@@ -1,0 +1,8 @@
+.git
+infra/
+Toma De Requerimientos/
+staticfiles/
+.venv/
+__pycache__/
+*.pyc
+.env

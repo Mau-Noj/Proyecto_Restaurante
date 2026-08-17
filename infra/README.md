@@ -72,6 +72,20 @@ El job `apply` corre contra el environment de GitHub `production` (para prod) o
 `development` (para dev) — protégelos con reviewers requeridos en Settings →
 Environments si quieres aprobar manualmente antes de aplicar contra AWS real.
 
+## Imagen Docker de la app (`.github/workflows/cd.yml`)
+
+Al hacer push a `main` o `develop` se construye y publica la imagen en GHCR
+(`ghcr.io/mau-noj/proyecto_restaurante:latest` / `:develop`), referenciada por
+`docker_image` en `infra/ansible/inventories/*/group_vars/all.yml`.
+
+**Pendiente antes del primer deploy real:** las imágenes publicadas con
+`GITHUB_TOKEN` quedan **privadas** en GHCR por defecto. El EC2 necesita poder
+hacer `docker pull` de esa imagen — hay que decidir entre (a) marcar el
+paquete como público en GitHub → tu perfil → Packages → proyecto_restaurante →
+Package settings, o (b) agregar una tarea `docker login ghcr.io` al rol
+`infra/ansible/roles/docker` usando un token con permiso `read:packages`
+guardado en Secrets Manager. Ninguna de las dos está hecha todavía.
+
 ## Qué necesito para poder aplicar esto en tu cuenta de AWS
 
 Ver la sección de credenciales en el mensaje del asistente — en resumen: un

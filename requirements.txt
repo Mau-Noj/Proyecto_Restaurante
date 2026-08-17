@@ -1,0 +1,5 @@
+Django>=5.2,<5.3
+gunicorn>=22
+psycopg[binary]>=3.2
+django-environ>=0.11
+redis>=5.0

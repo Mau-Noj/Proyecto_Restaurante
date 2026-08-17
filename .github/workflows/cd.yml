@@ -1,22 +1,36 @@
 name: CD
 
-# Se dispara solo cuando algo llega a main (release u hotfix ya fusionados).
-# TODO: una vez definido el hosting (Docker/VPS, Render, Railway, AWS, etc.)
-# reemplaza el job "deploy" con los pasos reales (build de imagen, push a
-# registry, despliegue). Por ahora deja constancia de que el pipeline existe
-# y valida que el proyecto arranca con Docker antes de publicar.
+# Se dispara al llegar a main (release/hotfix) o develop (ambiente dev).
+# build: valida que el proyecto arranca con Docker (collectstatic).
+# push-image: construye y publica la imagen en GHCR.
+# deploy: placeholder — el despliegue real (Ansible) todavía se corre a mano,
+# ver infra/README.md. Falta decidir visibilidad del paquete GHCR (ver nota
+# en infra/README.md) antes de depender de esto en un deploy real.
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
     paths-ignore:
       - "Toma De Requerimientos/**"
       - "**/*.md"
   workflow_dispatch: {}
 
 concurrency:
-  group: cd-${{ github.workflow }}
+  group: cd-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  # Valores dummy: solo para que Django cargue settings durante el chequeo
+  # de collectstatic, no se abre conexión real a DB/Redis en este paso.
+  DEBUG: "False"
+  SECRET_KEY: cd-check-secret-key
+  ALLOWED_HOSTS: localhost
+  DATABASE_URL: postgres://user:pass@localhost:5432/db
+  REDIS_URL: redis://localhost:6379/0
 
 jobs:
   build:
@@ -40,17 +54,46 @@ jobs:
         run: |
           if [ -f manage.py ]; then python manage.py collectstatic --noinput --dry-run; fi
 
-      # - name: Build Docker image
-      #   run: docker build -t restaurante-app:${{ github.sha }} .
+  push-image:
+    name: Build & Push image (GHCR)
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=develop,enable=${{ github.ref == 'refs/heads/develop' }}
+            type=sha,prefix=,format=short
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
 
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    needs: build
-    environment: production
+    needs: push-image
+    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
     steps:
       - name: Placeholder deploy step
         run: |
-          echo "TODO: configurar despliegue real (proveedor, secrets, credenciales)."
-          echo "Este job corre en el environment 'production' de GitHub: protégelo"
-          echo "con reviewers requeridos desde Settings > Environments."
+          echo "TODO: automatizar 'ansible-playbook playbooks/site.yml' desde aquí."
+          echo "Por ahora el despliegue se corre a mano (ver infra/README.md)."
+          echo "Este job corre en un environment de GitHub: protégelo con"
+          echo "reviewers requeridos desde Settings > Environments."

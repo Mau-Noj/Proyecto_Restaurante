@@ -3,7 +3,7 @@
 project_name: proyecto-restaurante
 environment_name: dev
 
-docker_image: "REEMPLAZAR/proyecto-restaurante:latest" # ej. ghcr.io/usuario/proyecto-restaurante:latest
+docker_image: "ghcr.io/mau-noj/proyecto_restaurante:develop"
 
 db_host: "REEMPLAZAR_CON_terraform_output_db_endpoint"
 db_port: 5432
