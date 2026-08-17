@@ -65,3 +65,24 @@ Thumbs.db
 
 # Docker
 *.pid
+
+# --- Terraform ---
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+**/backend.hcl
+terraform.tfvars
+*.auto.tfvars
+!*.tfvars.example
+!*.auto.tfvars.example
+
+# --- Ansible ---
+infra/ansible/.secrets/
+*.retry

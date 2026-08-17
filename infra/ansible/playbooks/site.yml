@@ -1,0 +1,9 @@
+---
+- name: Configurar y desplegar la app del restaurante
+  hosts: app
+  become: true
+
+  roles:
+    - common
+    - docker
+    - app_deploy

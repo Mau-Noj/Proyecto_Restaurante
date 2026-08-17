@@ -1,0 +1,46 @@
+---
+# La password de la DB se lee de Secrets Manager en el momento del deploy
+# (vía lookup plugin, ejecutado en el control node), nunca se guarda en
+# group_vars ni en el repo.
+- name: Crear directorio de la app
+  ansible.builtin.file:
+    path: /opt/app
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+    mode: "0750"
+
+- name: Generar docker-compose.yml
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: /opt/app/docker-compose.yml
+    owner: ubuntu
+    group: ubuntu
+    mode: "0640"
+
+- name: Generar configuración de nginx
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: /opt/app/nginx.conf
+    owner: ubuntu
+    group: ubuntu
+    mode: "0640"
+
+- name: Generar archivo .env
+  ansible.builtin.template:
+    src: env.j2
+    dest: /opt/app/.env
+    owner: ubuntu
+    group: ubuntu
+    mode: "0600"
+  vars:
+    db_password: "{{ (lookup('amazon.aws.secretsmanager_secret', db_secret_arn) | from_json).password }}"
+    # El lookup 'password' persiste el valor en ese archivo la primera vez y lo
+    # reutiliza después, para no invalidar sesiones de Django en cada deploy.
+    django_secret_key: "{{ lookup('ansible.builtin.password', playbook_dir + '/../.secrets/' + inventory_hostname + '/django_secret_key length=50 chars=ascii_letters,digits') }}"
+
+- name: Levantar los contenedores
+  community.docker.docker_compose_v2:
+    project_src: /opt/app
+    pull: always
+    state: present

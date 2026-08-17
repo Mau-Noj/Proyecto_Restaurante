@@ -1,0 +1,97 @@
+name: Terraform
+
+# terraform plan en cada PR que toque infra/terraform/**.
+# terraform apply automático solo al hacer push a main (o manualmente).
+# Usa OIDC: ningún access key/secret key vive en GitHub, solo el ARN del rol
+# (ver infra/terraform/bootstrap/github_oidc.tf).
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - "infra/terraform/**"
+  push:
+    branches: [main]
+    paths:
+      - "infra/terraform/**"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Ambiente (dev/prod)"
+        required: true
+        default: "dev"
+        type: choice
+        options: [dev, prod]
+
+permissions:
+  id-token: write # requerido por OIDC
+  contents: read
+  pull-requests: write # para comentar el plan en el PR
+
+env:
+  TF_ENVIRONMENT: ${{ github.event.inputs.environment || 'dev' }}
+  AWS_REGION: us-east-1
+
+jobs:
+  plan:
+    name: Plan
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infra/terraform/environments/${{ env.TF_ENVIRONMENT }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_TERRAFORM_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.x"
+
+      - name: Terraform Init
+        run: |
+          terraform init \
+            -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" \
+            -backend-config="dynamodb_table=${{ secrets.TF_STATE_LOCK_TABLE }}" \
+            -backend-config="region=${{ env.AWS_REGION }}"
+
+      - name: Terraform Plan
+        run: terraform plan -no-color -input=false
+          -var="key_name=${{ secrets.TF_EC2_KEY_NAME }}"
+          -var="allowed_ssh_cidr=${{ secrets.TF_ALLOWED_SSH_CIDR }}"
+
+  apply:
+    name: Apply
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: ${{ env.TF_ENVIRONMENT == 'prod' && 'production' || 'development' }}
+    defaults:
+      run:
+        working-directory: infra/terraform/environments/${{ env.TF_ENVIRONMENT }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_TERRAFORM_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.x"
+
+      - name: Terraform Init
+        run: |
+          terraform init \
+            -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" \
+            -backend-config="dynamodb_table=${{ secrets.TF_STATE_LOCK_TABLE }}" \
+            -backend-config="region=${{ env.AWS_REGION }}"
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve -input=false
+          -var="key_name=${{ secrets.TF_EC2_KEY_NAME }}"
+          -var="allowed_ssh_cidr=${{ secrets.TF_ALLOWED_SSH_CIDR }}"

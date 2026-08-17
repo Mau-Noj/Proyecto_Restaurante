@@ -1,0 +1,6 @@
+# Copiar a backend.hcl (gitignored) y completar con los outputs de bootstrap/.
+# Uso:  terraform init -backend-config=backend.hcl
+
+bucket         = "proyecto-restaurante-tfstate-<account_id>"
+dynamodb_table = "proyecto-restaurante-tfstate-lock"
+region         = "us-east-1"

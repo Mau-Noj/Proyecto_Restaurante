@@ -1,0 +1,19 @@
+---
+project_name: proyecto-restaurante
+environment_name: prod
+
+docker_image: "REEMPLAZAR/proyecto-restaurante:latest"
+
+db_host: "REEMPLAZAR_CON_terraform_output_db_endpoint"
+db_port: 5432
+db_name: restaurante
+db_username: restaurante_app
+db_secret_arn: "REEMPLAZAR_CON_terraform_output_db_secret_arn"
+
+redis_host: "REEMPLAZAR_CON_terraform_output_redis_endpoint"
+redis_port: 6379
+
+media_bucket: "REEMPLAZAR_CON_terraform_output_media_bucket"
+
+django_allowed_hosts: "REEMPLAZAR_CON_TU_DOMINIO"
+django_debug: "False"
