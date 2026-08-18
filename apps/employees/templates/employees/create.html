@@ -27,7 +27,7 @@
 
 {% include "dashboard/_topbar.html" with breadcrumb="Personal / Nuevo" %}
 
-<main class="relative z-10 max-w-3xl mx-auto px-6 py-10">
+<main class="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
 <h2 class="font-headline-lg text-2xl font-bold text-white mb-1">Nuevo Empleado</h2>
 <p class="text-gray-400 text-sm mb-8">Se genera automáticamente un usuario y contraseña temporal para el Login de Empleado.</p>
 
@@ -38,7 +38,7 @@
 </div>
 {% endif %}
 
-<form method="post" class="glass-panel rounded-2xl border border-white/10 p-8 space-y-6">
+<form method="post" class="glass-panel rounded-2xl border border-white/10 p-5 sm:p-8 space-y-6">
 {% csrf_token %}
 <div>
 <h3 class="font-headline-sm text-sm text-neon-cyan uppercase tracking-widest mb-4">Datos básicos</h3>
@@ -97,8 +97,8 @@
 </div>
 </div>
 
-<div class="pt-4 flex justify-end gap-3">
-<a href="{% url 'employees:list' %}" class="px-4 py-2 rounded-xl border border-white/10 text-gray-400 hover:text-white transition-colors text-sm">Cancelar</a>
+<div class="pt-4 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+<a href="{% url 'employees:list' %}" class="px-4 py-2 rounded-xl border border-white/10 text-gray-400 hover:text-white transition-colors text-sm text-center">Cancelar</a>
 <button class="px-6 py-2 rounded-xl bg-gradient-to-r from-neon-cyan/20 to-neon-violet/20 border border-neon-cyan/50 text-white hover:bg-neon-cyan/30 transition-all text-sm font-headline-sm" type="submit">Crear Empleado</button>
 </div>
 </form>

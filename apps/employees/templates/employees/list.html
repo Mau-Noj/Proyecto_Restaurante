@@ -63,26 +63,26 @@
 </div>
 {% endif %}
 
-<main class="relative z-10 max-w-6xl mx-auto px-6 py-10">
+<main class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
 {% if messages %}
 {% for message in messages %}
 <div class="form-error rounded-xl px-4 py-3 mb-6 text-sm {% if message.tags == 'success' %}!bg-[rgba(0,243,255,0.1)] !border-neon-cyan/40 !text-neon-cyan{% endif %}" role="alert">{{ message }}</div>
 {% endfor %}
 {% endif %}
 
-<div class="flex items-center justify-between mb-8">
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
 <div>
 <h2 class="font-headline-lg text-2xl font-bold text-white mb-1">Personal</h2>
 <p class="text-gray-400 text-sm">Empleados registrados y sus credenciales de acceso al Login de Empleado.</p>
 </div>
-<a href="{% url 'employees:create' %}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-neon-cyan/20 to-neon-violet/20 border border-neon-cyan/50 text-white hover:bg-neon-cyan/30 transition-all text-sm font-headline-sm">
+<a href="{% url 'employees:create' %}" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-neon-cyan/20 to-neon-violet/20 border border-neon-cyan/50 text-white hover:bg-neon-cyan/30 transition-all text-sm font-headline-sm shrink-0">
 <span class="material-symbols-outlined text-[18px]">person_add</span>
 Nuevo Empleado
 </a>
 </div>
 
-<div class="glass-panel rounded-xl border border-white/10 overflow-hidden">
-<table class="w-full text-sm">
+<div class="glass-panel rounded-xl border border-white/10 overflow-x-auto">
+<table class="w-full text-sm min-w-[720px]">
 <thead class="bg-black/40 text-gray-400 font-label-md text-xs uppercase tracking-widest">
 <tr>
 <th class="text-left px-5 py-3">Nombre</th>

@@ -27,7 +27,7 @@
 
 {% include "dashboard/_topbar.html" with breadcrumb="Personal / Editar" %}
 
-<main class="relative z-10 max-w-3xl mx-auto px-6 py-10">
+<main class="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
 <h2 class="font-headline-lg text-2xl font-bold text-white mb-1">Editar Empleado</h2>
 <p class="text-gray-400 text-sm mb-8">{{ employee.user.get_full_name }} · <span class="font-label-md">{{ employee.user.username }}</span></p>
 
@@ -38,7 +38,7 @@
 </div>
 {% endif %}
 
-<form method="post" class="glass-panel rounded-2xl border border-white/10 p-8 space-y-6">
+<form method="post" class="glass-panel rounded-2xl border border-white/10 p-5 sm:p-8 space-y-6">
 {% csrf_token %}
 <div>
 <h3 class="font-headline-sm text-sm text-neon-cyan uppercase tracking-widest mb-4">Datos básicos</h3>
@@ -79,8 +79,8 @@
 <p class="text-xs text-gray-500 mt-1">Si el empleado ya no trabaja aquí, desactívala en vez de borrarlo — conserva su historial.</p>
 </div>
 
-<div class="pt-4 flex justify-end gap-3">
-<a href="{% url 'employees:list' %}" class="px-4 py-2 rounded-xl border border-white/10 text-gray-400 hover:text-white transition-colors text-sm">Cancelar</a>
+<div class="pt-4 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+<a href="{% url 'employees:list' %}" class="px-4 py-2 rounded-xl border border-white/10 text-gray-400 hover:text-white transition-colors text-sm text-center">Cancelar</a>
 <button class="px-6 py-2 rounded-xl bg-gradient-to-r from-neon-cyan/20 to-neon-violet/20 border border-neon-cyan/50 text-white hover:bg-neon-cyan/30 transition-all text-sm font-headline-sm" type="submit">Guardar Cambios</button>
 </div>
 </form>
@@ -88,20 +88,20 @@
 <form method="post" action="{% url 'employees:reset_password' employee.pk %}" id="reset-password-form">
 {% csrf_token %}
 </form>
-<div class="glass-panel rounded-2xl border border-[#ffb800]/30 p-6 mt-6 flex items-center justify-between">
+<div class="glass-panel rounded-2xl border border-[#ffb800]/30 p-5 sm:p-6 mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
 <div>
 <h3 class="font-headline-sm text-sm text-[#ffb800] uppercase tracking-widest mb-1">¿Olvidó su contraseña?</h3>
 <p class="text-gray-400 text-sm">Genera una nueva contraseña temporal — deberá cambiarla al iniciar sesión.</p>
 </div>
-<button type="button" onclick="document.getElementById('confirm-reset-modal').classList.remove('hidden')" class="px-5 py-2 rounded-xl border border-[#ffb800]/50 text-[#ffb800] hover:bg-[#ffb800]/10 transition-all text-sm font-headline-sm whitespace-nowrap">Restablecer contraseña</button>
+<button type="button" onclick="document.getElementById('confirm-reset-modal').classList.remove('hidden')" class="px-5 py-2 rounded-xl border border-[#ffb800]/50 text-[#ffb800] hover:bg-[#ffb800]/10 transition-all text-sm font-headline-sm whitespace-nowrap shrink-0">Restablecer contraseña</button>
 </div>
 
-<div class="glass-panel rounded-2xl border border-red-500/30 p-6 mt-6 flex items-center justify-between">
+<div class="glass-panel rounded-2xl border border-red-500/30 p-5 sm:p-6 mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
 <div>
 <h3 class="font-headline-sm text-sm text-red-400 uppercase tracking-widest mb-1">Zona de peligro</h3>
 <p class="text-gray-400 text-sm">Elimina permanentemente a este empleado y su acceso.</p>
 </div>
-<a href="{% url 'employees:delete' employee.pk %}" class="px-5 py-2 rounded-xl border border-red-500/50 text-red-400 hover:bg-red-500/10 transition-all text-sm font-headline-sm whitespace-nowrap">Eliminar empleado</a>
+<a href="{% url 'employees:delete' employee.pk %}" class="px-5 py-2 rounded-xl border border-red-500/50 text-red-400 hover:bg-red-500/10 transition-all text-sm font-headline-sm whitespace-nowrap shrink-0 text-center">Eliminar empleado</a>
 </div>
 
 <!-- Modal de confirmacion (reemplaza el confirm() nativo del navegador) -->

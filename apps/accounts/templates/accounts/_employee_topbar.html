@@ -1,17 +1,17 @@
 <header class="relative z-10 border-b border-white/10 bg-black/40 backdrop-blur-md">
-<div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-<div class="flex items-center gap-4">
-<h1 class="font-headline-md text-xl font-bold tracking-tight text-white">Zennin<span class="text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-violet font-light ml-1">Bistro</span></h1>
+<div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+<div class="flex flex-wrap items-center gap-x-3 gap-y-1 min-w-0">
+<h1 class="font-headline-md text-lg sm:text-xl font-bold tracking-tight text-white shrink-0">Zennin<span class="text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-violet font-light ml-1">Bistro</span></h1>
 {% if breadcrumb %}
-<span class="text-gray-600">/</span>
-<span class="text-xs text-neon-cyan font-label-md tracking-widest uppercase">{{ breadcrumb }}</span>
+<span class="text-gray-600 hidden sm:inline">/</span>
+<span class="text-xs text-neon-cyan font-label-md tracking-widest uppercase truncate">{{ breadcrumb }}</span>
 {% endif %}
 </div>
-<div class="flex items-center gap-4">
-<span class="font-label-md text-xs text-gray-400 tracking-widest uppercase">{{ user.get_username }}</span>
+<div class="flex items-center gap-4 shrink-0">
+<span class="font-label-md text-xs text-gray-400 tracking-widest uppercase truncate max-w-[10rem] sm:max-w-none">{{ user.get_username }}</span>
 <form method="post" action="{% url 'accounts:logout' %}">
 {% csrf_token %}
-<button class="text-xs text-gray-400 hover:text-neon-cyan transition-colors font-label-md tracking-widest uppercase" type="submit">Cerrar sesión</button>
+<button class="text-xs text-gray-400 hover:text-neon-cyan transition-colors font-label-md tracking-widest uppercase whitespace-nowrap" type="submit">Cerrar sesión</button>
 </form>
 </div>
 </div>
