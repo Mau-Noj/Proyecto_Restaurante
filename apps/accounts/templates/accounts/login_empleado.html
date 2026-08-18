@@ -1,0 +1,176 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Zennin Bistro - Acceso Personal</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+                "primary": "#000000",
+                "secondary": "#ac3400",
+                "on-surface": "#ffffff",
+                "surface": "#111111",
+                "surface-container": "#1a1a1a",
+                "surface-variant": "#222222",
+                "outline": "#444444",
+                "outline-variant": "#333333",
+                "neon-cyan": "#00f3ff",
+                "neon-violet": "#bc13fe",
+            },
+            borderRadius: {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem",
+                    "2xl": "1rem"
+            },
+            spacing: {
+                    "section-gap": "2rem",
+                    "gutter": "1.5rem",
+                    "margin-mobile": "1rem",
+                    "card-padding": "2rem",
+                    "margin-desktop": "2.5rem",
+                    "baseline": "4px"
+            },
+            fontFamily: {
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "label-md": ["JetBrains Mono"],
+                    "headline-sm": ["Inter"],
+                    "body-md": ["Inter"],
+                    "stats-xl": ["Inter"],
+                    "headline-lg": ["Inter"]
+            },
+            fontSize: {
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "stats-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.03em", "fontWeight": "800"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          }
+        }
+      }
+</script>
+<link href="{% static 'css/auth-theme.css' %}" rel="stylesheet"/>
+</head>
+<body class="min-h-screen flex items-center justify-center relative overflow-hidden font-body-md">
+<div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+<div class="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full bg-neon-violet opacity-20 blur-[150px]"></div>
+<div class="absolute bottom-[0%] -right-[10%] w-[50%] h-[50%] rounded-full bg-neon-cyan opacity-10 blur-[120px]"></div>
+</div>
+<main class="w-full max-w-md px-margin-mobile md:px-0 relative z-10 flex flex-col items-center justify-center">
+<div class="text-center mb-10 w-full flex flex-col items-center">
+<div class="w-16 h-16 mb-4 rounded-full border border-neon-cyan/30 flex items-center justify-center bg-black/50 backdrop-blur-md shadow-[0_0_30px_rgba(0,243,255,0.2)]">
+<span class="material-symbols-outlined text-4xl text-neon-cyan" style="font-variation-settings: 'FILL' 1;">restaurant</span>
+</div>
+<h1 class="font-headline-lg text-4xl font-bold tracking-tight text-white mb-2">Zennin<span class="text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-violet font-light ml-2">Bistro</span></h1>
+<p class="font-body-md text-gray-400 tracking-widest uppercase text-xs mt-2">Acceso de Personal</p>
+</div>
+
+{% if form.non_field_errors %}
+<div class="form-error rounded-xl px-4 py-3 mb-6 text-sm w-full" role="alert">
+  {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+</div>
+{% endif %}
+
+<div class="w-full glass-panel neon-border rounded-2xl p-card-padding relative overflow-hidden">
+<form method="post" id="login-form">
+{% csrf_token %}
+<!-- Paso 1: credenciales -->
+<div class="transition-all duration-300 transform opacity-100 translate-x-0" id="step-1">
+<div class="space-y-6">
+<div class="relative group">
+<input class="peer w-full h-14 input-dark rounded-xl px-4 pt-4 text-white font-body-md focus:ring-0 transition-colors" id="id_username" name="username" placeholder=" " required autofocus type="text"/>
+<label class="absolute left-4 top-4 text-gray-400 font-label-md transition-all duration-200 pointer-events-none origin-left text-xs tracking-wider" for="id_username">ID DE EMPLEADO</label>
+</div>
+<div class="relative group">
+<input class="peer w-full h-14 input-dark rounded-xl px-4 pt-4 text-white font-body-md focus:ring-0 transition-colors" id="id_password" name="password" placeholder=" " required type="password"/>
+<label class="absolute left-4 top-4 text-gray-400 font-label-md transition-all duration-200 pointer-events-none origin-left text-xs tracking-wider" for="id_password">PIN</label>
+</div>
+<button class="w-full h-14 mt-6 bg-gradient-to-r from-neon-cyan/20 to-neon-violet/20 border border-neon-cyan/50 text-white rounded-xl font-headline-sm text-sm tracking-widest uppercase hover:bg-neon-cyan/30 transition-all pulse-button flex justify-center items-center gap-3 group" type="button" onclick="nextStep()">
+                        Continuar
+                        <span class="material-symbols-outlined text-neon-cyan group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Paso 2: confirmacion visual (decorativa por ahora, el submit real va aqui) -->
+<div class="absolute inset-0 p-card-padding transition-all duration-300 transform opacity-0 translate-x-full pointer-events-none flex flex-col justify-center" id="step-2">
+<div class="mb-6 text-center">
+<h2 class="font-headline-sm text-xl text-white tracking-widest uppercase mb-1">Confirmación</h2>
+<p class="font-body-md text-gray-400 text-xs">Verifica tus datos antes de iniciar turno.</p>
+</div>
+<div class="flex justify-between gap-2 opacity-40 pointer-events-none" title="Próximamente">
+<input class="w-12 h-14 text-center input-dark rounded-xl font-headline-md text-white" maxlength="1" type="text" disabled/>
+<input class="w-12 h-14 text-center input-dark rounded-xl font-headline-md text-white" maxlength="1" type="text" disabled/>
+<input class="w-12 h-14 text-center input-dark rounded-xl font-headline-md text-white" maxlength="1" type="text" disabled/>
+<input class="w-12 h-14 text-center input-dark rounded-xl font-headline-md text-white" maxlength="1" type="text" disabled/>
+<input class="w-12 h-14 text-center input-dark rounded-xl font-headline-md text-white" maxlength="1" type="text" disabled/>
+<input class="w-12 h-14 text-center input-dark rounded-xl font-headline-md text-white" maxlength="1" type="text" disabled/>
+</div>
+<p class="text-center text-[10px] text-gray-500 uppercase tracking-widest mt-2 mb-4">Código de verificación (próximamente)</p>
+<button class="w-full h-14 bg-gradient-to-r from-neon-cyan/20 to-neon-violet/20 border border-neon-cyan/50 text-white rounded-xl font-headline-sm text-sm tracking-widest uppercase hover:bg-neon-cyan/30 transition-all pulse-button flex justify-center items-center gap-3 group" type="submit">
+                        Iniciar Turno
+                        <span class="material-symbols-outlined text-neon-cyan group-hover:translate-x-1 transition-transform">login</span>
+</button>
+<button class="w-full text-center font-label-md text-xs tracking-widest uppercase text-gray-400 hover:text-white transition-colors mt-4" onclick="prevStep()" type="button">
+                        Volver
+                    </button>
+</div>
+</form>
+</div>
+<div class="text-center mt-8">
+<p class="font-label-md text-gray-500 tracking-widest uppercase text-[10px]">¿Necesitas ayuda? Contacta a tu Gerente de Turno</p>
+</div>
+</main>
+<script>
+        function nextStep() {
+            const username = document.getElementById('id_username');
+            const password = document.getElementById('id_password');
+            if (!username.value || !password.value) {
+                username.reportValidity();
+                password.reportValidity();
+                return;
+            }
+            const step1 = document.getElementById('step-1');
+            const step2 = document.getElementById('step-2');
+
+            step1.classList.remove('opacity-100', 'translate-x-0');
+            step1.classList.add('opacity-0', '-translate-x-full', 'pointer-events-none');
+
+            step2.classList.remove('opacity-0', 'translate-x-full', 'pointer-events-none');
+            step2.classList.add('opacity-100', 'translate-x-0');
+        }
+
+        function prevStep() {
+            const step1 = document.getElementById('step-1');
+            const step2 = document.getElementById('step-2');
+
+            step2.classList.remove('opacity-100', 'translate-x-0');
+            step2.classList.add('opacity-0', 'translate-x-full', 'pointer-events-none');
+
+            step1.classList.remove('opacity-0', '-translate-x-full', 'pointer-events-none');
+            step1.classList.add('opacity-100', 'translate-x-0');
+        }
+
+        {% if form.non_field_errors %}
+        // Hubo un error de credenciales: mostrar el paso 1 directamente.
+        document.addEventListener('DOMContentLoaded', prevStep);
+        {% endif %}
+    </script>
+</body>
+</html>

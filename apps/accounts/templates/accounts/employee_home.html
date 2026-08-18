@@ -1,0 +1,21 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Zennin Bistro - Panel de Personal</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="{% static 'css/auth-theme.css' %}" rel="stylesheet"/>
+</head>
+<body class="min-h-screen flex items-center justify-center text-white">
+<main class="text-center space-y-4">
+<h1 class="text-2xl font-bold">Bienvenido, {{ user.get_username }}</h1>
+<p class="text-gray-400 text-sm">Todavía no hay módulos operativos conectados aquí (Mesas, Órdenes, Cocina...).</p>
+<form method="post" action="{% url 'accounts:logout' %}">
+{% csrf_token %}
+<button class="mt-4 px-4 py-2 rounded-xl border border-white/10 hover:border-neon-cyan hover:text-neon-cyan transition-colors" type="submit">Cerrar sesión</button>
+</form>
+</main>
+</body>
+</html>

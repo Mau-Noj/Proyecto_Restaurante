@@ -1,0 +1,83 @@
+/* Tema "Zennin Bistro" (dark/neon) compartido por las pantallas de login. */
+
+body {
+    background-color: #050505;
+    color: #ffffff;
+}
+
+.glass-panel {
+    background: rgba(20, 20, 20, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 0 40px rgba(0, 243, 255, 0.05), inset 0 0 20px rgba(188, 19, 254, 0.05);
+}
+
+.neon-border {
+    position: relative;
+}
+.neon-border::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(45deg, rgba(0, 243, 255, 0.5), transparent 40%, transparent 60%, rgba(188, 19, 254, 0.5));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+}
+
+.neon-glow-text {
+    text-shadow: 0 0 10px rgba(0, 243, 255, 0.5), 0 0 20px rgba(0, 243, 255, 0.3);
+}
+
+.neon-violet-text {
+    text-shadow: 0 0 10px rgba(188, 19, 254, 0.5), 0 0 20px rgba(188, 19, 254, 0.3);
+}
+
+.pulse-button {
+    animation: pulse-shadow 2s infinite;
+}
+
+@keyframes pulse-shadow {
+    0% { box-shadow: 0 0 0 0 rgba(0, 243, 255, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(0, 243, 255, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 243, 255, 0); }
+}
+
+.input-dark {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    transition: all 0.3s ease;
+}
+.input-dark:focus {
+    border-color: rgba(0, 243, 255, 0.5);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+    outline: none;
+}
+
+.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+.icon-fill { font-variation-settings: 'FILL' 1; }
+
+/* Floating label (login admin: envuelve input+label en .floating-input) */
+.floating-input:focus-within label,
+.floating-input input:not(:placeholder-shown) ~ label {
+    transform: scale(0.85) translateY(-1rem);
+    color: theme('colors.neon-cyan');
+}
+
+/* Floating label (login empleado: label es hermano directo del input peer) */
+.peer:focus ~ label,
+.peer:not(:placeholder-shown) ~ label {
+    transform: scale(0.85) translateY(-0.8rem);
+    color: rgba(0, 243, 255, 1);
+}
+
+.form-error {
+    background: rgba(186, 26, 26, 0.15);
+    border: 1px solid rgba(186, 26, 26, 0.4);
+    color: #ffb4ab;
+}
