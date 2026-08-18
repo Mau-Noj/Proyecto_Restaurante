@@ -68,7 +68,7 @@
 </script>
 <link href="{% static 'css/auth-theme.css' %}" rel="stylesheet"/>
 </head>
-<body class="min-h-screen flex items-center justify-center relative overflow-hidden font-body-md">
+<body class="min-h-screen flex items-center justify-center relative font-body-md py-12">
 <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
 <div class="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full bg-neon-violet opacity-20 blur-[150px]"></div>
 <div class="absolute bottom-[0%] -right-[10%] w-[50%] h-[50%] rounded-full bg-neon-cyan opacity-10 blur-[120px]"></div>
@@ -106,6 +106,11 @@
                         Continuar
                         <span class="material-symbols-outlined text-neon-cyan group-hover:translate-x-1 transition-transform">arrow_forward</span>
 </button>
+<div class="flex flex-wrap gap-2 mt-6 justify-center">
+<span id="feature-attendance-clock" class="locked-chip"><span class="material-symbols-outlined">fingerprint</span>Reloj biométrico de asistencia</span>
+<span id="feature-employee-biometric" class="locked-chip"><span class="material-symbols-outlined">fingerprint</span>Huella para iniciar turno</span>
+<span id="feature-employee-trusted-devices" class="locked-chip"><span class="material-symbols-outlined">devices</span>Dispositivos confiables</span>
+</div>
 </div>
 </div>
 <!-- Paso 2: confirmacion visual (decorativa por ahora, el submit real va aqui) -->
@@ -114,6 +119,7 @@
 <h2 class="font-headline-sm text-xl text-white tracking-widest uppercase mb-1">Confirmación</h2>
 <p class="font-body-md text-gray-400 text-xs">Verifica tus datos antes de iniciar turno.</p>
 </div>
+<div id="feature-verification">
 <div class="flex justify-between gap-2 opacity-40 pointer-events-none" title="Próximamente">
 <input class="w-12 h-14 text-center input-dark rounded-xl font-headline-md text-white" maxlength="1" type="text" disabled/>
 <input class="w-12 h-14 text-center input-dark rounded-xl font-headline-md text-white" maxlength="1" type="text" disabled/>
@@ -121,6 +127,7 @@
 <input class="w-12 h-14 text-center input-dark rounded-xl font-headline-md text-white" maxlength="1" type="text" disabled/>
 <input class="w-12 h-14 text-center input-dark rounded-xl font-headline-md text-white" maxlength="1" type="text" disabled/>
 <input class="w-12 h-14 text-center input-dark rounded-xl font-headline-md text-white" maxlength="1" type="text" disabled/>
+</div>
 </div>
 <p class="text-center text-[10px] text-gray-500 uppercase tracking-widest mt-2 mb-4">Código de verificación (próximamente)</p>
 <button class="w-full h-14 bg-gradient-to-r from-neon-cyan/20 to-neon-violet/20 border border-neon-cyan/50 text-white rounded-xl font-headline-sm text-sm tracking-widest uppercase hover:bg-neon-cyan/30 transition-all pulse-button flex justify-center items-center gap-3 group" type="submit">
@@ -136,8 +143,50 @@
 <div class="text-center mt-8">
 <p class="font-label-md text-gray-500 tracking-widest uppercase text-[10px]">¿Necesitas ayuda? Contacta a tu Gerente de Turno</p>
 </div>
+<div class="mt-6 flex justify-center gap-3">
+<button type="button" onclick="startFeatureTour(PREMIUM_TOUR, 'violet', { onStart: showVerificationStep, onEnd: restoreStepOne })" class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-neon-violet/40 text-neon-violet hover:bg-neon-violet/10 transition-colors text-xs font-label-md tracking-widest uppercase">
+<span class="material-symbols-outlined text-[16px]">workspace_premium</span>
+Ver Premium
+</button>
+<button type="button" onclick="startFeatureTour(GOLD_TOUR, 'gold')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#ffb800]/40 text-[#ffb800] hover:bg-[#ffb800]/10 transition-colors text-xs font-label-md tracking-widest uppercase">
+<span class="material-symbols-outlined text-[16px]">star</span>
+Ver Gold
+</button>
+</div>
 </main>
+<script src="{% static 'js/feature-tour.js' %}"></script>
 <script>
+        const PREMIUM_TOUR = [
+            { selector: "#feature-verification", title: "Código de verificación · Premium", text: "Después del PIN se pide un código enviado al dispositivo del empleado, para que un PIN robado no alcance para iniciar turno." },
+            { selector: "#feature-attendance-clock", title: "Reloj biométrico · Premium", text: "La asistencia se marca con huella en vez de PIN, evitando que un compañero marque turno por otro." },
+        ];
+        const GOLD_TOUR = [
+            { selector: "#feature-employee-biometric", title: "Huella para iniciar turno · Gold", text: "El personal entra directo con huella digital, sin escribir ID ni PIN, agilizando el arranque de turno en hora pico." },
+            { selector: "#feature-employee-trusted-devices", title: "Dispositivos confiables · Gold", text: "El sistema reconoce las tablets/terminales habituales de cada sucursal y marca como sospechoso cualquier acceso desde un dispositivo nuevo." },
+        ];
+
+        function showStep2Panel() {
+            const step1 = document.getElementById('step-1');
+            const step2 = document.getElementById('step-2');
+            step1.classList.remove('opacity-100', 'translate-x-0');
+            step1.classList.add('opacity-0', '-translate-x-full', 'pointer-events-none');
+            step2.classList.remove('opacity-0', 'translate-x-full', 'pointer-events-none');
+            step2.classList.add('opacity-100', 'translate-x-0');
+        }
+
+        function showStep1Panel() {
+            const step1 = document.getElementById('step-1');
+            const step2 = document.getElementById('step-2');
+            step2.classList.remove('opacity-100', 'translate-x-0');
+            step2.classList.add('opacity-0', 'translate-x-full', 'pointer-events-none');
+            step1.classList.remove('opacity-0', '-translate-x-full', 'pointer-events-none');
+            step1.classList.add('opacity-100', 'translate-x-0');
+        }
+
+        // Usado por el tour: solo cambia de panel, sin validar el formulario.
+        function showVerificationStep() { showStep2Panel(); }
+        function restoreStepOne() { showStep1Panel(); }
+
         function nextStep() {
             const username = document.getElementById('id_username');
             const password = document.getElementById('id_password');
@@ -146,26 +195,10 @@
                 password.reportValidity();
                 return;
             }
-            const step1 = document.getElementById('step-1');
-            const step2 = document.getElementById('step-2');
-
-            step1.classList.remove('opacity-100', 'translate-x-0');
-            step1.classList.add('opacity-0', '-translate-x-full', 'pointer-events-none');
-
-            step2.classList.remove('opacity-0', 'translate-x-full', 'pointer-events-none');
-            step2.classList.add('opacity-100', 'translate-x-0');
+            showStep2Panel();
         }
 
-        function prevStep() {
-            const step1 = document.getElementById('step-1');
-            const step2 = document.getElementById('step-2');
-
-            step2.classList.remove('opacity-100', 'translate-x-0');
-            step2.classList.add('opacity-0', 'translate-x-full', 'pointer-events-none');
-
-            step1.classList.remove('opacity-0', '-translate-x-full', 'pointer-events-none');
-            step1.classList.add('opacity-100', 'translate-x-0');
-        }
+        function prevStep() { showStep1Panel(); }
 
         {% if form.non_field_errors %}
         // Hubo un error de credenciales: mostrar el paso 1 directamente.

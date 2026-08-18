@@ -22,13 +22,13 @@ class TestAdminLogin:
         response = client.get(reverse("accounts:login_admin"))
         assert response.status_code == 200
 
-    def test_valid_staff_login_redirects_to_admin_index(self, client, staff_user):
+    def test_valid_staff_login_redirects_to_dashboard(self, client, staff_user):
         response = client.post(
             reverse("accounts:login_admin"),
             {"username": "admin1", "password": "s3cret-pass"},
         )
         assert response.status_code == 302
-        assert response.url == reverse("admin:index")
+        assert response.url == reverse("dashboard:index")
 
     def test_non_staff_user_is_rejected(self, client, employee_user):
         response = client.post(

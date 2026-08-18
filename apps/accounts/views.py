@@ -12,7 +12,7 @@ class AdminLoginView(LoginView):
     redirect_authenticated_user = True
 
     def get_success_url(self):
-        return str(reverse_lazy("admin:index"))
+        return str(reverse_lazy("dashboard:index"))
 
 
 class EmployeeLoginView(LoginView):
