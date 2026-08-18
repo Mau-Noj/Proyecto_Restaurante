@@ -1,6 +1,7 @@
 import pytest
 from django.urls import reverse
 
+from apps.catalog.models import Category
 from apps.tables.models import Table
 
 
@@ -56,4 +57,47 @@ def test_detail_shows_selected_table(client, employee_user):
 def test_detail_404_for_unknown_table(client, employee_user):
     client.force_login(employee_user)
     response = client.get(reverse("tables:detail", args=[99]))
+    assert response.status_code == 404
+
+
+@pytest.mark.django_db
+def test_detail_shows_menu_categories(client, employee_user):
+    client.force_login(employee_user)
+    response = client.get(reverse("tables:detail", args=[3]))
+    assert response.status_code == 200
+    content = response.content.decode()
+    for name in ["Bebidas Sin Alcohol", "Bebidas Alcohólicas", "Pizza", "Papas"]:
+        assert name in content
+
+
+@pytest.mark.django_db
+def test_category_products_requires_login(client):
+    category = Category.objects.first()
+    response = client.get(reverse("tables:category_products", args=[1, category.pk]))
+    assert response.status_code == 302
+    assert response.url.startswith(reverse("accounts:login_empleado"))
+
+
+@pytest.mark.django_db
+def test_category_products_shows_table_and_category(client, employee_user):
+    client.force_login(employee_user)
+    category = Category.objects.get(name="Pizza")
+
+    response = client.get(reverse("tables:category_products", args=[5, category.pk]))
+
+    assert response.status_code == 200
+    content = response.content.decode()
+    assert "Pizza" in content
+    assert "Mesa 5" in content
+
+
+@pytest.mark.django_db
+def test_category_products_404_for_unknown_table_or_category(client, employee_user):
+    client.force_login(employee_user)
+    category = Category.objects.first()
+
+    response = client.get(reverse("tables:category_products", args=[99, category.pk]))
+    assert response.status_code == 404
+
+    response = client.get(reverse("tables:category_products", args=[1, 999]))
     assert response.status_code == 404
