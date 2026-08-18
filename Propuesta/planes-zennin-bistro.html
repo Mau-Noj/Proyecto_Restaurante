@@ -1,0 +1,931 @@
+<title>Planes Zennin Bistro</title>
+<style>
+  :root {
+    --bg: #050505;
+    --surface: #0c0c0f;
+    --surface-2: #131317;
+    --border: rgba(255,255,255,0.09);
+    --border-strong: rgba(255,255,255,0.16);
+    --text: #f5f5f7;
+    --text-muted: #a3a3ad;
+    --text-dim: #6b6b74;
+    --cyan: #00f3ff;
+    --violet: #bc13fe;
+    --gold: #ffb800;
+    --cyan-wash: rgba(0,243,255,0.07);
+    --violet-wash: rgba(188,19,254,0.07);
+    --gold-wash: rgba(255,184,0,0.07);
+    --font-display: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-display);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--violet); color: #0a0a0a; }
+
+  a { color: inherit; }
+
+  h1, h2, h3, h4 { text-wrap: balance; margin: 0; font-family: var(--font-display); }
+
+  p { margin: 0; }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .wrap {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ---------- top bar / quick nav ---------- */
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    background: rgba(5,5,5,0.86);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .topbar-inner {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .brand {
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+  }
+  .brand .g { background: linear-gradient(90deg, var(--cyan), var(--violet)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  .quicknav {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .quicknav::-webkit-scrollbar { display: none; }
+
+  .quicknav a {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    color: var(--text-dim);
+    white-space: nowrap;
+    padding: 7px 11px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .quicknav a:hover { color: var(--text); border-color: var(--border-strong); }
+  .quicknav a:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
+  /* ---------- hero ---------- */
+
+  .hero {
+    padding: 72px 0 56px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero h1 {
+    font-size: clamp(32px, 5vw, 50px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.08;
+    max-width: 16ch;
+  }
+  .hero h1 .g { background: linear-gradient(90deg, var(--cyan), var(--violet) 55%, var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  .hero-lede {
+    margin-top: 20px;
+    max-width: 62ch;
+    font-size: 17px;
+    color: var(--text-muted);
+  }
+
+  .spectrum {
+    margin-top: 40px;
+    height: 3px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--cyan), var(--violet) 52%, var(--gold));
+  }
+
+  .spectrum-labels {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .spectrum-labels span:nth-child(1) { color: var(--cyan); }
+  .spectrum-labels span:nth-child(2) { color: var(--violet); }
+  .spectrum-labels span:nth-child(3) { color: var(--gold); }
+
+  /* ---------- legend / how-to-read section ---------- */
+
+  .legend {
+    padding: 48px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .legend-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 24px;
+  }
+
+  .legend-card {
+    background: var(--surface);
+    padding: 22px 20px;
+  }
+  .legend-card .dot { width: 9px; height: 9px; border-radius: 50%; margin-bottom: 12px; }
+  .legend-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+  .legend-card p { font-size: 13.5px; color: var(--text-muted); }
+  .legend-card.tier-basico .dot { background: var(--cyan); }
+  .legend-card.tier-basico h3 { color: var(--cyan); }
+  .legend-card.tier-premium .dot { background: var(--violet); }
+  .legend-card.tier-premium h3 { color: var(--violet); }
+  .legend-card.tier-gold .dot { background: var(--gold); }
+  .legend-card.tier-gold h3 { color: var(--gold); }
+
+  .callout {
+    margin-top: 24px;
+    border: 1px solid var(--border-strong);
+    border-left: 3px solid var(--violet);
+    border-radius: 8px;
+    padding: 16px 20px;
+    background: var(--violet-wash);
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+  .callout strong { color: var(--text); font-weight: 600; }
+
+  /* ---------- module sections ---------- */
+
+  .module {
+    padding: 64px 0;
+    border-bottom: 1px solid var(--border);
+    scroll-margin-top: 70px;
+  }
+
+  .module-head { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+  .module-head h2 { font-size: 26px; font-weight: 800; letter-spacing: -0.01em; }
+  .module-num { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+
+  .module-flow {
+    margin-top: 16px;
+    max-width: 68ch;
+    font-size: 15px;
+    color: var(--text-muted);
+  }
+
+  .tier-row {
+    margin-top: 32px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .tier-col {
+    padding: 22px 20px 24px;
+    border-left: 1px solid var(--border);
+    position: relative;
+  }
+  .tier-col:first-child { border-left: none; }
+  .tier-col::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+  .tier-col.c-basico::before { background: var(--cyan); }
+  .tier-col.c-premium::before { background: var(--violet); }
+  .tier-col.c-gold::before { background: var(--gold); }
+  .tier-col.c-basico { background: var(--cyan-wash); }
+  .tier-col.c-premium { background: var(--violet-wash); }
+  .tier-col.c-gold { background: var(--gold-wash); }
+
+  .tier-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .tier-col.c-basico .tier-label { color: var(--cyan); }
+  .tier-col.c-premium .tier-label { color: var(--violet); }
+  .tier-col.c-gold .tier-label { color: var(--gold); }
+
+  .tier-price { margin-top: 8px; font-family: var(--font-mono); font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .tier-price small { font-size: 12px; font-weight: 400; color: var(--text-dim); }
+
+  .tier-features { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .tier-features li { font-size: 13.5px; color: var(--text-muted); padding-left: 14px; position: relative; }
+  .tier-features li::before { content: "–"; position: absolute; left: 0; color: var(--text-dim); }
+
+  .tier-why { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); font-size: 13px; color: var(--text-dim); font-style: italic; }
+
+  /* ---------- calculator ---------- */
+
+  .calc {
+    padding: 64px 0;
+    border-bottom: 1px solid var(--border);
+    scroll-margin-top: 70px;
+  }
+
+  .calc-head { max-width: 62ch; }
+  .calc-head p { margin-top: 12px; font-size: 15px; color: var(--text-muted); }
+
+  .calc-panel {
+    margin-top: 32px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .calc-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .calc-row:last-child { border-bottom: none; }
+
+  .calc-row-name { font-size: 14px; font-weight: 600; }
+
+  .calc-toggle { display: flex; gap: 6px; }
+  .calc-toggle button {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 7px 12px;
+    border-radius: 7px;
+    border: 1px solid var(--border-strong);
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all .12s ease;
+  }
+  .calc-toggle button:hover { color: var(--text); }
+  .calc-toggle button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+  .calc-toggle button[data-active="true"][data-tier="basico"] { background: var(--cyan); border-color: var(--cyan); color: #04222a; }
+  .calc-toggle button[data-active="true"][data-tier="premium"] { background: var(--violet); border-color: var(--violet); color: #1c0330; }
+  .calc-toggle button[data-active="true"][data-tier="gold"] { background: var(--gold); border-color: var(--gold); color: #2b1c00; }
+
+  .calc-total {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 22px 20px;
+    background: var(--surface-2);
+  }
+  .calc-total-label { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); }
+  .calc-total-value { font-family: var(--font-mono); font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .calc-total-value span { font-size: 15px; color: var(--text-dim); font-weight: 400; }
+
+  /* ---------- investment table ---------- */
+
+  .invest { padding: 64px 0; border-bottom: 1px solid var(--border); scroll-margin-top: 70px; }
+  .invest-head p { margin-top: 12px; max-width: 62ch; font-size: 15px; color: var(--text-muted); }
+
+  .table-scroll { overflow-x: auto; margin-top: 28px; border: 1px solid var(--border); border-radius: 12px; }
+
+  table { width: 100%; border-collapse: collapse; min-width: 760px; font-size: 13.5px; }
+  thead th {
+    text-align: left;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    font-weight: 500;
+    padding: 13px 16px;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  tbody td { padding: 13px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--surface); }
+  td.mod-name { font-weight: 600; }
+  td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .c-basico-text { color: var(--cyan); }
+  .c-premium-text { color: var(--violet); }
+  .c-gold-text { color: var(--gold); }
+
+  tfoot td { padding: 14px 16px; font-family: var(--font-mono); font-weight: 600; font-variant-numeric: tabular-nums; background: var(--surface-2); border-top: 1px solid var(--border-strong); }
+
+  .table-note { margin-top: 14px; font-size: 12.5px; color: var(--text-dim); max-width: 68ch; }
+
+  /* ---------- closing ---------- */
+
+  .closing { padding: 64px 0 88px; }
+  .closing h2 { font-size: 22px; font-weight: 800; }
+  .closing p { margin-top: 14px; max-width: 62ch; font-size: 15px; color: var(--text-muted); }
+  .closing .callout { margin-top: 24px; }
+
+  @media (max-width: 760px) {
+    .quicknav { display: none; }
+    .legend-grid { grid-template-columns: 1fr; }
+    .tier-row { grid-template-columns: 1fr; }
+    .tier-col { border-left: none; border-top: 1px solid var(--border); }
+    .tier-col:first-child { border-top: none; }
+    .tier-col::before { width: 3px; height: auto; top: 0; bottom: 0; right: auto; }
+    .calc-row { grid-template-columns: 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">Zennin <span class="g">Bistro</span></div>
+    <nav class="quicknav" aria-label="Navegación de módulos">
+      <a href="#auth">Seguridad</a>
+      <a href="#personal">Personal</a>
+      <a href="#mesas">Mesas</a>
+      <a href="#kds">Cocina/Bar</a>
+      <a href="#pagos">Pagos</a>
+      <a href="#catalogo">Catálogo</a>
+      <a href="#inventario">Inventario</a>
+      <a href="#calculadora">Arma tu plan</a>
+      <a href="#inversion">Inversión</a>
+    </nav>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Propuesta de planes · Sistema de gestión de restaurante</p>
+    <h1 style="margin-top:14px">Un plan distinto <span class="g">para cada módulo</span>, no para todo el sistema</h1>
+    <p class="hero-lede">Zennin Bistro no se contrata en un solo bloque. Cada módulo — Personal, Mesas, Cocina, Pagos, Catálogo, Inventario y la capa de Seguridad — tiene su propio nivel Básico, Premium y Gold, y usted decide dónde vale la pena subir de nivel. Si lo único que le preocupa es que nadie entre al sistema sin permiso, sube solo el módulo de Seguridad a Premium y deja todo lo demás en Básico. El resto del negocio no paga por algo que no pidió.</p>
+    <div class="spectrum" role="img" aria-label="Escala de planes: Básico en cian, Premium en violeta, Gold en dorado"></div>
+    <div class="spectrum-labels"><span>Básico</span><span>Premium</span><span>Gold</span></div>
+  </div>
+</header>
+
+<section class="legend">
+  <div class="wrap">
+    <p class="eyebrow">Cómo leer esta propuesta</p>
+    <h2 style="margin-top:10px; font-size:24px; font-weight:800;">Tres niveles, el mismo criterio en los siete módulos</h2>
+    <div class="legend-grid">
+      <div class="legend-card tier-basico">
+        <div class="dot"></div>
+        <h3>Básico</h3>
+        <p>La operación diaria del restaurante, completa. Es lo que ya está construido y funcionando hoy como demo: tomar pedidos, cobrar, controlar inventario, dar de alta personal. Nada de esto es un recorte — es el negocio corriendo de punta a punta.</p>
+      </div>
+      <div class="legend-card tier-premium">
+        <div class="dot"></div>
+        <h3>Premium</h3>
+        <p>Lo que un restaurante necesita cuando ya tiene volumen y no puede darse el lujo de un error: control físico (impresoras, biometría), trazabilidad (auditoría, documentos) y reportes listos para salir del sistema hacia contabilidad.</p>
+      </div>
+      <div class="legend-card tier-gold">
+        <div class="dot"></div>
+        <h3>Gold</h3>
+        <p>Automatización e integración: el sistema deja de solo registrar lo que pasó y empieza a anticipar, conectar con proveedores externos, facturar ante la SAT y sostener más de una sucursal sin duplicar trabajo.</p>
+      </div>
+    </div>
+    <div class="callout">
+      <strong>Los módulos no se agrupan entre sí.</strong> Subir Seguridad a Premium no obliga a subir Personal. Puede empezar con los siete en Básico e ir subiendo de nivel únicamente donde el negocio lo va pidiendo, mes a mes.
+    </div>
+  </div>
+</section>
+
+<!-- ================= AUTENTICACIÓN Y SEGURIDAD ================= -->
+<section class="module" id="auth">
+  <div class="wrap">
+    <div class="module-head">
+      <h2>Autenticación y Seguridad</h2>
+      <span class="module-num">Puerta de entrada al sistema</span>
+    </div>
+    <p class="module-flow">Dos puertas separadas — una para Administrador y otra para Empleados — cada una con su propio diseño y su propio nivel de exigencia. Un empleado nuevo recibe usuario y contraseña temporal generados automáticamente; en su primer ingreso, el sistema lo obliga a cambiarla antes de dejarlo continuar. Cada pantalla — Cocina, Bar, Caja, Mesas, Panel — solo se abre para el puesto correcto: un mesero nunca ve la pantalla de cocina, y un cocinero nunca ve reportes de ventas.</p>
+
+    <div class="tier-row">
+      <div class="tier-col c-basico">
+        <span class="tier-label">Básico</span>
+        <div class="tier-price">Q100 <small>/ mes</small></div>
+        <ul class="tier-features">
+          <li>Login separado Admin / Empleado</li>
+          <li>Contraseña temporal generada y forzada a cambiar</li>
+          <li>Acceso restringido por puesto en cada pantalla</li>
+          <li>Restablecer contraseña desde el panel</li>
+        </ul>
+        <p class="tier-why">Ya cierra la puerta correcta a cada quien — la base de todo lo demás.</p>
+      </div>
+      <div class="tier-col c-premium">
+        <span class="tier-label">Premium</span>
+        <div class="tier-price">Q250 <small>/ mes</small></div>
+        <ul class="tier-features">
+          <li>Código de verificación (2FA) al iniciar sesión</li>
+          <li>Códigos de respaldo si se pierde el dispositivo</li>
+          <li>Bitácora de auditoría: quién entró, cuándo, desde dónde</li>
+          <li>Reloj biométrico de asistencia para el personal</li>
+        </ul>
+        <p class="tier-why">Robar una contraseña deja de ser suficiente para entrar — y queda registro de cada intento.</p>
+      </div>
+      <div class="tier-col c-gold">
+        <span class="tier-label">Gold</span>
+        <div class="tier-price">Q500 <small>/ mes</small></div>
+        <ul class="tier-features">
+          <li>Biometría / WebAuthn: huella o reconocimiento del sistema</li>
+          <li>Llave de seguridad física para accesos críticos</li>
+          <li>Dispositivos confiables: alerta ante equipo nuevo</li>
+          <li>Inicio de turno del personal solo con huella</li>
+        </ul>
+        <p class="tier-why">El nivel que un negocio que ya maneja pagos y datos de clientes necesita para dormir tranquilo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PERSONAL ================= -->
+<section class="module" id="personal">
+  <div class="wrap">
+    <div class="module-head">
+      <h2>Personal</h2>
+      <span class="module-num">Alta, edición y credenciales de empleados</span>
+    </div>
+    <p class="module-flow">El administrador da de alta a cada empleado con nombre, puesto y fecha de contratación; el sistema genera usuario y contraseña automáticamente y los muestra una sola vez para copiar y entregar. Desde la misma pantalla se edita, se desactiva o se restablece la contraseña de cualquier empleado — y eliminarlo exige que el administrador vuelva a escribir su propia contraseña, como última confirmación.</p>
+
+    <div class="tier-row">
+      <div class="tier-col c-basico">
+        <span class="tier-label">Básico</span>
+        <div class="tier-price">Q150 <small>/ mes</small></div>
+        <ul class="tier-features">
+          <li>Alta / edición / baja de empleados</li>
+          <li>Usuario y contraseña generados automáticamente</li>
+          <li>Activar, desactivar y restablecer acceso</li>
+          <li>Eliminación con reconfirmación del admin</li>
+        </ul>
+        <p class="tier-why">Cubre todo el ciclo de vida del empleado en el sistema, sin papeles sueltos.</p>
+      </div>
+      <div class="tier-col c-premium">
+        <span class="tier-label">Premium</span>
+        <div class="tier-price">Q350 <small>/ mes</small></div>
+        <ul class="tier-features">
+          <li>Expediente: DPI/pasaporte y contrato firmado</li>
+          <li>Registro de capacitaciones</li>
+          <li>Reloj biométrico de entrada y salida</li>
+        </ul>
+        <p class="tier-why">El expediente de cada empleado queda formal y a la mano, no en una carpeta física que se puede perder.</p>
+      </div>
+      <div class="tier-col c-gold">
+        <span class="tier-label">Gold</span>
+        <div class="tier-price">Q700 <small>/ mes</small></div>
+        <ul class="tier-features">
+          <li>Onboarding automatizado de principio a fin</li>
+          <li>Asignación multi-sucursal</li>
+          <li>Integración con nómina externa</li>
+        </ul>
+        <p class="tier-why">Prepara al negocio para abrir un segundo local sin duplicar el trabajo administrativo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MESAS ================= -->
+<section class="module" id="mesas">
+  <div class="wrap">
+    <div class="module-head">
+      <h2>Mesas y Salón</h2>
+      <span class="module-num">Toma de pedidos por mesa</span>
+    </div>
+    <p class="module-flow">El mesero elige su mesa de una cuadrícula de 10, ve el menú por categorías en una ventana flotante disponible en cualquier pantalla, arma el pedido con un carrito simple de más/menos por producto, y lo envía a Cocina o Bar. La mesa cambia de color según su estado — libre, ocupada, cuenta pedida, reservada o en limpieza — para que cualquiera sepa su situación de un vistazo, sin preguntar.</p>
+
+    <div class="tier-row">
+      <div class="tier-col c-basico">
+        <span class="tier-label">Básico</span>
+        <div class="tier-price">Q200 <small>/ mes</small></div>
+        <ul class="tier-features">
+          <li>Selección de mesa y estados en tiempo real</li>
+          <li>Menú flotante por categorías, siempre a mano</li>
+          <li>Carrito de pedido y envío a Cocina/Bar</li>
+          <li>Control de ocupación manual</li>
+        </ul>
+        <p class="tier-why">El flujo completo de un mesero, de sentar al cliente a mandar el pedido.</p>
+      </div>
+      <div class="tier-col c-premium">
+        <span class="tier-label">Premium</span>
+        <div class="tier-price">Q450 <small>/ mes</small></div>
+        <ul class="tier-features">
+          <li>Mapa visual interactivo del salón</li>
+          <li>Unir y dividir mesas para grupos</li>
+          <li>Transferir un pedido entre mesas</li>
+          <li>Alertas de mesas con demora</li>
+        </ul>
+        <p class="tier-why">Para cuando el salón se llena seguido y ya no alcanza con una lista de números.</p>
+      </div>
+      <div class="tier-col c-gold">
+        <span class="tier-label">Gold</span>
+        <div class="tier-price">Q900 <small>/ mes</small></div>
+        <ul class="tier-features">
+          <li>% de ocupación y rotación en tiempo real</li>
+          <li>Predicción de tráfico por zona y horario</li>
+          <li>Integración total con POS y Cocina</li>
+        </ul>
+        <p class="tier-why">El salón deja de ser solo operación y se convierte en una palanca de ingresos.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= KDS ================= -->
+<section class="module" id="kds">
+  <div class="wrap">
+    <div class="module-head">
+      <h2>Cocina y Bar (KDS)</h2>
+      <span class="module-num">Pantallas de comanda por estación</span>
+    </div>
+    <p class="module-flow">Cada estación — Cocina, Bar — tiene su propia pantalla y sus propias credenciales, así nunca se cruza la información. Los pedidos llegan como tarjetas, la más antigua resaltada en verde para saber cuál atender primero; tocarla la marca "Entregada" y desaparece. Todo ocurre en tiempo real: en el instante en que el mesero envía un pedido, aparece en la pantalla correcta, sin que nadie tenga que refrescar nada.</p>
+
+    <div class="tier-row">
+      <div class="tier-col c-basico">
+        <span class="tier-label">Básico</span>
+        <div class="tier-price">Q250 <small>/ mes</small></div>
+        <ul class="tier-features">
+          <li>Pantalla propia de Cocina y de Bar</li>
+          <li>Enrutamiento automático por categoría</li>
+          <li>Actualización en tiempo real (sin recargar)</li>
+          <li>Prioridad visual del pedido más antiguo</li>
+        </ul>
+        <p class="tier-why">Ya resuelve lo esencial: que cocina y bar nunca se pisen la información, al instante.</p>
+      </div>
+      <div class="tier-col c-premium">
+        <span class="tier-label">Premium</span>
+        <div class="tier-price">Q500 <small>/ mes</small></div>
+        <ul class="tier-features">
+          <li>Impresión de tickets físicos por estación</li>
+          <li>Temporizador de preparación con alerta de demora</li>
+          <li>Pantalla "expo" que agrupa toda la mesa</li>
+        </ul>
+        <p class="tier-why">Control físico del tiempo de cocina, justo cuando el volumen empieza a apretar.</p>
+      </div>
+      <div class="tier-col c-gold">
+        <span class="tier-label">Gold</span>
+        <div class="tier-price">Q950 <small>/ mes</small></div>
+        <ul class="tier-features">
+          <li>Analítica de tiempos por cocinero y turno</li>
+          <li>Pedidos de apps de delivery entrando directo al KDS</li>
+          <li>Predicción de demanda por franja horaria</li>
+        </ul>
+        <p class="tier-why">Visibilidad gerencial sobre desempeño y un canal de venta externo sin trabajo manual.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PAGOS ================= -->
+<section class="module" id="pagos">
+  <div class="wrap">
+    <div class="module-head">
+      <h2>Pagos y Facturación</h2>
+      <span class="module-num">Cobro de mesa, para llevar y reportes</span>
+    </div>
+    <p class="module-flow">Al pedir la cuenta, el propio mesero la cierra desde la pantalla de su mesa: agrupa automáticamente todas las rondas que se enviaron, calcula la propina sugerida y permite dividir el pago entre varias personas, cada una con su propio método. Los pedidos para llevar se cobran aparte, en una pantalla de Caja con su propio usuario, sin ocupar ninguna mesa. Todo pago cerrado alimenta reportes por mesero, por turno y un panel de auditoría con gráficas.</p>
+
+    <div class="tier-row">
+      <div class="tier-col c-basico">
+        <span class="tier-label">Básico</span>
+        <div class="tier-price">Q300 <small>/ mes</small></div>
+        <ul class="tier-features">
+          <li>Cobro de mesa por el propio mesero</li>
+          <li>Caja para pedidos "para llevar"</li>
+          <li>Cuenta dividida por persona, con calculadora</li>
+          <li>Reportes por mesero, turno y auditoría con gráficas</li>
+        </ul>
+        <p class="tier-why">El cobro diario completo — dividir cuenta incluido, algo que otros sistemas cobran aparte.</p>
+      </div>
+      <div class="tier-col c-premium">
+        <span class="tier-label">Premium</span>
+        <div class="tier-price">Q600 <small>/ mes</small></div>
+        <ul class="tier-features">
+          <li>Impresión real de recibos en caja</li>
+          <li>Conciliación de cajón de dinero contra el sistema</li>
+          <li>Reportes exportables (PDF / Excel) para contabilidad</li>
+        </ul>
+        <p class="tier-why">El "papel" físico y exportable que pide un negocio ya formal.</p>
+      </div>
+      <div class="tier-col c-gold">
+        <span class="tier-label">Gold</span>
+        <div class="tier-price">Q1,200 <small>/ mes</small></div>
+        <ul class="tier-features">
+          <li>Facturación electrónica ante la SAT (FEL)</li>
+          <li>Contabilización automática con plan de cuentas</li>
+          <li>Auditoría: ventas del sistema contra depósitos</li>
+        </ul>
+        <p class="tier-why">El momento en que el sistema se vuelve indispensable: factura formal sin trabajo doble.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CATÁLOGO ================= -->
+<section class="module" id="catalogo">
+  <div class="wrap">
+    <div class="module-head">
+      <h2>Catálogo y Menú</h2>
+      <span class="module-num">Categorías y productos</span>
+    </div>
+    <p class="module-flow">El administrador organiza el menú en categorías y productos, cada uno con foto, precio y orden de aparición — el mismo catálogo que ve el mesero al armar un pedido y que alimenta el descuento automático de inventario cuando algo se vende.</p>
+
+    <div class="tier-row">
+      <div class="tier-col c-basico">
+        <span class="tier-label">Básico</span>
+        <div class="tier-price">Q100 <small>/ mes</small></div>
+        <ul class="tier-features">
+          <li>Categorías y productos con foto y precio</li>
+          <li>Orden de aparición editable</li>
+          <li>Un solo catálogo para mesero y cocina</li>
+        </ul>
+        <p class="tier-why">Suficiente para operar el menú del día a día sin fricción.</p>
+      </div>
+      <div class="tier-col c-premium">
+        <span class="tier-label">Premium</span>
+        <div class="tier-price">Q250 <small>/ mes</small></div>
+        <ul class="tier-features">
+          <li>Subir fotos propias del restaurante</li>
+          <li>Variantes: tamaños, extras, combos</li>
+          <li>Disponibilidad programada por horario</li>
+        </ul>
+        <p class="tier-why">Control real de marca y flexibilidad de precios según la hora del día.</p>
+      </div>
+      <div class="tier-col c-gold">
+        <span class="tier-label">Gold</span>
+        <div class="tier-price">Q500 <small>/ mes</small></div>
+        <ul class="tier-features">
+          <li>Menú multi-idioma</li>
+          <li>Menú QR interactivo para que el cliente ordene</li>
+          <li>Recomendaciones automáticas de venta cruzada</li>
+        </ul>
+        <p class="tier-why">Abre un canal de venta directo al cliente, sin depender solo del mesero.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= INVENTARIO ================= -->
+<section class="module" id="inventario">
+  <div class="wrap">
+    <div class="module-head">
+      <h2>Inventario y Recetas</h2>
+      <span class="module-num">Stock, costos y recetas (BOM)</span>
+    </div>
+    <p class="module-flow">Cada ingrediente tiene su stock, su mínimo y su costo; cada platillo tiene una receta que dice cuánto de cada ingrediente lleva. Cuando se vende un platillo — desde una mesa o para llevar — el sistema descuenta solo el stock correspondiente, sin que nadie tenga que anotarlo a mano. Un semáforo avisa qué ingredientes están por acabarse.</p>
+
+    <div class="tier-row">
+      <div class="tier-col c-basico">
+        <span class="tier-label">Básico</span>
+        <div class="tier-price">Q200 <small>/ mes</small></div>
+        <ul class="tier-features">
+          <li>Ingredientes con stock, mínimo y costo</li>
+          <li>Recetas (BOM) por platillo</li>
+          <li>Descuento automático al vender</li>
+          <li>Entradas/salidas, Kardex y semáforo de stock</li>
+          <li>Costo y utilidad por platillo, con gráficas</li>
+        </ul>
+        <p class="tier-why">Evita justo lo que más dinero se pierde sin darse cuenta en un restaurante: el inventario fantasma.</p>
+      </div>
+      <div class="tier-col c-premium">
+        <span class="tier-label">Premium</span>
+        <div class="tier-price">Q450 <small>/ mes</small></div>
+        <ul class="tier-features">
+          <li>Catálogo de proveedores con historial</li>
+          <li>Órdenes de compra automáticas al llegar al mínimo</li>
+          <li>Control de caducidad por lote</li>
+        </ul>
+        <p class="tier-why">Ahorra el tiempo de decidir manualmente cuándo y a quién comprar.</p>
+      </div>
+      <div class="tier-col c-gold">
+        <span class="tier-label">Gold</span>
+        <div class="tier-price">Q900 <small>/ mes</small></div>
+        <ul class="tier-features">
+          <li>Predicción de demanda de insumos</li>
+          <li>Integración directa con proveedores externos</li>
+          <li>Optimización automática de mermas y costos</li>
+        </ul>
+        <p class="tier-why">El inventario deja de ser un registro y se vuelve una herramienta financiera.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CALCULADORA ================= -->
+<section class="calc" id="calculadora">
+  <div class="wrap">
+    <p class="eyebrow">Herramienta</p>
+    <div class="calc-head">
+      <h2 style="margin-top:10px; font-size:24px; font-weight:800;">Arme su propio plan</h2>
+      <p>Elija el nivel de cada módulo por separado — igual que en el ejemplo de Seguridad — y vea el total mensual actualizarse al momento.</p>
+    </div>
+    <div class="calc-panel">
+      <div id="calc-rows"></div>
+      <div class="calc-total">
+        <span class="calc-total-label">Total estimado</span>
+        <div class="calc-total-value" id="calc-total">Q0 <span>/ mes</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= INVERSIÓN ================= -->
+<section class="invest" id="inversion">
+  <div class="wrap">
+    <p class="eyebrow">Para uso interno</p>
+    <div class="invest-head">
+      <h2 style="margin-top:10px; font-size:24px; font-weight:800;">Desglose de inversión en desarrollo</h2>
+      <p>Lo que existe hoy en cada módulo es un <strong style="color:var(--text)">demo funcional</strong>: la lógica y la pantalla ya trabajan de punta a punta, pero falta el endurecimiento de producción (pruebas de carga, manejo de errores reales, seguridad revisada) antes de cobrarlo como Básico. Los días de Premium y Gold son adicionales, sobre ese Básico ya terminado — y asumen un solo desarrollador; con un equipo pequeño, el tiempo baja.</p>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Módulo</th>
+            <th>Básico</th>
+            <th>+ Premium</th>
+            <th>+ Gold</th>
+            <th>Precio Básico</th>
+            <th>Precio Premium</th>
+            <th>Precio Gold</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mod-name">Autenticación y Seguridad</td>
+            <td class="num">4 días</td>
+            <td class="num">+9 días</td>
+            <td class="num">+14 días</td>
+            <td class="num c-basico-text">Q100</td>
+            <td class="num c-premium-text">Q250</td>
+            <td class="num c-gold-text">Q500</td>
+          </tr>
+          <tr>
+            <td class="mod-name">Personal</td>
+            <td class="num">3 días</td>
+            <td class="num">+11 días</td>
+            <td class="num">+17 días</td>
+            <td class="num c-basico-text">Q150</td>
+            <td class="num c-premium-text">Q350</td>
+            <td class="num c-gold-text">Q700</td>
+          </tr>
+          <tr>
+            <td class="mod-name">Mesas y Salón</td>
+            <td class="num">5 días</td>
+            <td class="num">+16 días</td>
+            <td class="num">+22 días</td>
+            <td class="num c-basico-text">Q200</td>
+            <td class="num c-premium-text">Q450</td>
+            <td class="num c-gold-text">Q900</td>
+          </tr>
+          <tr>
+            <td class="mod-name">Cocina y Bar (KDS)</td>
+            <td class="num">4 días</td>
+            <td class="num">+11 días</td>
+            <td class="num">+17 días</td>
+            <td class="num c-basico-text">Q250</td>
+            <td class="num c-premium-text">Q500</td>
+            <td class="num c-gold-text">Q950</td>
+          </tr>
+          <tr>
+            <td class="mod-name">Pagos y Facturación</td>
+            <td class="num">7 días</td>
+            <td class="num">+9 días</td>
+            <td class="num">+25 días</td>
+            <td class="num c-basico-text">Q300</td>
+            <td class="num c-premium-text">Q600</td>
+            <td class="num c-gold-text">Q1,200</td>
+          </tr>
+          <tr>
+            <td class="mod-name">Catálogo y Menú</td>
+            <td class="num">3 días</td>
+            <td class="num">+9 días</td>
+            <td class="num">+13 días</td>
+            <td class="num c-basico-text">Q100</td>
+            <td class="num c-premium-text">Q250</td>
+            <td class="num c-gold-text">Q500</td>
+          </tr>
+          <tr>
+            <td class="mod-name">Inventario y Recetas</td>
+            <td class="num">5 días</td>
+            <td class="num">+11 días</td>
+            <td class="num">+17 días</td>
+            <td class="num c-basico-text">Q200</td>
+            <td class="num c-premium-text">Q450</td>
+            <td class="num c-gold-text">Q900</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td>Total (los 7 módulos)</td>
+            <td class="num">31 días</td>
+            <td class="num">76 días más</td>
+            <td class="num">125 días más</td>
+            <td class="num c-basico-text">Q1,300</td>
+            <td class="num c-premium-text">Q2,850</td>
+            <td class="num c-gold-text">Q5,650</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <p class="table-note">Días = jornadas de desarrollo de 8 horas, un solo desarrollador. Precios = suscripción mensual sugerida por módulo a ese nivel (no acumulan sobre el nivel anterior). Ambas columnas son estimaciones internas, no una cotización cerrada ni un estudio de mercado — sirven como punto de partida para decidir por dónde empezar.</p>
+  </div>
+</section>
+
+<section class="closing">
+  <div class="wrap">
+    <p class="eyebrow">En resumen</p>
+    <h2 style="margin-top:10px">El negocio elige, no el sistema</h2>
+    <p>Los siete módulos ya caminan hoy como demo funcional en Básico. Subir de nivel es una decisión por módulo, no un paquete cerrado — el dueño que solo necesita blindar el Login lo hace sin pagar por analítica de cocina que no va a usar, y el que ya quiere facturar formalmente ante la SAT sube Pagos a Gold sin tocar el resto.</p>
+    <div class="callout">
+      <strong>Siguiente paso:</strong> decidir con qué combinación de niveles arranca la operación real, y de ahí planificar en qué orden se construye el resto — empezando por endurecer a producción los módulos Básico que ya están de pie.
+    </div>
+  </div>
+</section>
+
+<script>
+  const MODULES = [
+    { id: 'auth', name: 'Autenticación y Seguridad', prices: { basico: 100, premium: 250, gold: 500 } },
+    { id: 'personal', name: 'Personal', prices: { basico: 150, premium: 350, gold: 700 } },
+    { id: 'mesas', name: 'Mesas y Salón', prices: { basico: 200, premium: 450, gold: 900 } },
+    { id: 'kds', name: 'Cocina y Bar (KDS)', prices: { basico: 250, premium: 500, gold: 950 } },
+    { id: 'pagos', name: 'Pagos y Facturación', prices: { basico: 300, premium: 600, gold: 1200 } },
+    { id: 'catalogo', name: 'Catálogo y Menú', prices: { basico: 100, premium: 250, gold: 500 } },
+    { id: 'inventario', name: 'Inventario y Recetas', prices: { basico: 200, premium: 450, gold: 900 } },
+  ];
+
+  const state = {};
+  MODULES.forEach((m) => { state[m.id] = 'basico'; });
+
+  const rowsEl = document.getElementById('calc-rows');
+  const totalEl = document.getElementById('calc-total');
+
+  function fmt(n) {
+    return 'Q' + n.toLocaleString('es-GT');
+  }
+
+  function render() {
+    let total = 0;
+    MODULES.forEach((m) => { total += m.prices[state[m.id]]; });
+    totalEl.innerHTML = fmt(total) + ' <span>/ mes</span>';
+
+    MODULES.forEach((m) => {
+      ['basico', 'premium', 'gold'].forEach((tier) => {
+        const btn = document.getElementById('btn-' + m.id + '-' + tier);
+        if (btn) btn.setAttribute('data-active', state[m.id] === tier ? 'true' : 'false');
+      });
+    });
+  }
+
+  MODULES.forEach((m) => {
+    const row = document.createElement('div');
+    row.className = 'calc-row';
+
+    const name = document.createElement('span');
+    name.className = 'calc-row-name';
+    name.textContent = m.name;
+    row.appendChild(name);
+
+    const toggle = document.createElement('div');
+    toggle.className = 'calc-toggle';
+    ['basico', 'premium', 'gold'].forEach((tier) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.id = 'btn-' + m.id + '-' + tier;
+      btn.dataset.tier = tier;
+      btn.textContent = tier === 'basico' ? 'Básico' : tier === 'premium' ? 'Premium' : 'Gold';
+      btn.setAttribute('data-active', state[m.id] === tier ? 'true' : 'false');
+      btn.addEventListener('click', () => { state[m.id] = tier; render(); });
+      toggle.appendChild(btn);
+    });
+    row.appendChild(toggle);
+
+    rowsEl.appendChild(row);
+  });
+
+  render();
+</script>
