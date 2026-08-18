@@ -4,6 +4,7 @@ import pytest
 from django.urls import reverse
 
 from apps.catalog.models import Category, Product
+from apps.inventory.models import Ingredient, RecipeItem, StockMovement
 from apps.orders.models import Order, OrderItem
 from apps.tables.models import Table
 
@@ -252,3 +253,21 @@ class TestSubmitOrder:
         assert response.status_code == 302
         assert response.url == reverse("tables:preorder", args=[10])
         assert not Order.objects.filter(table__number=10).exists()
+
+    def test_deducts_ingredient_stock_according_to_recipe(self, client, employee_user):
+        client.force_login(employee_user)
+        pizza = Product.objects.get(name="Pizza Pepperoni")
+        cheese = Ingredient.objects.create(
+            name="Mozzarella", unit=Ingredient.Unit.G, stock=1000, min_stock=200
+        )
+        RecipeItem.objects.create(product=pizza, ingredient=cheese, quantity=120)
+
+        client.post(reverse("tables:cart_increment", args=[3, pizza.category_id, pizza.pk]))
+        client.post(reverse("tables:cart_increment", args=[3, pizza.category_id, pizza.pk]))
+        client.post(reverse("tables:submit_order", args=[3]))
+
+        cheese.refresh_from_db()
+        assert cheese.stock == Decimal("760")
+        assert StockMovement.objects.filter(
+            ingredient=cheese, movement_type=StockMovement.MovementType.VENTA
+        ).exists()

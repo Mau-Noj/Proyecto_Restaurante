@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Zennin Bistro - Costos y Utilidad</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: { extend: { colors: { "neon-cyan": "#00f3ff", "neon-violet": "#bc13fe" },
+          fontFamily: { "body-md": ["Inter"], "headline-md": ["Inter"], "headline-lg": ["Inter"], "label-md": ["JetBrains Mono"] } } }
+      }
+</script>
+<link href="{% static 'css/auth-theme.css' %}" rel="stylesheet"/>
+</head>
+<body class="font-body-md">
+<div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+<div class="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full bg-neon-violet opacity-10 blur-[150px]"></div>
+<div class="absolute bottom-[0%] -right-[10%] w-[50%] h-[50%] rounded-full bg-neon-cyan opacity-5 blur-[120px]"></div>
+</div>
+
+{% include "dashboard/_topbar.html" with breadcrumb="Inventario / Reporte de Costos" %}
+
+<main class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+<div class="mb-8">
+<h2 class="font-headline-lg text-2xl font-bold text-white mb-1">Costos y Utilidad</h2>
+<p class="text-gray-400 text-sm">Costo calculado desde la receta de cada platillo, comparado contra su precio de venta.</p>
+</div>
+
+<div class="glass-panel rounded-xl border border-white/10 overflow-x-auto">
+<table class="w-full text-sm min-w-[640px]">
+<thead class="bg-black/40 text-gray-400 font-label-md text-xs uppercase tracking-widest">
+<tr>
+<th class="text-left px-5 py-3">Platillo</th>
+<th class="text-left px-5 py-3">Costo</th>
+<th class="text-left px-5 py-3">Precio de venta</th>
+<th class="text-left px-5 py-3">Utilidad</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5">
+{% for row in rows %}
+<tr class="hover:bg-white/5 transition-colors">
+<td class="px-5 py-3 text-white">{{ row.product.name }}</td>
+{% if row.cost is not None %}
+<td class="px-5 py-3 text-gray-300">Q{{ row.cost }}</td>
+<td class="px-5 py-3 text-gray-300">Q{{ row.product.price }}</td>
+<td class="px-5 py-3 {% if row.utility > 0 %}text-emerald-400{% else %}text-red-400{% endif %}">Q{{ row.utility }}</td>
+{% else %}
+<td class="px-5 py-3 text-gray-500" colspan="3">Sin receta asignada — <a href="{% url 'inventory:recipe_edit' row.product.pk %}" class="text-neon-cyan hover:underline">agregar receta</a></td>
+{% endif %}
+</tr>
+{% empty %}
+<tr>
+<td class="px-5 py-8 text-center text-gray-500" colspan="4">Todavía no hay platillos en el catálogo.</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</main>
+</body>
+</html>

@@ -10,5 +10,6 @@ urlpatterns = [
     path("panel/personal/", include("apps.employees.urls")),
     path("mesas/", include("apps.tables.urls")),
     path("kds/", include("apps.kds.urls")),
+    path("inventario/", include("apps.inventory.urls")),
     path("healthz/", healthz, name="healthz"),
 ]

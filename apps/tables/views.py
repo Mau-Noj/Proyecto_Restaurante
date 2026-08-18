@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
 from apps.catalog.models import Category, Product
+from apps.inventory.services import discount_recipe_for_order
 from apps.orders.models import Order, OrderItem
 
 from .models import Table
@@ -120,6 +121,7 @@ def submit_order(request, number):
                 OrderItem.objects.create(
                     order=order, product_id=int(product_id), quantity=quantity
                 )
+        discount_recipe_for_order(order, request.user)
         request.session["cart"][str(number)] = {}
         request.session.modified = True
         messages.success(request, "Pedido enviado a cocina/bar.")

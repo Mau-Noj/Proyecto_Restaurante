@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Zennin Bistro - Ingredientes</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: { extend: { colors: { "neon-cyan": "#00f3ff", "neon-violet": "#bc13fe" },
+          fontFamily: { "body-md": ["Inter"], "headline-md": ["Inter"], "headline-lg": ["Inter"], "label-md": ["JetBrains Mono"] } } }
+      }
+</script>
+<link href="{% static 'css/auth-theme.css' %}" rel="stylesheet"/>
+</head>
+<body class="font-body-md">
+<div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+<div class="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full bg-neon-violet opacity-10 blur-[150px]"></div>
+<div class="absolute bottom-[0%] -right-[10%] w-[50%] h-[50%] rounded-full bg-neon-cyan opacity-5 blur-[120px]"></div>
+</div>
+
+{% include "dashboard/_topbar.html" with breadcrumb="Inventario / Ingredientes" %}
+
+<main class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+{% if messages %}
+{% for message in messages %}
+<div class="form-error rounded-xl px-4 py-3 mb-6 text-sm {% if message.tags == 'success' %}!bg-[rgba(0,243,255,0.1)] !border-neon-cyan/40 !text-neon-cyan{% endif %}" role="alert">{{ message }}</div>
+{% endfor %}
+{% endif %}
+
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+<div>
+<h2 class="font-headline-lg text-2xl font-bold text-white mb-1">Ingredientes</h2>
+<p class="text-gray-400 text-sm">Stock actual y alertas de stock mínimo.</p>
+</div>
+<div class="flex flex-wrap gap-2">
+<a href="{% url 'inventory:stock_entry' %}" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-white/10 text-gray-300 hover:text-neon-cyan hover:border-neon-cyan/40 transition-colors text-sm">
+<span class="material-symbols-outlined text-[18px]">add_box</span>
+Registrar Entrada
+</a>
+<a href="{% url 'inventory:stock_exit' %}" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-white/10 text-gray-300 hover:text-neon-cyan hover:border-neon-cyan/40 transition-colors text-sm">
+<span class="material-symbols-outlined text-[18px]">remove_shopping_cart</span>
+Registrar Salida
+</a>
+<a href="{% url 'inventory:ingredient_create' %}" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-neon-cyan/20 to-neon-violet/20 border border-neon-cyan/50 text-white hover:bg-neon-cyan/30 transition-all text-sm font-headline-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+Nuevo Ingrediente
+</a>
+</div>
+</div>
+
+<div class="glass-panel rounded-xl border border-white/10 overflow-x-auto">
+<table class="w-full text-sm min-w-[720px]">
+<thead class="bg-black/40 text-gray-400 font-label-md text-xs uppercase tracking-widest">
+<tr>
+<th class="text-left px-5 py-3">Nombre</th>
+<th class="text-left px-5 py-3">Stock</th>
+<th class="text-left px-5 py-3">Mínimo</th>
+<th class="text-left px-5 py-3">Costo unitario</th>
+<th class="text-left px-5 py-3">Estado</th>
+<th class="text-right px-5 py-3"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5">
+{% for ingredient in ingredients %}
+<tr class="hover:bg-white/5 transition-colors">
+<td class="px-5 py-3 text-white">{{ ingredient.name }}</td>
+<td class="px-5 py-3 text-gray-300">{{ ingredient.stock }} {{ ingredient.get_unit_display }}</td>
+<td class="px-5 py-3 text-gray-400">{{ ingredient.min_stock }} {{ ingredient.get_unit_display }}</td>
+<td class="px-5 py-3 text-gray-400">Q{{ ingredient.unit_cost }}</td>
+<td class="px-5 py-3">
+{% if ingredient.status == "CRITICO" %}
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 text-[10px] font-label-md uppercase tracking-widest">Crítico</span>
+{% elif ingredient.status == "BAJO" %}
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[10px] font-label-md uppercase tracking-widest">Bajo</span>
+{% else %}
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-label-md uppercase tracking-widest">Seguro</span>
+{% endif %}
+</td>
+<td class="px-5 py-3 text-right">
+<a href="{% url 'inventory:ingredient_edit' ingredient.pk %}" class="inline-flex items-center gap-1 text-gray-400 hover:text-neon-cyan transition-colors text-xs font-label-md uppercase tracking-widest">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+Editar
+</a>
+</td>
+</tr>
+{% empty %}
+<tr>
+<td class="px-5 py-8 text-center text-gray-500" colspan="6">Todavía no hay ingredientes registrados.</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</main>
+</body>
+</html>

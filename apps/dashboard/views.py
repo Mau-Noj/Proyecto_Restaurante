@@ -12,7 +12,7 @@ MODULES = [
     {"code": "COC", "name": "Cocina (KDS)", "icon": "soup_kitchen"},
     {"code": "PAG", "name": "Pagos", "icon": "point_of_sale"},
     {"code": "CAT", "name": "Catálogo y Menú", "icon": "restaurant_menu"},
-    {"code": "INV", "name": "Inventario", "icon": "inventory_2"},
+    {"code": "INV", "name": "Inventario", "icon": "inventory_2", "url_name": "inventory:index"},
     {"code": "PUR", "name": "Compras", "icon": "shopping_cart"},
     {"code": "RES", "name": "Reservaciones", "icon": "event_seat"},
     {"code": "DEL", "name": "Delivery", "icon": "moped"},

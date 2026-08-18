@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Zennin Bistro - Receta de {{ product.name }}</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: { extend: { colors: { "neon-cyan": "#00f3ff", "neon-violet": "#bc13fe" },
+          fontFamily: { "body-md": ["Inter"], "headline-md": ["Inter"], "headline-lg": ["Inter"], "label-md": ["JetBrains Mono"] } } }
+      }
+</script>
+<link href="{% static 'css/auth-theme.css' %}" rel="stylesheet"/>
+</head>
+<body class="font-body-md">
+<div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+<div class="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full bg-neon-violet opacity-10 blur-[150px]"></div>
+<div class="absolute bottom-[0%] -right-[10%] w-[50%] h-[50%] rounded-full bg-neon-cyan opacity-5 blur-[120px]"></div>
+</div>
+
+{% include "dashboard/_topbar.html" with breadcrumb=breadcrumb %}
+
+<main class="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+<h2 class="font-headline-lg text-2xl font-bold text-white mb-1">Receta: {{ product.name }}</h2>
+<p class="text-gray-400 text-sm mb-8">Ingredientes y cantidad que se descuentan del stock cada vez que se vende este platillo. Deja vacía una fila para ignorarla.</p>
+
+{% if formset.non_form_errors %}
+<div class="form-error rounded-xl px-4 py-3 mb-6 text-sm" role="alert">
+{% for error in formset.non_form_errors %}<p>{{ error }}</p>{% endfor %}
+</div>
+{% endif %}
+
+<form method="post" class="glass-panel rounded-2xl border border-white/10 p-5 sm:p-8 space-y-4">
+{% csrf_token %}
+{{ formset.management_form }}
+
+<div class="space-y-3">
+{% for form in formset %}
+<div class="flex flex-col sm:flex-row sm:items-end gap-3 pb-3 border-b border-white/5 last:border-0">
+{% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+<div class="flex-1">
+<label class="field-label">Ingrediente</label>
+{{ form.ingredient }}
+{% for error in form.ingredient.errors %}<p class="text-red-400 text-xs mt-1">{{ error }}</p>{% endfor %}
+</div>
+<div class="w-full sm:w-32">
+<label class="field-label">Cantidad</label>
+{{ form.quantity }}
+{% for error in form.quantity.errors %}<p class="text-red-400 text-xs mt-1">{{ error }}</p>{% endfor %}
+</div>
+{% if form.DELETE %}
+<label class="flex items-center gap-2 text-xs text-gray-400 pb-2.5 shrink-0">
+{{ form.DELETE }}
+Eliminar
+</label>
+{% endif %}
+</div>
+{% endfor %}
+</div>
+
+<div class="pt-4 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+<a href="{% url 'inventory:recipe_list' %}" class="px-4 py-2 rounded-xl border border-white/10 text-gray-400 hover:text-white transition-colors text-sm text-center">Cancelar</a>
+<button class="px-6 py-2 rounded-xl bg-gradient-to-r from-neon-cyan/20 to-neon-violet/20 border border-neon-cyan/50 text-white hover:bg-neon-cyan/30 transition-all text-sm font-headline-sm" type="submit">Guardar Receta</button>
+</div>
+</form>
+</main>
+</body>
+</html>

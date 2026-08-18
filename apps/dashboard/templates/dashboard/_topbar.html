@@ -9,11 +9,15 @@
 <span class="text-xs text-neon-cyan font-label-md tracking-widest uppercase truncate">{{ breadcrumb }}</span>
 {% endif %}
 </div>
-<div class="flex items-center gap-4 shrink-0">
-<span class="font-label-md text-xs text-gray-400 tracking-widest uppercase truncate max-w-[10rem] sm:max-w-none">{{ user.get_username }}</span>
+<div class="flex items-center justify-between sm:justify-end gap-3 shrink-0">
+<span class="font-label-md text-xs text-gray-400 tracking-widest uppercase truncate max-w-[8rem] sm:max-w-none">{{ user.get_username }}</span>
+<span class="hidden sm:block w-px h-4 bg-white/10"></span>
 <form method="post" action="{% url 'accounts:logout' %}">
 {% csrf_token %}
-<button class="text-xs text-gray-400 hover:text-neon-cyan transition-colors font-label-md tracking-widest uppercase whitespace-nowrap" type="submit">Cerrar sesión</button>
+<button class="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3 py-2 sm:py-1.5 text-xs text-gray-300 hover:text-neon-cyan hover:border-neon-cyan/40 hover:bg-neon-cyan/5 active:scale-95 transition-all font-label-md tracking-widest uppercase whitespace-nowrap" type="submit">
+<span class="material-symbols-outlined text-[15px] leading-none">logout</span>
+Cerrar sesión
+</button>
 </form>
 </div>
 </div>
