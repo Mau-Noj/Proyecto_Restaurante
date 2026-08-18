@@ -11,5 +11,6 @@ urlpatterns = [
     path("mesas/", include("apps.tables.urls")),
     path("kds/", include("apps.kds.urls")),
     path("inventario/", include("apps.inventory.urls")),
+    path("pagos/", include("apps.payments.urls")),
     path("healthz/", healthz, name="healthz"),
 ]

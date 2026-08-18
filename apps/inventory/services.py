@@ -34,6 +34,7 @@ def register_movement(
 
 def discount_recipe_for_order(order, created_by) -> None:
     """Descuenta stock de ingredientes según receta al enviar un pedido a cocina/bar."""
+    target = f"Mesa {order.table.number}" if order.table_id else "Para Llevar"
     for item in order.items.select_related("product"):
         for recipe_item in item.product.recipe_items.select_related("ingredient"):
             register_movement(
@@ -41,5 +42,5 @@ def discount_recipe_for_order(order, created_by) -> None:
                 movement_type=StockMovement.MovementType.VENTA,
                 quantity=recipe_item.quantity * item.quantity,
                 created_by=created_by,
-                reference=f"Pedido #{order.pk} - Mesa {order.table.number}",
+                reference=f"Pedido #{order.pk} - {target}",
             )

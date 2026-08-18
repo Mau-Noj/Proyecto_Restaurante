@@ -85,6 +85,17 @@ class TestKitchenDisplay:
         assert "Cerveza" not in content
         assert "Mesa 3" in content
 
+    def test_shows_takeout_orders_without_a_table(self, client, cocinero_user):
+        pizza = Product.objects.get(name="Pizza Pepperoni")
+        order = Order.objects.create(table=None, created_by=cocinero_user)
+        OrderItem.objects.create(order=order, product=pizza, quantity=1)
+
+        client.force_login(cocinero_user)
+        response = client.get(reverse("kds:kitchen"))
+
+        assert response.status_code == 200
+        assert "Para Llevar" in response.content.decode()
+
 
 @pytest.mark.django_db
 class TestBarDisplay:

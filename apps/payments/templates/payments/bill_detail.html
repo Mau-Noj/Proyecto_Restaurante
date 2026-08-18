@@ -1,0 +1,161 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Zennin Bistro - Reportar Pago</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: { extend: { colors: { "neon-cyan": "#00f3ff", "neon-violet": "#bc13fe" },
+          fontFamily: { "body-md": ["Inter"], "headline-md": ["Inter"], "headline-lg": ["Inter"], "label-md": ["JetBrains Mono"] } } }
+      }
+</script>
+<link href="{% static 'css/auth-theme.css' %}" rel="stylesheet"/>
+</head>
+<body class="font-body-md">
+<div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+<div class="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full bg-neon-violet opacity-10 blur-[150px]"></div>
+<div class="absolute bottom-[0%] -right-[10%] w-[50%] h-[50%] rounded-full bg-neon-cyan opacity-5 blur-[120px]"></div>
+</div>
+
+{% include "accounts/_employee_topbar.html" with breadcrumb="Reportar Pago" %}
+
+<main class="relative z-10 max-w-xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+<div class="text-center mb-6">
+<span class="font-label-md text-xs text-gray-500 uppercase tracking-widest">
+{% if bill.table %}Mesa {{ bill.table.number }}{% else %}Para Llevar{% endif %}
+</span>
+<h2 class="font-headline-lg text-2xl font-bold text-white mt-1">Reportar Pago</h2>
+</div>
+
+{% if messages %}
+{% for message in messages %}
+<div class="form-error rounded-xl px-4 py-3 mb-6 text-sm" role="alert">{{ message }}</div>
+{% endfor %}
+{% endif %}
+
+<div class="glass-panel neon-border rounded-2xl p-5 sm:p-6 mb-4">
+<div class="divide-y divide-white/10">
+{% for line in lines %}
+<div class="flex items-center justify-between py-3 gap-3">
+<div class="min-w-0">
+<p class="text-white text-sm truncate">{{ line.product.name }}</p>
+<p class="text-gray-500 text-xs font-label-md">{{ line.quantity }} × Q{{ line.product.price }}</p>
+</div>
+<span class="text-gray-300 text-sm font-label-md shrink-0">Q{{ line.subtotal }}</span>
+</div>
+{% endfor %}
+</div>
+<div class="flex items-center justify-between pt-3 mt-1 border-t border-white/10 text-sm">
+<span class="text-gray-400">Subtotal</span>
+<span class="text-gray-300 font-label-md">Q{{ bill.subtotal }}</span>
+</div>
+<div class="flex items-center justify-between pt-1 text-sm">
+<span class="text-gray-400">Propina</span>
+<span class="text-gray-300 font-label-md">Q{{ bill.tip }}</span>
+</div>
+<div class="flex items-center justify-between pt-3 mt-2 border-t border-white/10">
+<span class="text-white font-headline-sm text-sm uppercase tracking-widest">Total</span>
+<span class="text-neon-cyan font-headline-md text-lg font-bold">Q{{ bill.total }}</span>
+</div>
+</div>
+
+{% if bill.status == "ABIERTA" %}
+<div class="glass-panel rounded-2xl border border-white/10 p-5 sm:p-6 mb-4">
+<h3 class="font-headline-sm text-sm text-neon-cyan uppercase tracking-widest mb-4">Asistente de Propina</h3>
+<form method="post" action="{% url 'payments:set_bill_tip' bill.pk %}" class="space-y-3">
+{% csrf_token %}
+<div class="grid grid-cols-2 gap-2">
+{% for pct, amount in tip_suggestions %}
+<label class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-white/15 text-sm text-gray-300 cursor-pointer has-[:checked]:border-neon-cyan has-[:checked]:text-neon-cyan transition-colors">
+<input type="radio" name="preset" value="{{ pct }}" class="accent-neon-cyan"/>
+{{ pct }}% (Q{{ amount }})
+</label>
+{% endfor %}
+<label class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-white/15 text-sm text-gray-300 cursor-pointer has-[:checked]:border-neon-cyan has-[:checked]:text-neon-cyan transition-colors col-span-2">
+<input type="radio" name="preset" value="custom" class="accent-neon-cyan"/>
+Personalizada
+</label>
+</div>
+<input type="number" step="0.01" min="0" name="custom_amount" placeholder="Monto de propina" class="field-input"/>
+<button type="submit" class="w-full h-10 rounded-xl border border-neon-cyan/40 text-neon-cyan text-sm hover:bg-neon-cyan/10 transition-colors">Aplicar Propina</button>
+</form>
+</div>
+
+<div class="glass-panel rounded-2xl border border-white/10 p-5 sm:p-6 mb-4">
+<h3 class="font-headline-sm text-sm text-neon-cyan uppercase tracking-widest mb-4">Selección de Pago</h3>
+
+{% if bill.splits.all %}
+<div class="space-y-2 mb-4">
+{% for split in bill.splits.all %}
+<div class="flex items-center justify-between px-3 py-2 rounded-xl bg-black/30 border border-white/10">
+<div class="min-w-0">
+<p class="text-white text-sm truncate">{{ split.label|default:split.get_method_display }}</p>
+<p class="text-gray-500 text-xs font-label-md">{{ split.get_method_display }}</p>
+</div>
+<div class="flex items-center gap-3 shrink-0">
+<span class="text-gray-300 text-sm font-label-md">Q{{ split.amount }}</span>
+<form method="post" action="{% url 'payments:remove_bill_split' bill.pk split.pk %}">
+{% csrf_token %}
+<button type="submit" class="text-gray-500 hover:text-red-400 transition-colors" aria-label="Quitar">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</form>
+</div>
+</div>
+{% endfor %}
+</div>
+{% endif %}
+
+<form method="post" action="{% url 'payments:add_bill_split' bill.pk %}" class="space-y-3">
+{% csrf_token %}
+<div class="grid grid-cols-2 gap-3">
+<div>
+<label class="field-label">{{ split_form.label.label }}</label>
+{{ split_form.label }}
+</div>
+<div>
+<label class="field-label">{{ split_form.method.label }}</label>
+{{ split_form.method }}
+</div>
+</div>
+<div>
+<label class="field-label">{{ split_form.amount.label }}</label>
+{{ split_form.amount }}
+</div>
+<button type="submit" class="w-full h-10 rounded-xl border border-white/15 text-gray-300 text-sm hover:border-neon-cyan hover:text-neon-cyan transition-colors">Agregar Pago</button>
+</form>
+
+<div class="flex items-center justify-between pt-4 mt-4 border-t border-white/10 text-sm">
+<span class="text-gray-400">Cubierto</span>
+<span class="text-gray-300 font-label-md">Q{{ bill.paid_amount }}</span>
+</div>
+<div class="flex items-center justify-between pt-1 text-sm">
+<span class="text-gray-400">Falta por cubrir</span>
+<span class="{% if bill.balance_due > 0 %}text-amber-400{% else %}text-emerald-400{% endif %} font-label-md">Q{{ bill.balance_due }}</span>
+</div>
+</div>
+
+<form method="post" action="{% url 'payments:confirm_bill' bill.pk %}">
+{% csrf_token %}
+<button type="submit" class="w-full h-12 bg-gradient-to-r from-neon-cyan/20 to-neon-violet/20 border border-neon-cyan/50 text-white rounded-xl font-headline-sm text-sm tracking-widest uppercase hover:bg-neon-cyan/30 transition-all">Confirmar Pago</button>
+</form>
+<div class="flex justify-center mt-4">
+<span class="locked-chip"><span class="material-symbols-outlined">print</span>Imprimir recibo · Próximamente</span>
+</div>
+{% else %}
+<div class="glass-panel rounded-2xl border border-emerald-500/30 p-6 text-center">
+<span class="material-symbols-outlined text-4xl text-emerald-400 mb-2">check_circle</span>
+<p class="text-emerald-400 text-sm">Cuenta pagada.</p>
+</div>
+{% endif %}
+</main>
+</body>
+</html>

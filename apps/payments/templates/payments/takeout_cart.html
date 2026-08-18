@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Zennin Bistro - Pedido para Llevar</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: { extend: { colors: { "neon-cyan": "#00f3ff", "neon-violet": "#bc13fe" },
+          fontFamily: { "body-md": ["Inter"], "headline-md": ["Inter"], "headline-lg": ["Inter"], "label-md": ["JetBrains Mono"] } } }
+      }
+</script>
+<link href="{% static 'css/auth-theme.css' %}" rel="stylesheet"/>
+</head>
+<body class="font-body-md">
+<div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+<div class="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full bg-neon-violet opacity-10 blur-[150px]"></div>
+<div class="absolute bottom-[0%] -right-[10%] w-[50%] h-[50%] rounded-full bg-neon-cyan opacity-5 blur-[120px]"></div>
+</div>
+
+{% include "accounts/_employee_topbar.html" with breadcrumb="Caja" %}
+
+<main class="relative z-10 max-w-md mx-auto px-4 sm:px-6 py-10 sm:py-16">
+<div class="text-center mb-6">
+<span class="font-label-md text-xs text-gray-500 uppercase tracking-widest">Para Llevar</span>
+<h2 class="font-headline-lg text-2xl font-bold text-white mt-1">Pedido</h2>
+</div>
+
+<div class="glass-panel neon-border rounded-2xl p-5 sm:p-6">
+{% if lines %}
+<div class="divide-y divide-white/10">
+{% for line in lines %}
+<div class="flex items-center justify-between py-3 gap-3">
+<div class="min-w-0">
+<p class="text-white text-sm truncate">{{ line.product.name }}</p>
+<p class="text-gray-500 text-xs font-label-md">{{ line.quantity }} × Q{{ line.product.price }}</p>
+</div>
+<span class="text-neon-cyan text-sm font-label-md shrink-0">Q{{ line.subtotal }}</span>
+</div>
+{% endfor %}
+</div>
+<div class="flex items-center justify-between pt-4 mt-2 border-t border-white/10">
+<span class="text-white font-headline-sm text-sm uppercase tracking-widest">Total</span>
+<span class="text-neon-cyan font-headline-md text-lg font-bold">Q{{ total }}</span>
+</div>
+{% else %}
+<p class="text-center text-gray-500 text-sm py-6">Todavía no has agregado productos.</p>
+{% endif %}
+</div>
+
+{% if lines %}
+<form method="post" action="{% url 'payments:takeout_checkout' %}" class="mt-4">
+{% csrf_token %}
+<button type="submit" class="w-full h-12 bg-gradient-to-r from-neon-cyan/20 to-neon-violet/20 border border-neon-cyan/50 text-white rounded-xl font-headline-sm text-sm tracking-widest uppercase hover:bg-neon-cyan/30 transition-all">Cobrar</button>
+</form>
+{% endif %}
+
+<div class="text-center mt-8">
+<a href="{% url 'payments:takeout_new' %}" class="inline-flex items-center gap-2 text-gray-400 hover:text-neon-cyan transition-colors text-xs font-label-md uppercase tracking-widest">
+&larr; Seguir agregando productos
+</a>
+</div>
+</main>
+</body>
+</html>

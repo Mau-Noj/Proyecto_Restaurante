@@ -35,7 +35,7 @@
 <form method="post" action="{% url 'kds:mark_delivered' item.pk %}" class="kds-card-form" data-item-id="{{ item.pk }}">
 {% csrf_token %}
 <div class="kds-card glass-panel rounded-xl border border-yellow-400/40 bg-yellow-400/5 p-4 w-40 sm:w-44 cursor-pointer hover:border-yellow-400 transition-colors" onclick="deliverItem(this)">
-<span class="text-[10px] text-gray-400 font-label-md uppercase tracking-widest">Mesa {{ item.order.table.number }}</span>
+<span class="text-[10px] text-gray-400 font-label-md uppercase tracking-widest">{% if item.order.table %}Mesa {{ item.order.table.number }}{% else %}Para Llevar{% endif %}</span>
 <p class="text-white font-medium mt-1 text-sm">{{ item.product.name }}{% if item.quantity > 1 %} &times;{{ item.quantity }}{% endif %}</p>
 </div>
 </form>

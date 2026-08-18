@@ -30,15 +30,51 @@
 <main class="relative z-10 max-w-md mx-auto px-4 sm:px-6 py-10 sm:py-16">
 <div class="text-center mb-6">
 <span class="font-headline-lg text-5xl font-bold text-white block mb-1">{{ table.number }}</span>
-<p class="text-gray-400 text-sm">Gestión de Orden</p>
+<p class="text-gray-400 text-sm">{{ table.get_status_display }}</p>
 </div>
 
+{% if messages %}
+{% for message in messages %}
+<div class="form-error rounded-xl px-4 py-3 mb-6 text-sm !bg-[rgba(0,243,255,0.1)] !border-neon-cyan/40 !text-neon-cyan" role="alert">{{ message }}</div>
+{% endfor %}
+{% endif %}
+
+{% if table.status == "LIMPIEZA" %}
+<div class="glass-panel rounded-xl border border-white/10 p-6 text-center mb-6">
+<span class="material-symbols-outlined text-4xl text-gray-400 mb-2">cleaning_services</span>
+<p class="text-gray-300 text-sm mb-4">La mesa está en limpieza tras el último pago.</p>
+<form method="post" action="{% url 'tables:mark_clean' table.number %}">
+{% csrf_token %}
+<button type="submit" class="w-full h-11 bg-gradient-to-r from-neon-cyan/20 to-neon-violet/20 border border-neon-cyan/50 text-white rounded-xl text-sm font-headline-sm hover:bg-neon-cyan/30 transition-all">Marcar Mesa como Libre</button>
+</form>
+</div>
+{% elif table.status == "CUENTA_PEDIDA" %}
+<div class="glass-panel rounded-xl border border-amber-500/30 p-6 text-center mb-6">
+<span class="material-symbols-outlined text-4xl text-amber-400 mb-2">receipt_long</span>
+<p class="text-gray-300 text-sm mb-4">Ya se solicitó la cuenta. Termina de registrar el pago para liberar la mesa.</p>
+{% if open_bill %}
+<a href="{% url 'payments:bill_detail' open_bill.pk %}" class="block h-11 leading-[2.75rem] bg-gradient-to-r from-neon-cyan/20 to-neon-violet/20 border border-neon-cyan/50 text-white rounded-xl text-sm font-headline-sm hover:bg-neon-cyan/30 transition-all mb-3">Continuar Cobro</a>
+{% endif %}
+<form method="post" action="{% url 'payments:cancel_table_bill' table.number %}">
+{% csrf_token %}
+<button type="submit" class="w-full h-11 rounded-xl border border-white/10 text-gray-400 hover:text-white transition-colors text-sm">Cancelar y Seguir Agregando</button>
+</form>
+</div>
+{% else %}
 {% include "tables/_category_menu.html" %}
 
-<a href="{% url 'tables:preorder' table.number %}" class="block px-4 py-3 rounded-xl border border-dashed border-[#ff5c7a]/40 bg-[#ff5c7a]/5 text-center hover:border-[#ff5c7a] transition-colors">
+<a href="{% url 'tables:preorder' table.number %}" class="block px-4 py-3 rounded-xl border border-dashed border-[#ff5c7a]/40 bg-[#ff5c7a]/5 text-center hover:border-[#ff5c7a] transition-colors mb-3">
 <p class="text-[#ff8fa3] text-sm">Agregar productos a un pedido{% if cart_count %} ({{ cart_count }}){% endif %}</p>
 <p class="text-gray-500 text-[10px] mt-1 uppercase tracking-widest font-label-md">Ver / agregar a la orden actual de la mesa</p>
 </a>
+
+{% if table.status == "OCUPADA" %}
+<form method="post" action="{% url 'payments:open_table_bill' table.number %}">
+{% csrf_token %}
+<button type="submit" class="w-full h-12 bg-gradient-to-r from-neon-cyan/20 to-neon-violet/20 border border-neon-cyan/50 text-white rounded-xl font-headline-sm text-sm tracking-widest uppercase hover:bg-neon-cyan/30 transition-all">Pagar Cuenta</button>
+</form>
+{% endif %}
+{% endif %}
 
 <div class="text-center">
 <a href="{% url 'tables:select' %}" class="inline-flex items-center gap-2 mt-8 text-gray-400 hover:text-neon-cyan transition-colors text-xs font-label-md uppercase tracking-widest">

@@ -271,3 +271,43 @@ class TestSubmitOrder:
         assert StockMovement.objects.filter(
             ingredient=cheese, movement_type=StockMovement.MovementType.VENTA
         ).exists()
+
+    def test_marks_table_as_ocupada(self, client, employee_user):
+        client.force_login(employee_user)
+        pizza = Product.objects.get(name="Pizza Pepperoni")
+        client.post(reverse("tables:cart_increment", args=[4, pizza.category_id, pizza.pk]))
+        client.post(reverse("tables:submit_order", args=[4]))
+
+        table = Table.objects.get(number=4)
+        assert table.status == Table.Status.OCUPADA
+
+
+@pytest.mark.django_db
+class TestTableDetailByStatus:
+    def test_libre_table_only_offers_adding_products(self, client, employee_user):
+        client.force_login(employee_user)
+        response = client.get(reverse("tables:detail", args=[1]))
+        content = response.content.decode()
+        assert "Agregar productos" in content
+        assert "Pagar Cuenta" not in content
+
+    def test_ocupada_table_offers_pagar_cuenta(self, client, employee_user):
+        client.force_login(employee_user)
+        table = Table.objects.get(number=2)
+        table.status = Table.Status.OCUPADA
+        table.save(update_fields=["status"])
+
+        response = client.get(reverse("tables:detail", args=[2]))
+
+        assert "Pagar Cuenta" in response.content.decode()
+
+    def test_limpieza_table_only_offers_marking_it_free(self, client, employee_user):
+        client.force_login(employee_user)
+        table = Table.objects.get(number=3)
+        table.status = Table.Status.LIMPIEZA
+        table.save(update_fields=["status"])
+
+        response = client.get(reverse("tables:detail", args=[3]))
+        content = response.content.decode()
+        assert "Marcar Mesa como Libre" in content
+        assert "Agregar productos" not in content

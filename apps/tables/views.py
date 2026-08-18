@@ -33,11 +33,27 @@ def table_detail(request, number):
     table = get_object_or_404(Table, number=number)
     categories = Category.objects.order_by("order", "name")
     cart_count = sum(_table_cart(request, number).values())
+    open_bill = table.bills.filter(status="ABIERTA").first()
     return render(
         request,
         "tables/detail.html",
-        {"table": table, "categories": categories, "cart_count": cart_count},
+        {
+            "table": table,
+            "categories": categories,
+            "cart_count": cart_count,
+            "open_bill": open_bill,
+        },
     )
+
+
+@login_required(login_url="accounts:login_empleado")
+def mark_table_clean(request, number):
+    table = get_object_or_404(Table, number=number)
+    if request.method == "POST" and table.status == Table.Status.LIMPIEZA:
+        table.status = Table.Status.LIBRE
+        table.save(update_fields=["status"])
+        messages.success(request, f"Mesa {table.number} lista para nuevos clientes.")
+    return redirect(reverse("tables:select"))
 
 
 @login_required(login_url="accounts:login_empleado")
@@ -122,6 +138,8 @@ def submit_order(request, number):
                     order=order, product_id=int(product_id), quantity=quantity
                 )
         discount_recipe_for_order(order, request.user)
+        table.status = Table.Status.OCUPADA
+        table.save(update_fields=["status"])
         request.session["cart"][str(number)] = {}
         request.session.modified = True
         messages.success(request, "Pedido enviado a cocina/bar.")

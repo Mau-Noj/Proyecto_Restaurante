@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Zennin Bistro - Elegir Mesa</title>
+<title>Zennin Bistro - Reporte por Mesero</title>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -25,33 +25,39 @@
 <div class="absolute bottom-[0%] -right-[10%] w-[50%] h-[50%] rounded-full bg-neon-cyan opacity-5 blur-[120px]"></div>
 </div>
 
-{% include "accounts/_employee_topbar.html" with breadcrumb="Mesas" %}
+{% include "dashboard/_topbar.html" with breadcrumb="Pagos / Reporte por Mesero" %}
 
 <main class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
-<div class="mb-8 text-center">
-<h2 class="font-headline-lg text-2xl font-bold text-white mb-1">¿Qué mesa vas a atender?</h2>
-<p class="text-gray-400 text-sm">Selecciona el número de mesa para continuar.</p>
+<div class="mb-8">
+<h2 class="font-headline-lg text-2xl font-bold text-white mb-1">Reporte por Mesero</h2>
+<p class="text-gray-400 text-sm">Cuentas cerradas, ventas y propinas, por quien confirmó el pago.</p>
 </div>
 
-<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-{% for table in tables %}
-<a href="{% url 'tables:detail' table.number %}" class="glass-panel rounded-xl border transition-colors flex flex-col items-center justify-center gap-2 aspect-square
-{% if table.status == 'LIBRE' %} border-emerald-500/30 hover:border-emerald-500/60
-{% elif table.status == 'OCUPADA' %} border-red-500/30 hover:border-red-500/60
-{% elif table.status == 'CUENTA_PEDIDA' %} border-amber-500/30 hover:border-amber-500/60
-{% elif table.status == 'RESERVADA' %} border-sky-500/30 hover:border-sky-500/60
-{% else %} border-gray-500/30 hover:border-gray-500/60
-{% endif %}">
-<span class="font-headline-lg text-3xl font-bold text-white">{{ table.number }}</span>
-<span class="text-[10px] font-label-md uppercase tracking-widest
-{% if table.status == 'LIBRE' %} text-emerald-400
-{% elif table.status == 'OCUPADA' %} text-red-400
-{% elif table.status == 'CUENTA_PEDIDA' %} text-amber-400
-{% elif table.status == 'RESERVADA' %} text-sky-400
-{% else %} text-gray-400
-{% endif %}">{{ table.get_status_display }}</span>
-</a>
+<div class="glass-panel rounded-xl border border-white/10 overflow-x-auto">
+<table class="w-full text-sm min-w-[560px]">
+<thead class="bg-black/40 text-gray-400 font-label-md text-xs uppercase tracking-widest">
+<tr>
+<th class="text-left px-5 py-3">Mesero</th>
+<th class="text-left px-5 py-3">Cuentas Cerradas</th>
+<th class="text-left px-5 py-3">Total Vendido</th>
+<th class="text-left px-5 py-3">Total Propinas</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5">
+{% for row in rows %}
+<tr class="hover:bg-white/5 transition-colors">
+<td class="px-5 py-3 text-white">{{ row.user.get_full_name|default:row.user.username }}</td>
+<td class="px-5 py-3 text-gray-300">{{ row.count }}</td>
+<td class="px-5 py-3 text-gray-300">Q{{ row.total_sales }}</td>
+<td class="px-5 py-3 text-neon-cyan">Q{{ row.total_tips }}</td>
+</tr>
+{% empty %}
+<tr>
+<td class="px-5 py-8 text-center text-gray-500" colspan="4">Todavía no hay cuentas cerradas.</td>
+</tr>
 {% endfor %}
+</tbody>
+</table>
 </div>
 </main>
 </body>

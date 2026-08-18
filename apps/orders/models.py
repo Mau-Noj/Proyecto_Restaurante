@@ -3,9 +3,18 @@ from django.db import models
 
 
 class Order(models.Model):
-    """Pedido enviado a cocina/bar (RF-ORD-001 Básico)."""
+    """Pedido enviado a cocina/bar (RF-ORD-001 Básico).
 
-    table = models.ForeignKey("tables.Table", on_delete=models.PROTECT, related_name="orders")
+    `table` queda vacío para pedidos para llevar (RF-PAG-001 Básico), que se
+    cobran de inmediato en caja en vez de quedar asociados a una mesa.
+    """
+
+    table = models.ForeignKey(
+        "tables.Table", null=True, blank=True, on_delete=models.PROTECT, related_name="orders"
+    )
+    bill = models.ForeignKey(
+        "payments.Bill", null=True, blank=True, on_delete=models.PROTECT, related_name="orders"
+    )
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="orders_created"
     )
@@ -15,7 +24,8 @@ class Order(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self):
-        return f"Orden Mesa {self.table.number} · {self.created_at:%H:%M}"
+        target = f"Mesa {self.table.number}" if self.table_id else "Para Llevar"
+        return f"Orden {target} · {self.created_at:%H:%M}"
 
 
 class OrderItem(models.Model):
