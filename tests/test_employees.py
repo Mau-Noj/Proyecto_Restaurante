@@ -83,6 +83,20 @@ class TestEmployeeCreate:
         employee = Employee.objects.get(user__email="ana.perez@example.com")
         assert employee.user.username == "ana.perez2"
 
+    def test_compound_names_use_only_first_word(self, client, staff_user):
+        client.force_login(staff_user)
+        data = {
+            **VALID_DATA,
+            "first_name": "Brandon Mauricio",
+            "last_name": "Noj Romero",
+            "email": "brandon.noj@example.com",
+        }
+
+        client.post(reverse("employees:create"), data)
+
+        employee = Employee.objects.get(user__email="brandon.noj@example.com")
+        assert employee.user.username == "brandon.noj"
+
     def test_duplicate_email_rejected(self, client, staff_user, django_user_model):
         client.force_login(staff_user)
         django_user_model.objects.create_user(username="existing", email="ana.perez@example.com")

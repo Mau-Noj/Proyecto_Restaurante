@@ -13,7 +13,11 @@ _INPUT_ATTRS = {"class": "field-input"}
 
 
 def _slugify_username(first_name: str, last_name: str) -> str:
-    raw = f"{first_name}.{last_name}".lower().strip()
+    # Solo la primera palabra de cada campo (evita usuarios larguisimos con
+    # nombres/apellidos compuestos, ej. "Brandon Mauricio" -> "brandon").
+    first_word = first_name.split()[0] if first_name.split() else first_name
+    last_word = last_name.split()[0] if last_name.split() else last_name
+    raw = f"{first_word}.{last_word}".lower().strip()
     normalized = unicodedata.normalize("NFKD", raw).encode("ascii", "ignore").decode("ascii")
     cleaned = "".join(ch for ch in normalized if ch.isalnum() or ch == ".")
     return cleaned or "empleado"
