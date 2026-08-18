@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
@@ -17,10 +18,20 @@ from .models import Employee
 def employee_list(request):
     employees = Employee.objects.select_related("user").all()
     new_credentials = request.session.pop("new_credentials", None)
+
+    position_labels = dict(Employee.Position.choices)
+    position_counts = (
+        Employee.objects.values("position").annotate(count=Count("id")).order_by("-count")
+    )
     return render(
         request,
         "employees/list.html",
-        {"employees": employees, "new_credentials": new_credentials},
+        {
+            "employees": employees,
+            "new_credentials": new_credentials,
+            "chart_labels": [position_labels[row["position"]] for row in position_counts],
+            "chart_data": [row["count"] for row in position_counts],
+        },
     )
 
 

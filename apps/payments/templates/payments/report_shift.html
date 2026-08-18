@@ -18,6 +18,7 @@
       }
 </script>
 <link href="{% static 'css/auth-theme.css' %}" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 </head>
 <body class="font-body-md">
 <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
@@ -46,6 +47,11 @@
 <p class="text-white text-lg font-bold">Q{{ row.total }}</p>
 </div>
 {% endfor %}
+</div>
+
+<div class="glass-panel rounded-xl border border-white/10 p-5 mb-6">
+<h3 class="font-headline-sm text-sm text-neon-cyan uppercase tracking-widest mb-4">Ventas por Método</h3>
+<canvas id="method-chart" height="200"></canvas>
 </div>
 
 <div class="glass-panel neon-border rounded-2xl p-5 sm:p-6 mb-6">
@@ -86,5 +92,24 @@
 </table>
 </div>
 </main>
+
+{{ chart_labels|json_script:"chart-labels" }}
+{{ chart_totals|json_script:"chart-totals" }}
+<script>
+    const labels = JSON.parse(document.getElementById('chart-labels').textContent);
+    const totals = JSON.parse(document.getElementById('chart-totals').textContent);
+
+    new Chart(document.getElementById('method-chart'), {
+        type: 'bar',
+        data: { labels: labels, datasets: [{ data: totals, backgroundColor: '#00f3ff' }] },
+        options: {
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                y: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+            },
+        },
+    });
+</script>
 </body>
 </html>

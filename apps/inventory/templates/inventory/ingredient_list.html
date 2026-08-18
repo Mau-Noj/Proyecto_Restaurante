@@ -18,6 +18,7 @@
       }
 </script>
 <link href="{% static 'css/auth-theme.css' %}" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 </head>
 <body class="font-body-md">
 <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
@@ -54,6 +55,13 @@ Nuevo Ingrediente
 </a>
 </div>
 </div>
+
+{% if chart_labels %}
+<div class="glass-panel rounded-xl border border-white/10 p-5 mb-6">
+<h3 class="font-headline-sm text-sm text-neon-cyan uppercase tracking-widest mb-4">Stock Actual vs Mínimo</h3>
+<canvas id="stock-chart" height="220"></canvas>
+</div>
+{% endif %}
 
 <div class="glass-panel rounded-xl border border-white/10 overflow-x-auto">
 <table class="w-full text-sm min-w-[720px]">
@@ -99,5 +107,45 @@ Editar
 </table>
 </div>
 </main>
+
+{{ chart_labels|json_script:"chart-labels" }}
+{{ chart_stock|json_script:"chart-stock" }}
+{{ chart_min_stock|json_script:"chart-min-stock" }}
+{{ chart_status|json_script:"chart-status" }}
+<script>
+    const labels = JSON.parse(document.getElementById('chart-labels').textContent);
+    if (labels.length) {
+        const stock = JSON.parse(document.getElementById('chart-stock').textContent);
+        const minStock = JSON.parse(document.getElementById('chart-min-stock').textContent);
+        const status = JSON.parse(document.getElementById('chart-status').textContent);
+        const statusColors = { CRITICO: '#f87171', BAJO: '#fbbf24', SEGURO: '#34d399' };
+
+        new Chart(document.getElementById('stock-chart'), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Stock actual',
+                        data: stock,
+                        backgroundColor: status.map((s) => statusColors[s]),
+                    },
+                    {
+                        label: 'Stock mínimo',
+                        data: minStock,
+                        backgroundColor: 'rgba(255,255,255,0.15)',
+                    },
+                ],
+            },
+            options: {
+                plugins: { legend: { labels: { color: '#d1d5db' } } },
+                scales: {
+                    x: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                    y: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                },
+            },
+        });
+    }
+</script>
 </body>
 </html>

@@ -19,6 +19,7 @@
 </script>
 <link href="{% static 'css/auth-theme.css' %}" rel="stylesheet"/>
 <script src="{% static 'js/clipboard.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 </head>
 <body class="font-body-md">
 <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
@@ -81,6 +82,15 @@ Nuevo Empleado
 </a>
 </div>
 
+{% if chart_labels %}
+<div class="glass-panel rounded-xl border border-white/10 p-5 mb-6">
+<h3 class="font-headline-sm text-sm text-neon-cyan uppercase tracking-widest mb-4">Empleados por Puesto</h3>
+<div class="max-w-xs mx-auto">
+<canvas id="position-chart" height="220"></canvas>
+</div>
+</div>
+{% endif %}
+
 <div class="glass-panel rounded-xl border border-white/10 overflow-x-auto">
 <table class="w-full text-sm min-w-[720px]">
 <thead class="bg-black/40 text-gray-400 font-label-md text-xs uppercase tracking-widest">
@@ -125,5 +135,26 @@ Editar
 </table>
 </div>
 </main>
+
+{{ chart_labels|json_script:"chart-labels" }}
+{{ chart_data|json_script:"chart-data" }}
+<script>
+    const labels = JSON.parse(document.getElementById('chart-labels').textContent);
+    if (labels.length) {
+        const data = JSON.parse(document.getElementById('chart-data').textContent);
+        const palette = ['#00f3ff', '#bc13fe', '#34d399', '#fbbf24', '#38bdf8', '#f472b6', '#818cf8', '#2dd4bf', '#fb7185'];
+
+        new Chart(document.getElementById('position-chart'), {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{ data: data, backgroundColor: labels.map((_, i) => palette[i % palette.length]) }],
+            },
+            options: {
+                plugins: { legend: { position: 'bottom', labels: { color: '#d1d5db' } } },
+            },
+        });
+    }
+</script>
 </body>
 </html>

@@ -18,7 +18,17 @@ def index(request):
 @staff_required
 def ingredient_list(request):
     ingredients = Ingredient.objects.all()
-    return render(request, "inventory/ingredient_list.html", {"ingredients": ingredients})
+    return render(
+        request,
+        "inventory/ingredient_list.html",
+        {
+            "ingredients": ingredients,
+            "chart_labels": [ingredient.name for ingredient in ingredients],
+            "chart_stock": [float(ingredient.stock) for ingredient in ingredients],
+            "chart_min_stock": [float(ingredient.min_stock) for ingredient in ingredients],
+            "chart_status": [ingredient.status for ingredient in ingredients],
+        },
+    )
 
 
 @staff_required
@@ -129,13 +139,31 @@ def cost_report(request):
         "recipe_items__ingredient"
     )
     rows = []
+    chart_labels = []
+    chart_costs = []
+    chart_prices = []
+    chart_utilities = []
     for product in products:
         recipe_items = list(product.recipe_items.all())
         if recipe_items:
             cost = sum(ri.quantity * ri.ingredient.unit_cost for ri in recipe_items)
             utility = product.price - cost
+            chart_labels.append(product.name)
+            chart_costs.append(float(cost))
+            chart_prices.append(float(product.price))
+            chart_utilities.append(float(utility))
         else:
             cost = None
             utility = None
         rows.append({"product": product, "cost": cost, "utility": utility})
-    return render(request, "inventory/cost_report.html", {"rows": rows})
+    return render(
+        request,
+        "inventory/cost_report.html",
+        {
+            "rows": rows,
+            "chart_labels": chart_labels,
+            "chart_costs": chart_costs,
+            "chart_prices": chart_prices,
+            "chart_utilities": chart_utilities,
+        },
+    )

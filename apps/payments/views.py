@@ -266,6 +266,8 @@ def report_shift(request):
             "method_rows": method_rows,
             "grand_total": grand_total,
             "tip_total": tip_total,
+            "chart_labels": [row["label"] for row in method_rows],
+            "chart_totals": [float(row["total"]) for row in method_rows],
         },
     )
 
