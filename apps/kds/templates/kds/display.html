@@ -34,9 +34,17 @@
 {% for item in items %}
 <form method="post" action="{% url 'kds:mark_delivered' item.pk %}" class="kds-card-form" data-item-id="{{ item.pk }}">
 {% csrf_token %}
-<div class="kds-card glass-panel rounded-xl border border-yellow-400/40 bg-yellow-400/5 p-4 w-40 sm:w-44 cursor-pointer hover:border-yellow-400 transition-colors" onclick="deliverItem(this)">
-<span class="text-[10px] text-gray-400 font-label-md uppercase tracking-widest">{% if item.order.table %}Mesa {{ item.order.table.number }}{% else %}Para Llevar{% endif %}</span>
-<p class="text-white font-medium mt-1 text-sm">{{ item.product.name }}{% if item.quantity > 1 %} &times;{{ item.quantity }}{% endif %}</p>
+<div class="kds-card glass-panel rounded-xl border {% if forloop.first %}border-emerald-400/60 bg-emerald-400/5 hover:border-emerald-400{% else %}border-yellow-400/40 bg-yellow-400/5 hover:border-yellow-400{% endif %} p-4 w-44 sm:w-48 cursor-pointer transition-colors" onclick="deliverItem(this)">
+<div class="flex items-baseline gap-1.5 mb-2">
+{% if item.order.table %}
+<span class="font-headline-lg text-4xl font-bold text-white leading-none tracking-tight">{{ item.order.table.number }}</span>
+<span class="text-[10px] text-gray-400 font-label-md uppercase tracking-widest">Mesa</span>
+{% else %}
+<span class="material-symbols-outlined text-3xl text-white">shopping_bag</span>
+<span class="text-[10px] text-gray-400 font-label-md uppercase tracking-widest">Para Llevar</span>
+{% endif %}
+</div>
+<p class="text-white font-medium text-sm">{{ item.product.name }}{% if item.quantity > 1 %} &times;{{ item.quantity }}{% endif %}</p>
 </div>
 </form>
 {% empty %}
@@ -52,8 +60,7 @@
         if (cardEl.dataset.delivering) return;
         cardEl.dataset.delivering = "1";
         deliveringInProgress = true;
-        cardEl.classList.remove('border-yellow-400/40', 'bg-yellow-400/5', 'hover:border-yellow-400');
-        cardEl.classList.add('border-neon-cyan', 'bg-neon-cyan/10');
+        cardEl.className = 'kds-card glass-panel rounded-xl border border-neon-cyan bg-neon-cyan/10 p-4 w-44 sm:w-48 transition-colors';
         cardEl.innerHTML = '<p class="text-neon-cyan text-sm font-medium">Orden Entregada</p><p class="text-gray-500 text-[10px] mt-1">Se quita en un momento…</p>';
         setTimeout(() => {
             cardEl.closest('form').submit();

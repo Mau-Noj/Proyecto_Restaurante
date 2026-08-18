@@ -45,10 +45,12 @@ class TipForm(forms.Form):
 
 class SplitForm(forms.Form):
     label = forms.CharField(
-        label="Persona",
+        label="Nombre o NIT",
         max_length=50,
         required=False,
-        widget=forms.TextInput(attrs={**_INPUT_ATTRS, "placeholder": "Ej. Persona 1"}),
+        widget=forms.TextInput(
+            attrs={**_INPUT_ATTRS, "placeholder": "Ej. Persona 1 o NIT 1234567-8"}
+        ),
     )
     method = forms.ChoiceField(
         label="Método", choices=PaymentSplit.Method.choices, widget=forms.Select(attrs=_INPUT_ATTRS)

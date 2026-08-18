@@ -89,6 +89,16 @@ Personalizada
 </form>
 </div>
 
+<div class="glass-panel rounded-2xl border border-white/10 p-5 sm:p-6 mb-4" data-total="{{ bill.total }}" id="split-calculator">
+<h3 class="font-headline-sm text-sm text-neon-cyan uppercase tracking-widest mb-1">Dividir Cuenta</h3>
+<p class="text-gray-500 text-xs mb-4">Calcula partes iguales entre varias personas. Si no todos pagan lo mismo, solo ajusta el monto de cada pago abajo.</p>
+<div class="flex items-center gap-2 mb-3">
+<input type="number" min="2" step="1" id="split-people-count" placeholder="¿Entre cuántas personas?" class="field-input"/>
+<button type="button" onclick="calculateEqualSplit()" class="px-4 py-2 rounded-xl border border-neon-cyan/40 text-neon-cyan text-sm hover:bg-neon-cyan/10 transition-colors shrink-0">Calcular</button>
+</div>
+<div id="split-suggestions" class="space-y-2"></div>
+</div>
+
 <div class="glass-panel rounded-2xl border border-white/10 p-5 sm:p-6 mb-4">
 <h3 class="font-headline-sm text-sm text-neon-cyan uppercase tracking-widest mb-4">Selección de Pago</h3>
 
@@ -157,5 +167,44 @@ Personalizada
 </div>
 {% endif %}
 </main>
+
+<script>
+    function calculateEqualSplit() {
+        const container = document.getElementById('split-calculator');
+        const total = parseFloat(container.dataset.total);
+        const count = parseInt(document.getElementById('split-people-count').value, 10);
+        const suggestions = document.getElementById('split-suggestions');
+        suggestions.innerHTML = '';
+        if (!count || count < 2 || !total) return;
+
+        const totalCents = Math.round(total * 100);
+        const baseCents = Math.floor(totalCents / count);
+        let remainder = totalCents - baseCents * count;
+
+        for (let i = 1; i <= count; i++) {
+            let cents = baseCents;
+            if (remainder > 0) {
+                cents += 1;
+                remainder -= 1;
+            }
+            const amount = (cents / 100).toFixed(2);
+            const label = `Persona ${i}`;
+
+            const row = document.createElement('div');
+            row.className = 'flex items-center justify-between px-3 py-2 rounded-xl bg-black/30 border border-white/10';
+            row.innerHTML = '<span class="text-gray-300 text-sm">' + label + '</span>' +
+                '<div class="flex items-center gap-3">' +
+                '<span class="text-white text-sm font-label-md">Q' + amount + '</span>' +
+                '<button type="button" class="text-xs text-neon-cyan hover:underline">Usar</button>' +
+                '</div>';
+            row.querySelector('button').addEventListener('click', () => {
+                document.getElementById('id_label').value = label;
+                document.getElementById('id_amount').value = amount;
+                document.getElementById('id_amount').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+            suggestions.appendChild(row);
+        }
+    }
+</script>
 </body>
 </html>

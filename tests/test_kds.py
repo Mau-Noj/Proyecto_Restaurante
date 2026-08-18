@@ -83,7 +83,20 @@ class TestKitchenDisplay:
         content = response.content.decode()
         assert "Pizza Pepperoni" in content
         assert "Cerveza" not in content
-        assert "Mesa 3" in content
+        assert "Mesa" in content
+        assert ">3<" in content
+
+    def test_only_oldest_pending_item_is_highlighted(self, client, cocinero_user):
+        pizza = Product.objects.get(name="Pizza Pepperoni")
+        table = Table.objects.get(number=1)
+        order = Order.objects.create(table=table, created_by=cocinero_user)
+        OrderItem.objects.create(order=order, product=pizza, quantity=1)
+        OrderItem.objects.create(order=order, product=pizza, quantity=1)
+
+        client.force_login(cocinero_user)
+        response = client.get(reverse("kds:kitchen"))
+
+        assert response.content.decode().count("border-emerald-400/60") == 1
 
     def test_shows_takeout_orders_without_a_table(self, client, cocinero_user):
         pizza = Product.objects.get(name="Pizza Pepperoni")
