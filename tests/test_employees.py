@@ -1,6 +1,7 @@
 import datetime
 
 import pytest
+from django.core import mail
 from django.urls import reverse
 
 from apps.employees.models import Employee
@@ -9,14 +10,21 @@ from apps.employees.models import Employee
 @pytest.fixture
 def staff_user(django_user_model):
     return django_user_model.objects.create_user(
-        username="admin1", email="admin1@example.com", password="s3cret-pass", is_staff=True
+        username="admin1",
+        email="admin1@example.com",
+        password="s3cret-pass",
+        is_staff=True,
+        must_change_password=False,
     )
 
 
 @pytest.fixture
 def employee_user(django_user_model):
     return django_user_model.objects.create_user(
-        username="empleado1", email="empleado1@example.com", password="s3cret-pass"
+        username="empleado1",
+        email="empleado1@example.com",
+        password="s3cret-pass",
+        must_change_password=False,
     )
 
 
@@ -65,6 +73,16 @@ class TestEmployeeCreate:
         assert employee.user.has_usable_password()
         assert employee.position == Employee.Position.MESERO
         assert employee.hire_date == datetime.date(2026, 1, 15)
+        assert employee.user.must_change_password is True
+
+    def test_welcome_email_is_sent(self, client, staff_user):
+        client.force_login(staff_user)
+        client.post(reverse("employees:create"), VALID_DATA)
+
+        assert len(mail.outbox) == 1
+        sent = mail.outbox[0]
+        assert sent.to == ["ana.perez@example.com"]
+        assert "ana.perez" in sent.body
 
     def test_username_collision_gets_suffixed(self, client, staff_user, django_user_model):
         client.force_login(staff_user)

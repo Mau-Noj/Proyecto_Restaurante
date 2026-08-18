@@ -5,14 +5,21 @@ from django.urls import reverse
 @pytest.fixture
 def staff_user(django_user_model):
     return django_user_model.objects.create_user(
-        username="admin1", email="admin1@example.com", password="s3cret-pass", is_staff=True
+        username="admin1",
+        email="admin1@example.com",
+        password="s3cret-pass",
+        is_staff=True,
+        must_change_password=False,
     )
 
 
 @pytest.fixture
 def employee_user(django_user_model):
     return django_user_model.objects.create_user(
-        username="empleado1", email="empleado1@example.com", password="s3cret-pass"
+        username="empleado1",
+        email="empleado1@example.com",
+        password="s3cret-pass",
+        must_change_password=False,
     )
 
 

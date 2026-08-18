@@ -17,3 +17,12 @@ media_bucket: "REEMPLAZAR_CON_terraform_output_media_bucket"
 
 django_allowed_hosts: "REEMPLAZAR_CON_TU_DOMINIO"
 django_debug: "False"
+
+# Brevo SMTP (https://app.brevo.com/settings/keys/smtp). TODO produccion:
+# mover email_host_password a Secrets Manager, igual que la password de la DB.
+email_host: "smtp-relay.brevo.com"
+email_port: 587
+email_host_user: "REEMPLAZAR_CON_TU_EMAIL_DE_BREVO"
+email_host_password: "REEMPLAZAR_CON_TU_SMTP_KEY_DE_BREVO"
+email_use_tls: "True"
+default_from_email: "Zennin Bistro <no-reply@REEMPLAZAR_TU_DOMINIO>"

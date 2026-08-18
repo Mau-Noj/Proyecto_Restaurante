@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.utils.translation import gettext_lazy as _
 
 
@@ -13,3 +13,12 @@ class AdminAuthenticationForm(AuthenticationForm):
                 _("Esta cuenta no tiene permisos de administrador."),
                 code="not_staff",
             )
+
+
+class ThemedPasswordChangeForm(PasswordChangeForm):
+    """PasswordChangeForm de Django, solo con la clase CSS del tema oscuro."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({"class": "field-input"})

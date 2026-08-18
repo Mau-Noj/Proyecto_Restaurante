@@ -9,3 +9,8 @@ class User(AbstractUser):
     """
 
     email = models.EmailField(unique=True)
+    must_change_password = models.BooleanField(
+        "Debe cambiar la contraseña",
+        default=True,
+        help_text="Se exige cambiarla en el primer inicio de sesión (contraseña temporal).",
+    )
