@@ -5,14 +5,17 @@ body {
     color: #ffffff;
 }
 
-/* Campos de formulario compartidos (crear/editar empleado, confirmaciones) */
+/* Campos de formulario compartidos (crear/editar empleado, confirmaciones).
+   !important porque el plugin "forms" de Tailwind (CDN) inyecta su propio
+   reset con fondo blanco DESPUES de este stylesheet y empata en
+   especificidad, dejando el texto blanco invisible sobre fondo blanco. */
 .field-input {
     width: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.5) !important;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 0.5rem;
     padding: 0.625rem 0.875rem;
-    color: white;
+    color: #ffffff !important;
     font-size: 14px;
 }
 .field-input:focus {
@@ -72,9 +75,9 @@ body {
 }
 
 .input-dark {
-    background: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.5) !important;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    color: white;
+    color: #ffffff !important;
     transition: all 0.3s ease;
 }
 .input-dark:focus {
