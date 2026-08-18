@@ -27,12 +27,31 @@
 
 {% include "dashboard/_topbar.html" with breadcrumb="Personal" %}
 
-<main class="relative z-10 max-w-6xl mx-auto px-6 py-10">
-{% if messages %}
 {% for message in messages %}
-<div class="form-error rounded-xl px-4 py-3 mb-6 text-sm {% if message.tags == 'success' %}!bg-[rgba(0,243,255,0.1)] !border-neon-cyan/40 !text-neon-cyan{% endif %}" role="alert">{{ message }}</div>
-{% endfor %}
+{% if message.extra_tags == "credentials" %}
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
+<div class="glass-panel neon-border rounded-2xl p-8 max-w-md w-full">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-3xl text-neon-cyan">verified_user</span>
+<h3 class="font-headline-md text-lg font-bold text-white">Credenciales generadas</h3>
+</div>
+<p class="text-gray-300 text-sm mb-4">Compártelas con el empleado — no se volverán a mostrar.</p>
+<div id="credentials-text" class="bg-black/50 border border-white/10 rounded-xl px-4 py-3 mb-6 text-sm text-neon-cyan font-label-md">{{ message }}</div>
+<div class="flex gap-3">
+<button type="button" onclick="navigator.clipboard.writeText(document.getElementById('credentials-text').innerText)" class="flex-1 h-11 rounded-xl border border-white/10 text-gray-300 hover:text-white hover:border-white/30 transition-all text-sm">Copiar</button>
+<button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 h-11 bg-gradient-to-r from-neon-cyan/20 to-neon-violet/20 border border-neon-cyan/50 text-white rounded-xl hover:bg-neon-cyan/30 transition-all text-sm">Entendido</button>
+</div>
+</div>
+</div>
 {% endif %}
+{% endfor %}
+
+<main class="relative z-10 max-w-6xl mx-auto px-6 py-10">
+{% for message in messages %}
+{% if message.extra_tags != "credentials" %}
+<div class="form-error rounded-xl px-4 py-3 mb-6 text-sm {% if message.tags == 'success' %}!bg-[rgba(0,243,255,0.1)] !border-neon-cyan/40 !text-neon-cyan{% endif %}" role="alert">{{ message }}</div>
+{% endif %}
+{% endfor %}
 
 <div class="flex items-center justify-between mb-8">
 <div>
@@ -54,6 +73,8 @@ Nuevo Empleado
 <th class="text-left px-5 py-3">Puesto</th>
 <th class="text-left px-5 py-3">Teléfono</th>
 <th class="text-left px-5 py-3">Contratación</th>
+<th class="text-left px-5 py-3">Estado</th>
+<th class="text-right px-5 py-3"></th>
 </tr>
 </thead>
 <tbody class="divide-y divide-white/5">
@@ -64,10 +85,23 @@ Nuevo Empleado
 <td class="px-5 py-3 text-gray-300">{{ employee.get_position_display }}</td>
 <td class="px-5 py-3 text-gray-400">{{ employee.phone|default:"—" }}</td>
 <td class="px-5 py-3 text-gray-400">{{ employee.hire_date }}</td>
+<td class="px-5 py-3">
+{% if employee.user.is_active %}
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-neon-cyan/10 border border-neon-cyan/30 text-neon-cyan text-[10px] font-label-md uppercase tracking-widest">Activo</span>
+{% else %}
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 text-[10px] font-label-md uppercase tracking-widest">Inactivo</span>
+{% endif %}
+</td>
+<td class="px-5 py-3 text-right">
+<a href="{% url 'employees:edit' employee.pk %}" class="inline-flex items-center gap-1 text-gray-400 hover:text-neon-cyan transition-colors text-xs font-label-md uppercase tracking-widest">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+Editar
+</a>
+</td>
 </tr>
 {% empty %}
 <tr>
-<td class="px-5 py-8 text-center text-gray-500" colspan="5">Todavía no hay empleados registrados.</td>
+<td class="px-5 py-8 text-center text-gray-500" colspan="7">Todavía no hay empleados registrados.</td>
 </tr>
 {% endfor %}
 </tbody>

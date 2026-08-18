@@ -9,6 +9,8 @@ from .models import Employee
 
 User = get_user_model()
 
+_INPUT_ATTRS = {"class": "field-input"}
+
 
 def _slugify_username(first_name: str, last_name: str) -> str:
     raw = f"{first_name}.{last_name}".lower().strip()
@@ -32,9 +34,17 @@ def generate_temp_password() -> str:
     return "".join(secrets.choice(alphabet) for _ in range(12))
 
 
-class EmployeeCreateForm(forms.Form):
-    _INPUT_ATTRS = {"class": "field-input"}
+def reset_employee_password(employee: Employee) -> str:
+    """Genera una nueva contraseña temporal y exige cambiarla en el próximo login."""
+    temp_password = generate_temp_password()
+    user = employee.user
+    user.set_password(temp_password)
+    user.must_change_password = True
+    user.save(update_fields=["password", "must_change_password"])
+    return temp_password
 
+
+class EmployeeCreateForm(forms.Form):
     first_name = forms.CharField(
         label="Nombre", max_length=150, widget=forms.TextInput(attrs=_INPUT_ATTRS)
     )
@@ -80,3 +90,65 @@ class EmployeeCreateForm(forms.Form):
             hire_date=data["hire_date"],
         )
         return employee, temp_password
+
+
+class EmployeeEditForm(forms.Form):
+    first_name = forms.CharField(
+        label="Nombre", max_length=150, widget=forms.TextInput(attrs=_INPUT_ATTRS)
+    )
+    last_name = forms.CharField(
+        label="Apellido", max_length=150, widget=forms.TextInput(attrs=_INPUT_ATTRS)
+    )
+    email = forms.EmailField(label="Correo", widget=forms.EmailInput(attrs=_INPUT_ATTRS))
+    phone = forms.CharField(
+        label="Teléfono", max_length=20, required=False, widget=forms.TextInput(attrs=_INPUT_ATTRS)
+    )
+    position = forms.ChoiceField(
+        label="Puesto", choices=Employee.Position.choices, widget=forms.Select(attrs=_INPUT_ATTRS)
+    )
+    hire_date = forms.DateField(
+        label="Fecha de contratación",
+        widget=forms.DateInput(attrs={**_INPUT_ATTRS, "type": "date"}),
+    )
+    is_active = forms.BooleanField(
+        label="Cuenta activa",
+        required=False,
+        widget=forms.CheckboxInput(attrs={"class": "w-5 h-5 rounded accent-neon-cyan"}),
+    )
+
+    def __init__(self, *args, employee: Employee, **kwargs):
+        self.employee = employee
+        kwargs.setdefault(
+            "initial",
+            {
+                "first_name": employee.user.first_name,
+                "last_name": employee.user.last_name,
+                "email": employee.user.email,
+                "phone": employee.phone,
+                "position": employee.position,
+                "hire_date": employee.hire_date,
+                "is_active": employee.user.is_active,
+            },
+        )
+        super().__init__(*args, **kwargs)
+
+    def clean_email(self):
+        email = self.cleaned_data["email"]
+        if User.objects.filter(email__iexact=email).exclude(pk=self.employee.user_id).exists():
+            raise forms.ValidationError("Ya existe un usuario registrado con ese correo.")
+        return email
+
+    def save(self) -> Employee:
+        data = self.cleaned_data
+        user = self.employee.user
+        user.first_name = data["first_name"]
+        user.last_name = data["last_name"]
+        user.email = data["email"]
+        user.is_active = data["is_active"]
+        user.save(update_fields=["first_name", "last_name", "email", "is_active"])
+
+        self.employee.phone = data["phone"]
+        self.employee.position = data["position"]
+        self.employee.hire_date = data["hire_date"]
+        self.employee.save(update_fields=["phone", "position", "hire_date", "updated_at"])
+        return self.employee

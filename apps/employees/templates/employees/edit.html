@@ -1,0 +1,112 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Zennin Bistro - Editar Empleado</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: { extend: { colors: { "neon-cyan": "#00f3ff", "neon-violet": "#bc13fe" },
+          fontFamily: { "body-md": ["Inter"], "headline-md": ["Inter"], "headline-lg": ["Inter"], "label-md": ["JetBrains Mono"] } } }
+      }
+</script>
+<link href="{% static 'css/auth-theme.css' %}" rel="stylesheet"/>
+<style>
+  .field-input {
+    width: 100%;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 0.5rem;
+    padding: 0.625rem 0.875rem;
+    color: white;
+    font-size: 14px;
+  }
+  .field-input:focus { border-color: #00f3ff; outline: none; box-shadow: 0 0 15px rgba(0,243,255,0.2); }
+  .field-label { display: block; color: #9ca3af; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.375rem; }
+</style>
+</head>
+<body class="font-body-md">
+<div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+<div class="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full bg-neon-violet opacity-10 blur-[150px]"></div>
+<div class="absolute bottom-[0%] -right-[10%] w-[50%] h-[50%] rounded-full bg-neon-cyan opacity-5 blur-[120px]"></div>
+</div>
+
+{% include "dashboard/_topbar.html" with breadcrumb="Personal / Editar" %}
+
+<main class="relative z-10 max-w-3xl mx-auto px-6 py-10">
+<h2 class="font-headline-lg text-2xl font-bold text-white mb-1">Editar Empleado</h2>
+<p class="text-gray-400 text-sm mb-8">{{ employee.user.get_full_name }} · <span class="font-label-md">{{ employee.user.username }}</span></p>
+
+{% if form.non_field_errors or form.errors %}
+<div class="form-error rounded-xl px-4 py-3 mb-6 text-sm" role="alert">
+{% for field in form %}{% for error in field.errors %}<p>{{ field.label }}: {{ error }}</p>{% endfor %}{% endfor %}
+{% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+</div>
+{% endif %}
+
+<form method="post" class="glass-panel rounded-2xl border border-white/10 p-8 space-y-6">
+{% csrf_token %}
+<div>
+<h3 class="font-headline-sm text-sm text-neon-cyan uppercase tracking-widest mb-4">Datos básicos</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div>
+<label class="field-label" for="{{ form.first_name.id_for_label }}">Nombre</label>
+{{ form.first_name }}
+</div>
+<div>
+<label class="field-label" for="{{ form.last_name.id_for_label }}">Apellido</label>
+{{ form.last_name }}
+</div>
+<div>
+<label class="field-label" for="{{ form.email.id_for_label }}">Correo</label>
+{{ form.email }}
+</div>
+<div>
+<label class="field-label" for="{{ form.phone.id_for_label }}">Teléfono</label>
+{{ form.phone }}
+</div>
+<div>
+<label class="field-label" for="{{ form.position.id_for_label }}">Puesto</label>
+{{ form.position }}
+</div>
+<div>
+<label class="field-label" for="{{ form.hire_date.id_for_label }}">Fecha de contratación</label>
+{{ form.hire_date }}
+</div>
+</div>
+</div>
+
+<div class="pt-2 border-t border-white/10">
+<h3 class="font-headline-sm text-sm text-gray-300 uppercase tracking-widest mb-3 mt-4">Estado de la cuenta</h3>
+<label class="flex items-center gap-3 cursor-pointer">
+{{ form.is_active }}
+<span class="text-sm text-gray-300">Cuenta activa (puede iniciar sesión)</span>
+</label>
+<p class="text-xs text-gray-500 mt-1">Si el empleado ya no trabaja aquí, desactívala en vez de borrarlo — conserva su historial.</p>
+</div>
+
+<div class="pt-4 flex justify-end gap-3">
+<a href="{% url 'employees:list' %}" class="px-4 py-2 rounded-xl border border-white/10 text-gray-400 hover:text-white transition-colors text-sm">Cancelar</a>
+<button class="px-6 py-2 rounded-xl bg-gradient-to-r from-neon-cyan/20 to-neon-violet/20 border border-neon-cyan/50 text-white hover:bg-neon-cyan/30 transition-all text-sm font-headline-sm" type="submit">Guardar Cambios</button>
+</div>
+</form>
+
+<form method="post" action="{% url 'employees:reset_password' employee.pk %}" class="glass-panel rounded-2xl border border-[#ffb800]/30 p-6 mt-6 flex items-center justify-between"
+      onsubmit="return confirm('¿Restablecer la contraseña de {{ employee.user.get_full_name|escapejs }}? La contraseña actual dejará de funcionar.');">
+{% csrf_token %}
+<div>
+<h3 class="font-headline-sm text-sm text-[#ffb800] uppercase tracking-widest mb-1">¿Olvidó su contraseña?</h3>
+<p class="text-gray-400 text-sm">Genera una nueva contraseña temporal — deberá cambiarla al iniciar sesión.</p>
+</div>
+<button class="px-5 py-2 rounded-xl border border-[#ffb800]/50 text-[#ffb800] hover:bg-[#ffb800]/10 transition-all text-sm font-headline-sm whitespace-nowrap" type="submit">Restablecer contraseña</button>
+</form>
+</main>
+</body>
+</html>

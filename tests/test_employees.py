@@ -102,4 +102,7 @@ def test_list_shows_created_employee(client, staff_user, django_user_model):
     response = client.get(reverse("employees:list"))
 
     assert response.status_code == 200
-    assert "ana.perez" in response.content.decode()
+    content = response.content.decode()
+    assert "ana.perez" in content
+    assert "Editar" in content
+    assert "Activo" in content
