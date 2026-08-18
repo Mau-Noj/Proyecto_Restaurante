@@ -4,14 +4,24 @@ from django.urls import reverse
 
 from apps.accounts.decorators import staff_required
 
-from .forms import EmployeeCreateForm, EmployeeEditForm, reset_employee_password
+from .forms import (
+    ConfirmPasswordForm,
+    EmployeeCreateForm,
+    EmployeeEditForm,
+    reset_employee_password,
+)
 from .models import Employee
 
 
 @staff_required
 def employee_list(request):
     employees = Employee.objects.select_related("user").all()
-    return render(request, "employees/list.html", {"employees": employees})
+    new_credentials = request.session.pop("new_credentials", None)
+    return render(
+        request,
+        "employees/list.html",
+        {"employees": employees, "new_credentials": new_credentials},
+    )
 
 
 @staff_required
@@ -20,12 +30,11 @@ def employee_create(request):
         form = EmployeeCreateForm(request.POST)
         if form.is_valid():
             employee, temp_password = form.save()
-            messages.success(
-                request,
-                f"Empleado creado. Usuario: {employee.user.username} · "
-                f"Contraseña temporal: {temp_password}",
-                extra_tags="credentials",
-            )
+            request.session["new_credentials"] = {
+                "heading": "Empleado creado",
+                "username": employee.user.username,
+                "password": temp_password,
+            }
             return redirect(reverse("employees:list"))
     else:
         form = EmployeeCreateForm()
@@ -51,10 +60,24 @@ def employee_reset_password(request, pk):
     employee = get_object_or_404(Employee, pk=pk)
     if request.method == "POST":
         temp_password = reset_employee_password(employee)
-        messages.success(
-            request,
-            f"Contraseña restablecida. Usuario: {employee.user.username} · "
-            f"Contraseña temporal: {temp_password}",
-            extra_tags="credentials",
-        )
+        request.session["new_credentials"] = {
+            "heading": "Contraseña restablecida",
+            "username": employee.user.username,
+            "password": temp_password,
+        }
     return redirect(reverse("employees:list"))
+
+
+@staff_required
+def employee_delete(request, pk):
+    employee = get_object_or_404(Employee, pk=pk)
+    if request.method == "POST":
+        form = ConfirmPasswordForm(request.POST, user=request.user)
+        if form.is_valid():
+            full_name = employee.user.get_full_name()
+            employee.user.delete()  # cascada: borra tambien el Employee
+            messages.success(request, f"Se eliminó a {full_name}.")
+            return redirect(reverse("employees:list"))
+    else:
+        form = ConfirmPasswordForm(user=request.user)
+    return render(request, "employees/delete.html", {"form": form, "employee": employee})

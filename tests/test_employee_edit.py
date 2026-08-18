@@ -114,3 +114,41 @@ class TestEmployeeResetPassword:
         assert employee.user.password != old_password_hash
         assert employee.user.must_change_password is True
         assert not employee.user.check_password("old-temp-pass")
+
+
+@pytest.mark.django_db
+class TestEmployeeDelete:
+    def test_requires_staff(self, client, employee):
+        response = client.get(reverse("employees:delete", args=[employee.pk]))
+        assert response.status_code == 302
+        assert response.url.startswith(reverse("accounts:login_admin"))
+
+    def test_get_renders_confirmation_form(self, client, staff_user, employee):
+        client.force_login(staff_user)
+        response = client.get(reverse("employees:delete", args=[employee.pk]))
+        assert response.status_code == 200
+
+    def test_wrong_admin_password_does_not_delete(self, client, staff_user, employee):
+        client.force_login(staff_user)
+        response = client.post(
+            reverse("employees:delete", args=[employee.pk]), {"password": "wrong-password"}
+        )
+        assert response.status_code == 200
+        assert response.context["form"].errors
+        assert Employee.objects.filter(pk=employee.pk).exists()
+
+    def test_correct_admin_password_deletes_employee_and_user(
+        self, client, staff_user, employee, django_user_model
+    ):
+        client.force_login(staff_user)
+        employee_pk = employee.pk
+        user_pk = employee.user_id
+
+        response = client.post(
+            reverse("employees:delete", args=[employee_pk]), {"password": "s3cret-pass"}
+        )
+
+        assert response.status_code == 302
+        assert response.url == reverse("employees:list")
+        assert not Employee.objects.filter(pk=employee_pk).exists()
+        assert not django_user_model.objects.filter(pk=user_pk).exists()

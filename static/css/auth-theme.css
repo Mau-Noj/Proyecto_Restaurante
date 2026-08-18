@@ -5,6 +5,30 @@ body {
     color: #ffffff;
 }
 
+/* Campos de formulario compartidos (crear/editar empleado, confirmaciones) */
+.field-input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    padding: 0.625rem 0.875rem;
+    color: white;
+    font-size: 14px;
+}
+.field-input:focus {
+    border-color: #00f3ff;
+    outline: none;
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+}
+.field-label {
+    display: block;
+    color: #9ca3af;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.375rem;
+}
+
 .glass-panel {
     background: rgba(20, 20, 20, 0.6);
     backdrop-filter: blur(20px);

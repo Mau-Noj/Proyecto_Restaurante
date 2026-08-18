@@ -152,3 +152,22 @@ class EmployeeEditForm(forms.Form):
         self.employee.hire_date = data["hire_date"]
         self.employee.save(update_fields=["phone", "position", "hire_date", "updated_at"])
         return self.employee
+
+
+class ConfirmPasswordForm(forms.Form):
+    """Reconfirmación de la contraseña del admin logueado, para acciones destructivas."""
+
+    password = forms.CharField(
+        label="Tu contraseña",
+        widget=forms.PasswordInput(attrs=_INPUT_ATTRS),
+    )
+
+    def __init__(self, *args, user, **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
+
+    def clean_password(self):
+        password = self.cleaned_data["password"]
+        if not self.user.check_password(password):
+            raise forms.ValidationError("Contraseña incorrecta.")
+        return password
