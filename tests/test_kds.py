@@ -3,6 +3,7 @@ from django.urls import reverse
 
 from apps.catalog.models import Product
 from apps.employees.models import Employee
+from apps.kds.notify import notify_order_stations, notify_station
 from apps.orders.models import Order, OrderItem
 from apps.tables.models import Table
 
@@ -157,3 +158,36 @@ class TestMarkDelivered:
         response = client.post(reverse("kds:mark_delivered", args=[item.pk]))
 
         assert response.url == reverse("kds:bar")
+
+
+@pytest.mark.django_db
+class TestNotify:
+    def test_notify_station_does_not_raise(self):
+        notify_station("cocina")
+        notify_station("bar")
+
+    def test_notify_order_stations_targets_stations_from_order_items(
+        self, monkeypatch, cocinero_user, order_with_items
+    ):
+        notified = []
+        monkeypatch.setattr(
+            "apps.kds.notify.notify_station", lambda station: notified.append(station)
+        )
+
+        notify_order_stations(order_with_items)
+
+        assert set(notified) == {"cocina", "bar"}
+
+    def test_mark_delivered_notifies_its_station(
+        self, monkeypatch, client, cocinero_user, order_with_items
+    ):
+        notified = []
+        monkeypatch.setattr(
+            "apps.kds.views.notify_station", lambda station: notified.append(station)
+        )
+        client.force_login(cocinero_user)
+        item = order_with_items.items.get(product__name="Pizza Pepperoni")
+
+        client.post(reverse("kds:mark_delivered", args=[item.pk]))
+
+        assert notified == ["cocina"]

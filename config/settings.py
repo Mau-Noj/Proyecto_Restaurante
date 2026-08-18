@@ -13,6 +13,8 @@ DEBUG = env.bool("DEBUG", default=False)
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
 
 INSTALLED_APPS = [
+    "daphne",
+    "channels",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -68,6 +70,13 @@ DATABASES = {"default": env.db("DATABASE_URL")}
 
 CACHES = {
     "default": env.cache("REDIS_URL", backend="django.core.cache.backends.redis.RedisCache"),
+}
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {"hosts": [env("REDIS_URL")]},
+    },
 }
 
 AUTH_PASSWORD_VALIDATORS = [

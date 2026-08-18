@@ -7,6 +7,7 @@ from django.urls import reverse
 
 from apps.catalog.models import Category, Product
 from apps.inventory.services import discount_recipe_for_order
+from apps.kds.notify import notify_order_stations
 from apps.orders.models import Order, OrderItem
 
 from .models import Table
@@ -138,6 +139,7 @@ def submit_order(request, number):
                     order=order, product_id=int(product_id), quantity=quantity
                 )
         discount_recipe_for_order(order, request.user)
+        notify_order_stations(order)
         table.status = Table.Status.OCUPADA
         table.save(update_fields=["status"])
         request.session["cart"][str(number)] = {}

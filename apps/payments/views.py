@@ -13,6 +13,7 @@ from apps.catalog.models import Category, Product
 from apps.employees.decorators import position_required
 from apps.employees.models import Employee
 from apps.inventory.services import discount_recipe_for_order
+from apps.kds.notify import notify_order_stations
 from apps.orders.models import Order, OrderItem
 from apps.tables.models import Table
 
@@ -199,6 +200,7 @@ def takeout_checkout(request):
                     order=order, product_id=int(product_id), quantity=quantity
                 )
         discount_recipe_for_order(order, request.user)
+        notify_order_stations(order)
         bill = open_bill_for_takeout(order, request.user)
         request.session["takeout_cart"] = {}
         request.session.modified = True

@@ -1,3 +1,11 @@
+# Websockets del KDS en tiempo real: solo se pide "upgrade" cuando el
+# cliente lo pide de verdad, para no romper el keep-alive de las peticiones
+# HTTP normales que pasan por el mismo location.
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    ''      close;
+}
+
 server {
     listen 80;
     server_name {{ django_allowed_hosts }};
@@ -12,5 +20,10 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
+
+        # Django Channels / Daphne atienden HTTP y WS en el mismo puerto 8000.
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
     }
 }

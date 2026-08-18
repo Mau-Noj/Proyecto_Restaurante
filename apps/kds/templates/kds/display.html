@@ -28,7 +28,13 @@
 {% include "accounts/_employee_topbar.html" with breadcrumb=title %}
 
 <main class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
-<h2 class="font-headline-lg text-2xl font-bold text-white mb-6">{{ title }}</h2>
+<div class="flex items-center gap-3 mb-6">
+<h2 class="font-headline-lg text-2xl font-bold text-white">{{ title }}</h2>
+<span id="connection-status" class="inline-flex items-center gap-1.5 text-[10px] font-label-md uppercase tracking-widest text-gray-500">
+<span id="connection-dot" class="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
+<span id="connection-label">Conectando…</span>
+</span>
+</div>
 
 <div id="kds-grid" class="flex flex-wrap gap-4">
 {% for item in items %}
@@ -67,12 +73,34 @@
         }, 1000);
     }
 
-    // Sin websockets todavia (RNF-008 queda pendiente): se refresca sola
-    // cada 8s para mostrar pedidos nuevos, salvo que haya una animacion
-    // de entrega en curso.
-    setInterval(() => {
+    // Tiempo real (RNF-008): la pantalla se une a un grupo por estacion via
+    // WebSocket y se refresca en cuanto llega o se entrega un pedido, en vez
+    // de estar recargando a ciegas cada pocos segundos.
+    const labelEl = document.getElementById('connection-label');
+    const dotEl = document.getElementById('connection-dot');
+
+    function setConnectionStatus(connected) {
+        labelEl.textContent = connected ? 'En vivo' : 'Reconectando…';
+        dotEl.className = 'w-1.5 h-1.5 rounded-full ' + (connected ? 'bg-emerald-400' : 'bg-gray-500');
+    }
+
+    const wsScheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/kds/{{ station }}/`);
+
+    socket.onopen = () => setConnectionStatus(true);
+
+    socket.onmessage = () => {
         if (!deliveringInProgress) location.reload();
-    }, 8000);
+    };
+
+    socket.onclose = () => {
+        setConnectionStatus(false);
+        // El socket se cae (ej. red inestable): recarga sola tras un momento
+        // para reconectar limpio, salvo que haya una animacion en curso.
+        setTimeout(() => {
+            if (!deliveringInProgress) location.reload();
+        }, 4000);
+    };
 </script>
 </body>
 </html>

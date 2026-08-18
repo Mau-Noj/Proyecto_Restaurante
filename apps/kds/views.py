@@ -6,6 +6,8 @@ from apps.employees.decorators import position_required
 from apps.employees.models import Employee
 from apps.orders.models import OrderItem
 
+from .notify import notify_station
+
 
 def _pending_items(station):
     return (
@@ -20,13 +22,17 @@ def _pending_items(station):
 @position_required(Employee.Position.COCINERO)
 def kitchen_display(request):
     items = _pending_items(Category.Station.COCINA)
-    return render(request, "kds/display.html", {"items": items, "title": "Pedido Cocina"})
+    return render(
+        request, "kds/display.html", {"items": items, "title": "Pedido Cocina", "station": "cocina"}
+    )
 
 
 @position_required(Employee.Position.BARTENDER)
 def bar_display(request):
     items = _pending_items(Category.Station.BAR)
-    return render(request, "kds/display.html", {"items": items, "title": "Pedido Bar"})
+    return render(
+        request, "kds/display.html", {"items": items, "title": "Pedido Bar", "station": "bar"}
+    )
 
 
 @position_required(Employee.Position.COCINERO, Employee.Position.BARTENDER)
@@ -36,6 +42,8 @@ def mark_delivered(request, item_id):
         item.status = OrderItem.Status.ENTREGADO
         item.delivered_at = timezone.now()
         item.save(update_fields=["status", "delivered_at"])
+        station = "bar" if item.product.category.station == Category.Station.BAR else "cocina"
+        notify_station(station)
     if item.product.category.station == Category.Station.BAR:
         return redirect("kds:bar")
     return redirect("kds:kitchen")
