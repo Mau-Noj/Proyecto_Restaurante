@@ -18,9 +18,6 @@
       }
 </script>
 <link href="{% static 'css/auth-theme.css' %}" rel="stylesheet"/>
-<style>
-  #menu-chevron { transition: transform 0.2s ease; }
-</style>
 </head>
 <body class="font-body-md">
 <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
@@ -36,28 +33,12 @@
 <p class="text-gray-400 text-sm">Gestión de Orden</p>
 </div>
 
-<div class="glass-panel neon-border rounded-2xl overflow-hidden">
-<button type="button"
-        onclick="document.getElementById('category-menu').classList.toggle('hidden'); document.getElementById('menu-chevron').classList.toggle('rotate-180')"
-        class="w-full flex items-center gap-3 px-5 sm:px-6 py-4 text-white hover:bg-white/5 transition-colors">
-<span class="material-symbols-outlined text-neon-cyan">menu</span>
-<span class="font-headline-sm text-sm uppercase tracking-widest flex-1 text-left">Menú</span>
-<span id="menu-chevron" class="material-symbols-outlined text-gray-400">expand_more</span>
-</button>
+{% include "tables/_category_menu.html" %}
 
-<div id="category-menu" class="px-5 sm:px-6 pb-6 space-y-3">
-{% for category in categories %}
-<a href="{% url 'tables:category_products' table.number category.pk %}" class="block text-center px-4 py-3 rounded-xl border border-white/15 text-white hover:border-neon-cyan hover:text-neon-cyan transition-colors">{{ category.name }}</a>
-{% empty %}
-<p class="text-center text-gray-500 text-sm py-4">Todavía no hay categorías en el catálogo.</p>
-{% endfor %}
-
-<a href="{% url 'tables:preorder' table.number %}" class="block mt-4 px-4 py-3 rounded-xl border border-dashed border-[#ff5c7a]/40 bg-[#ff5c7a]/5 text-center hover:border-[#ff5c7a] transition-colors">
+<a href="{% url 'tables:preorder' table.number %}" class="block px-4 py-3 rounded-xl border border-dashed border-[#ff5c7a]/40 bg-[#ff5c7a]/5 text-center hover:border-[#ff5c7a] transition-colors">
 <p class="text-[#ff8fa3] text-sm">Agregar productos a un pedido{% if cart_count %} ({{ cart_count }}){% endif %}</p>
 <p class="text-gray-500 text-[10px] mt-1 uppercase tracking-widest font-label-md">Ver / agregar a la orden actual de la mesa</p>
 </a>
-</div>
-</div>
 
 <div class="text-center">
 <a href="{% url 'tables:select' %}" class="inline-flex items-center gap-2 mt-8 text-gray-400 hover:text-neon-cyan transition-colors text-xs font-label-md uppercase tracking-widest">

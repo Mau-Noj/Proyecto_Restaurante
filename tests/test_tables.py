@@ -94,6 +94,19 @@ def test_category_products_shows_table_and_category(client, employee_user):
 
 
 @pytest.mark.django_db
+def test_category_products_shows_category_menu_overlay(client, employee_user):
+    client.force_login(employee_user)
+    category = Category.objects.get(name="Pizza")
+
+    response = client.get(reverse("tables:category_products", args=[5, category.pk]))
+
+    content = response.content.decode()
+    assert "category-menu-overlay" in content
+    for name in ["Bebidas Sin Alcohol", "Bebidas Alcohólicas", "Pizza", "Papas"]:
+        assert name in content
+
+
+@pytest.mark.django_db
 def test_category_products_404_for_unknown_table_or_category(client, employee_user):
     client.force_login(employee_user)
     category = Category.objects.first()
@@ -179,6 +192,13 @@ class TestPreorder:
         assert response.status_code == 200
         assert response.context["lines"] == []
         assert response.context["total"] == Decimal("0")
+
+    def test_shows_category_menu_overlay(self, client, employee_user):
+        client.force_login(employee_user)
+        response = client.get(reverse("tables:preorder", args=[6]))
+        content = response.content.decode()
+        assert "category-menu-overlay" in content
+        assert "Pizza" in content
 
     def test_shows_added_products_with_total(self, client, employee_user):
         client.force_login(employee_user)

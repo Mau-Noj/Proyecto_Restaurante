@@ -41,6 +41,7 @@ def table_detail(request, number):
 def category_products(request, number, category_id):
     table = get_object_or_404(Table, number=number)
     category = get_object_or_404(Category, pk=category_id)
+    categories = Category.objects.order_by("order", "name")
     table_cart = _table_cart(request, number)
     products = [
         {"product": product, "quantity": table_cart.get(str(product.pk), 0)}
@@ -49,7 +50,7 @@ def category_products(request, number, category_id):
     return render(
         request,
         "tables/category_products.html",
-        {"table": table, "category": category, "products": products},
+        {"table": table, "category": category, "categories": categories, "products": products},
     )
 
 
@@ -82,6 +83,7 @@ def cart_decrement(request, number, category_id, product_id):
 @login_required(login_url="accounts:login_empleado")
 def preorder(request, number):
     table = get_object_or_404(Table, number=number)
+    categories = Category.objects.order_by("order", "name")
     table_cart = _table_cart(request, number)
     products = Product.objects.filter(pk__in=[int(pid) for pid in table_cart]).select_related(
         "category"
@@ -97,4 +99,8 @@ def preorder(request, number):
         total += subtotal
         lines.append({"product": product, "quantity": quantity, "subtotal": subtotal})
 
-    return render(request, "tables/preorder.html", {"table": table, "lines": lines, "total": total})
+    return render(
+        request,
+        "tables/preorder.html",
+        {"table": table, "categories": categories, "lines": lines, "total": total},
+    )

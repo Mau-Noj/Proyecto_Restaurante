@@ -1,0 +1,25 @@
+<button type="button"
+        onclick="document.getElementById('category-menu-overlay').classList.remove('hidden')"
+        class="w-full flex items-center gap-3 px-5 sm:px-6 py-4 glass-panel neon-border rounded-2xl text-white hover:bg-white/5 transition-colors mb-6">
+<span class="material-symbols-outlined text-neon-cyan">menu</span>
+<span class="font-headline-sm text-sm uppercase tracking-widest flex-1 text-left">Menú</span>
+<span class="material-symbols-outlined text-gray-400">expand_more</span>
+</button>
+
+<div id="category-menu-overlay" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md px-4">
+<div class="glass-panel neon-border rounded-2xl p-6 max-w-sm w-full max-h-[80vh] overflow-y-auto">
+<div class="flex items-center justify-between mb-5">
+<span class="font-headline-sm text-sm text-white uppercase tracking-widest">Menú &middot; Mesa {{ table.number }}</span>
+<button type="button" onclick="document.getElementById('category-menu-overlay').classList.add('hidden')" class="text-gray-400 hover:text-white transition-colors" aria-label="Cerrar">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="space-y-3">
+{% for cat in categories %}
+<a href="{% url 'tables:category_products' table.number cat.pk %}" class="block text-center px-4 py-3 rounded-xl border {% if category and category.pk == cat.pk %}border-neon-cyan text-neon-cyan{% else %}border-white/15 text-white hover:border-neon-cyan hover:text-neon-cyan{% endif %} transition-colors">{{ cat.name }}</a>
+{% empty %}
+<p class="text-center text-gray-500 text-sm py-4">Todavía no hay categorías en el catálogo.</p>
+{% endfor %}
+</div>
+</div>
+</div>
