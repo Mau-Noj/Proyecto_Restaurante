@@ -23,4 +23,5 @@ urlpatterns = [
         name="cart_decrement",
     ),
     path("<int:number>/pre-orden/", views.preorder, name="preorder"),
+    path("<int:number>/enviar/", views.submit_order, name="submit_order"),
 ]

@@ -8,7 +8,8 @@ class Employee(models.Model):
     class Position(models.TextChoices):
         GERENTE = "GERENTE", "Administrador / Gerente"
         MESERO = "MESERO", "Mesero"
-        COCINERO = "COCINERO", "Cocinero / Bartender"
+        COCINERO = "COCINERO", "Cocinero"
+        BARTENDER = "BARTENDER", "Bartender"
         CAJERO = "CAJERO", "Cajero"
         HOSTESS = "HOSTESS", "Hostess"
         BODEGUERO = "BODEGUERO", "Bodeguero"

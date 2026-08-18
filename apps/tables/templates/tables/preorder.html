@@ -57,7 +57,13 @@
 {% endif %}
 </div>
 
-<p class="text-gray-500 text-xs text-center mt-4">Esto todavía no envía el pedido a cocina/caja — es una vista previa mientras se construye el módulo de Órdenes.</p>
+{% if lines %}
+<form method="post" action="{% url 'tables:submit_order' table.number %}" class="mt-4">
+{% csrf_token %}
+<button type="submit" class="w-full h-12 bg-gradient-to-r from-neon-cyan/20 to-neon-violet/20 border border-neon-cyan/50 text-white rounded-xl font-headline-sm text-sm tracking-widest uppercase hover:bg-neon-cyan/30 transition-all">Enviar a Cocina / Bar</button>
+</form>
+<p class="text-gray-500 text-xs text-center mt-3">Cada producto llega a la pantalla de Cocina o Bar según su categoría.</p>
+{% endif %}
 
 <div class="text-center mt-8">
 <a href="{% url 'tables:detail' table.number %}" class="inline-flex items-center gap-2 text-gray-400 hover:text-neon-cyan transition-colors text-xs font-label-md uppercase tracking-widest">

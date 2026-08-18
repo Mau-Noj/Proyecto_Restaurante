@@ -12,8 +12,13 @@ def _employee_landing_url(user) -> str:
     from apps.employees.models import Employee  # import local: evita acoplar accounts a employees
 
     employee = getattr(user, "employee_profile", None)
-    if employee and employee.position == Employee.Position.MESERO:
-        return str(reverse_lazy("tables:select"))
+    if employee:
+        if employee.position == Employee.Position.MESERO:
+            return str(reverse_lazy("tables:select"))
+        if employee.position == Employee.Position.COCINERO:
+            return str(reverse_lazy("kds:kitchen"))
+        if employee.position == Employee.Position.BARTENDER:
+            return str(reverse_lazy("kds:bar"))
     return str(reverse_lazy("accounts:employee_home"))
 
 

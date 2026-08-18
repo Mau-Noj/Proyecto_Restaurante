@@ -4,8 +4,19 @@ from django.db import models
 class Category(models.Model):
     """Categoría del menú (RF-CAT-001 Básico)."""
 
+    class Station(models.TextChoices):
+        COCINA = "COCINA", "Cocina"
+        BAR = "BAR", "Bar"
+
     name = models.CharField("Nombre", max_length=100)
     order = models.PositiveSmallIntegerField("Orden", default=0)
+    station = models.CharField(
+        "Estación",
+        max_length=20,
+        choices=Station.choices,
+        default=Station.COCINA,
+        help_text="A qué pantalla de KDS se enrutan los productos de esta categoría.",
+    )
 
     class Meta:
         ordering = ["order", "name"]

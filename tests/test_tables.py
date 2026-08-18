@@ -4,6 +4,7 @@ import pytest
 from django.urls import reverse
 
 from apps.catalog.models import Category, Product
+from apps.orders.models import Order, OrderItem
 from apps.tables.models import Table
 
 
@@ -216,3 +217,38 @@ class TestPreorder:
         assert lines[pizza.pk] == 1
         assert lines[water.pk] == 2
         assert response.context["total"] == pizza.price + (water.price * 2)
+
+
+@pytest.mark.django_db
+class TestSubmitOrder:
+    def test_requires_login(self, client):
+        response = client.post(reverse("tables:submit_order", args=[1]))
+        assert response.status_code == 302
+        assert response.url.startswith(reverse("accounts:login_empleado"))
+
+    def test_creates_order_with_items_and_clears_cart(self, client, employee_user):
+        client.force_login(employee_user)
+        pizza = Product.objects.get(name="Pizza Pepperoni")
+        client.post(reverse("tables:cart_increment", args=[9, pizza.category_id, pizza.pk]))
+        client.post(reverse("tables:cart_increment", args=[9, pizza.category_id, pizza.pk]))
+
+        response = client.post(reverse("tables:submit_order", args=[9]))
+
+        assert response.status_code == 302
+        assert response.url == reverse("tables:detail", args=[9])
+
+        order = Order.objects.get(table__number=9)
+        assert order.created_by == employee_user
+        item = order.items.get(product=pizza)
+        assert item.quantity == 2
+        assert item.status == OrderItem.Status.PENDIENTE
+
+        preorder_response = client.get(reverse("tables:preorder", args=[9]))
+        assert preorder_response.context["lines"] == []
+
+    def test_empty_cart_does_not_create_order(self, client, employee_user):
+        client.force_login(employee_user)
+        response = client.post(reverse("tables:submit_order", args=[10]))
+        assert response.status_code == 302
+        assert response.url == reverse("tables:preorder", args=[10])
+        assert not Order.objects.filter(table__number=10).exists()

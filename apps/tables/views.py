@@ -1,10 +1,12 @@
 from decimal import Decimal
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
 from apps.catalog.models import Category, Product
+from apps.orders.models import Order, OrderItem
 
 from .models import Table
 
@@ -104,3 +106,23 @@ def preorder(request, number):
         "tables/preorder.html",
         {"table": table, "categories": categories, "lines": lines, "total": total},
     )
+
+
+@login_required(login_url="accounts:login_empleado")
+def submit_order(request, number):
+    table = get_object_or_404(Table, number=number)
+    table_cart = _table_cart(request, number)
+
+    if request.method == "POST" and table_cart:
+        order = Order.objects.create(table=table, created_by=request.user)
+        for product_id, quantity in table_cart.items():
+            if quantity > 0:
+                OrderItem.objects.create(
+                    order=order, product_id=int(product_id), quantity=quantity
+                )
+        request.session["cart"][str(number)] = {}
+        request.session.modified = True
+        messages.success(request, "Pedido enviado a cocina/bar.")
+        return redirect(reverse("tables:detail", args=[number]))
+
+    return redirect(reverse("tables:preorder", args=[number]))
