@@ -6,6 +6,17 @@ from django.urls import reverse_lazy
 from .forms import AdminAuthenticationForm, ThemedPasswordChangeForm
 
 
+def _employee_landing_url(user) -> str:
+    """A dónde debe caer un empleado no-admin justo después de loguearse
+    (o de cambiar su contraseña temporal), según su puesto."""
+    from apps.employees.models import Employee  # import local: evita acoplar accounts a employees
+
+    employee = getattr(user, "employee_profile", None)
+    if employee and employee.position == Employee.Position.MESERO:
+        return str(reverse_lazy("tables:select"))
+    return str(reverse_lazy("accounts:employee_home"))
+
+
 class AdminLoginView(LoginView):
     template_name = "accounts/login_admin.html"
     authentication_form = AdminAuthenticationForm
@@ -20,7 +31,7 @@ class EmployeeLoginView(LoginView):
     redirect_authenticated_user = True
 
     def get_success_url(self):
-        return str(reverse_lazy("accounts:employee_home"))
+        return _employee_landing_url(self.request.user)
 
 
 @login_required(login_url="accounts:login_empleado")
@@ -42,4 +53,4 @@ class ForcedPasswordChangeView(PasswordChangeView):
     def get_success_url(self):
         if self.request.user.is_staff:
             return str(reverse_lazy("dashboard:index"))
-        return str(reverse_lazy("accounts:employee_home"))
+        return _employee_landing_url(self.request.user)
