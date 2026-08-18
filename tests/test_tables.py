@@ -1,7 +1,9 @@
+from decimal import Decimal
+
 import pytest
 from django.urls import reverse
 
-from apps.catalog.models import Category
+from apps.catalog.models import Category, Product
 from apps.tables.models import Table
 
 
@@ -101,3 +103,96 @@ def test_category_products_404_for_unknown_table_or_category(client, employee_us
 
     response = client.get(reverse("tables:category_products", args=[1, 999]))
     assert response.status_code == 404
+
+
+@pytest.mark.django_db
+def test_category_products_shows_zero_quantity_initially(client, employee_user):
+    client.force_login(employee_user)
+    pizza = Category.objects.get(name="Pizza")
+
+    response = client.get(reverse("tables:category_products", args=[2, pizza.pk]))
+
+    assert response.status_code == 200
+    assert response.context["products"][0]["quantity"] == 0
+
+
+@pytest.mark.django_db
+class TestCart:
+    def test_increment_requires_login(self, client):
+        product = Product.objects.first()
+        response = client.post(
+            reverse("tables:cart_increment", args=[1, product.category_id, product.pk])
+        )
+        assert response.status_code == 302
+        assert response.url.startswith(reverse("accounts:login_empleado"))
+
+    def test_increment_increases_quantity(self, client, employee_user):
+        client.force_login(employee_user)
+        product = Product.objects.get(name="Pizza Pepperoni")
+
+        client.post(
+            reverse("tables:cart_increment", args=[4, product.category_id, product.pk])
+        )
+        client.post(
+            reverse("tables:cart_increment", args=[4, product.category_id, product.pk])
+        )
+
+        response = client.get(reverse("tables:category_products", args=[4, product.category_id]))
+        items = {i["product"].pk: i["quantity"] for i in response.context["products"]}
+        assert items[product.pk] == 2
+
+    def test_decrement_never_goes_below_zero(self, client, employee_user):
+        client.force_login(employee_user)
+        product = Product.objects.get(name="Pizza Pepperoni")
+
+        client.post(
+            reverse("tables:cart_decrement", args=[4, product.category_id, product.pk])
+        )
+
+        response = client.get(reverse("tables:category_products", args=[4, product.category_id]))
+        items = {i["product"].pk: i["quantity"] for i in response.context["products"]}
+        assert items[product.pk] == 0
+
+    def test_cart_is_scoped_per_table(self, client, employee_user):
+        client.force_login(employee_user)
+        product = Product.objects.get(name="Pizza Pepperoni")
+
+        client.post(
+            reverse("tables:cart_increment", args=[1, product.category_id, product.pk])
+        )
+
+        response = client.get(reverse("tables:category_products", args=[2, product.category_id]))
+        items = {i["product"].pk: i["quantity"] for i in response.context["products"]}
+        assert items[product.pk] == 0
+
+
+@pytest.mark.django_db
+class TestPreorder:
+    def test_requires_login(self, client):
+        response = client.get(reverse("tables:preorder", args=[1]))
+        assert response.status_code == 302
+        assert response.url.startswith(reverse("accounts:login_empleado"))
+
+    def test_empty_cart_shows_empty_state(self, client, employee_user):
+        client.force_login(employee_user)
+        response = client.get(reverse("tables:preorder", args=[6]))
+        assert response.status_code == 200
+        assert response.context["lines"] == []
+        assert response.context["total"] == Decimal("0")
+
+    def test_shows_added_products_with_total(self, client, employee_user):
+        client.force_login(employee_user)
+        pizza = Product.objects.get(name="Pizza Pepperoni")
+        water = Product.objects.get(name="Agua Pura")
+
+        client.post(reverse("tables:cart_increment", args=[8, pizza.category_id, pizza.pk]))
+        client.post(reverse("tables:cart_increment", args=[8, water.category_id, water.pk]))
+        client.post(reverse("tables:cart_increment", args=[8, water.category_id, water.pk]))
+
+        response = client.get(reverse("tables:preorder", args=[8]))
+
+        assert response.status_code == 200
+        lines = {line["product"].pk: line["quantity"] for line in response.context["lines"]}
+        assert lines[pizza.pk] == 1
+        assert lines[water.pk] == 2
+        assert response.context["total"] == pizza.price + (water.price * 2)

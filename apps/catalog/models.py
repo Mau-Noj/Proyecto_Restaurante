@@ -14,3 +14,26 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Product(models.Model):
+    """Producto del menú (RF-CAT-001 Básico).
+
+    image_url apunta a una imagen externa (por ahora, fotos de Wikimedia
+    Commons como relleno) en vez de un archivo subido — evita depender de
+    almacenamiento de medios (S3/MEDIA_ROOT) hasta que se defina esa pieza.
+    """
+
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="products")
+    name = models.CharField("Nombre", max_length=150)
+    price = models.DecimalField("Precio", max_digits=8, decimal_places=2)
+    image_url = models.URLField("Imagen", blank=True)
+    order = models.PositiveSmallIntegerField("Orden", default=0)
+
+    class Meta:
+        ordering = ["order", "name"]
+        verbose_name = "Producto"
+        verbose_name_plural = "Productos"
+
+    def __str__(self):
+        return self.name

@@ -12,4 +12,15 @@ urlpatterns = [
         views.category_products,
         name="category_products",
     ),
+    path(
+        "<int:number>/categoria/<int:category_id>/producto/<int:product_id>/sumar/",
+        views.cart_increment,
+        name="cart_increment",
+    ),
+    path(
+        "<int:number>/categoria/<int:category_id>/producto/<int:product_id>/restar/",
+        views.cart_decrement,
+        name="cart_decrement",
+    ),
+    path("<int:number>/pre-orden/", views.preorder, name="preorder"),
 ]

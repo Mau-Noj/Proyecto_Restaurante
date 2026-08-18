@@ -52,10 +52,10 @@
 <p class="text-center text-gray-500 text-sm py-4">Todavía no hay categorías en el catálogo.</p>
 {% endfor %}
 
-<div class="mt-4 px-4 py-3 rounded-xl border border-dashed border-[#ff5c7a]/40 bg-[#ff5c7a]/5 text-center">
-<p class="text-[#ff8fa3] text-sm">Agregar productos a un pedido</p>
-<p class="text-gray-500 text-[10px] mt-1 uppercase tracking-widest font-label-md">Próximamente: verás lo que ya pidió la mesa y podrás sumar más, sin duplicar la orden</p>
-</div>
+<a href="{% url 'tables:preorder' table.number %}" class="block mt-4 px-4 py-3 rounded-xl border border-dashed border-[#ff5c7a]/40 bg-[#ff5c7a]/5 text-center hover:border-[#ff5c7a] transition-colors">
+<p class="text-[#ff8fa3] text-sm">Agregar productos a un pedido{% if cart_count %} ({{ cart_count }}){% endif %}</p>
+<p class="text-gray-500 text-[10px] mt-1 uppercase tracking-widest font-label-md">Ver / agregar a la orden actual de la mesa</p>
+</a>
 </div>
 </div>
 
