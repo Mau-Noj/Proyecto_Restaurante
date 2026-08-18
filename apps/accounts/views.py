@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import LoginView, PasswordChangeView
+from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.shortcuts import render
 from django.urls import reverse_lazy
 
@@ -39,6 +39,21 @@ class EmployeeLoginView(LoginView):
 
     def get_success_url(self):
         return _employee_landing_url(self.request.user)
+
+
+class ThemedLogoutView(LogoutView):
+    """Manda al login de Admin a quien salía del panel, y al de Empleado a
+    los demás - next_page es estático, así que hay que decidirlo antes de
+    que dispatch() cierre la sesión y pierda request.user."""
+
+    def dispatch(self, request, *args, **kwargs):
+        self._was_staff = request.user.is_authenticated and request.user.is_staff
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_default_redirect_url(self):
+        if getattr(self, "_was_staff", False):
+            return str(reverse_lazy("accounts:login_admin"))
+        return str(reverse_lazy("accounts:login_empleado"))
 
 
 @login_required(login_url="accounts:login_empleado")

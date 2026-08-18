@@ -88,3 +88,18 @@ class TestEmployeeLogin:
         )
         assert response.status_code == 302
         assert response.url == reverse("tables:select")
+
+
+@pytest.mark.django_db
+class TestLogout:
+    def test_staff_logout_redirects_to_admin_login(self, client, staff_user):
+        client.force_login(staff_user)
+        response = client.post(reverse("accounts:logout"))
+        assert response.status_code == 302
+        assert response.url == reverse("accounts:login_admin")
+
+    def test_employee_logout_redirects_to_employee_login(self, client, employee_user):
+        client.force_login(employee_user)
+        response = client.post(reverse("accounts:logout"))
+        assert response.status_code == 302
+        assert response.url == reverse("accounts:login_empleado")
