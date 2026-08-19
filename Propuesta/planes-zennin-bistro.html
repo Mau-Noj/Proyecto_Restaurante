@@ -190,6 +190,11 @@
   }
   .callout strong { color: var(--text); font-weight: 600; }
 
+  /* ---------- soporte ---------- */
+
+  .support { padding: 48px 0; border-bottom: 1px solid var(--border); scroll-margin-top: 70px; }
+  .support-head p { margin-top: 10px; max-width: 62ch; font-size: 14.5px; color: var(--text-muted); }
+
   /* ---------- module sections ---------- */
 
   .module {
@@ -229,13 +234,29 @@
   .tier-col.c-premium::before { background: var(--violet); }
   .tier-col.c-gold::before { background: var(--gold); }
   .tier-col.c-basico { background: var(--cyan-wash); }
-  .tier-col.c-premium { background: var(--violet-wash); }
+  .tier-col.c-premium { background: var(--violet-wash); box-shadow: inset 0 0 0 1px rgba(188,19,254,0.28); z-index: 1; }
   .tier-col.c-gold { background: var(--gold-wash); }
 
+  .tier-label-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .tier-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
   .tier-col.c-basico .tier-label { color: var(--cyan); }
   .tier-col.c-premium .tier-label { color: var(--violet); }
   .tier-col.c-gold .tier-label { color: var(--gold); }
+
+  .badge-rec {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--violet);
+    color: #1c0330;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
 
   .tier-price { margin-top: 8px; font-family: var(--font-mono); font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; }
   .tier-price small { font-size: 12px; font-weight: 400; color: var(--text-dim); }
@@ -245,6 +266,32 @@
   .tier-features li::before { content: "–"; position: absolute; left: 0; color: var(--text-dim); }
 
   .tier-why { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); font-size: 13px; color: var(--text-dim); font-style: italic; }
+
+  /* ---------- infra ---------- */
+
+  .infra { padding: 64px 0; border-bottom: 1px solid var(--border); scroll-margin-top: 70px; }
+  .infra-head p { margin-top: 12px; max-width: 68ch; font-size: 15px; color: var(--text-muted); }
+
+  .infra-grid {
+    margin-top: 28px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .infra-card { background: var(--surface); padding: 24px 22px; }
+  .infra-card .tier-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); }
+  .infra-card .infra-price { margin-top: 8px; font-family: var(--font-mono); font-size: 22px; font-weight: 600; }
+  .infra-card .infra-price small { font-size: 12px; font-weight: 400; color: var(--text-dim); }
+  .infra-card .infra-setup { margin-top: 4px; font-size: 12px; color: var(--text-dim); font-family: var(--font-mono); }
+  .infra-card ul { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .infra-card li { font-size: 13.5px; color: var(--text-muted); padding-left: 14px; position: relative; }
+  .infra-card li::before { content: "–"; position: absolute; left: 0; color: var(--text-dim); }
+  .infra-card.opt { position: relative; }
+  .infra-card.opt::before { content: ""; position: absolute; top:0; left:0; right:0; height:3px; background: var(--gold); }
 
   /* ---------- calculator ---------- */
 
@@ -257,8 +304,27 @@
   .calc-head { max-width: 62ch; }
   .calc-head p { margin-top: 12px; font-size: 15px; color: var(--text-muted); }
 
+  .calc-presets { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+  .calc-presets button {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    padding: 9px 16px;
+    border-radius: 999px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text-muted);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition: border-color .15s ease, color .15s ease;
+  }
+  .calc-presets button:hover { color: var(--text); border-color: var(--text-dim); }
+  .calc-presets button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
   .calc-panel {
-    margin-top: 32px;
+    margin-top: 24px;
     border: 1px solid var(--border);
     border-radius: 12px;
     overflow: hidden;
@@ -272,9 +338,10 @@
     padding: 14px 20px;
     border-bottom: 1px solid var(--border);
   }
-  .calc-row:last-child { border-bottom: none; }
 
   .calc-row-name { font-size: 14px; font-weight: 600; }
+  .calc-row-sub { display: block; margin-top: 3px; font-size: 11.5px; font-weight: 400; color: var(--text-dim); }
+  .calc-row-fixed { font-family: var(--font-mono); font-size: 13px; color: var(--text-dim); font-variant-numeric: tabular-nums; white-space: nowrap; }
 
   .calc-toggle { display: flex; gap: 6px; }
   .calc-toggle button {
@@ -296,21 +363,43 @@
   .calc-toggle button[data-active="true"][data-tier="premium"] { background: var(--violet); border-color: var(--violet); color: #1c0330; }
   .calc-toggle button[data-active="true"][data-tier="gold"] { background: var(--gold); border-color: var(--gold); color: #2b1c00; }
 
+  .calc-switch { position: relative; display: inline-block; width: 42px; height: 24px; }
+  .calc-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+  .calc-switch span { position: absolute; inset: 0; background: var(--border-strong); border-radius: 999px; transition: background .15s ease; cursor: pointer; }
+  .calc-switch span::before { content: ""; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; background: var(--text); border-radius: 50%; transition: transform .15s ease; }
+  .calc-switch input:checked + span { background: var(--gold); }
+  .calc-switch input:checked + span::before { transform: translateX(18px); background: #2b1c00; }
+  .calc-switch input:focus-visible + span { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
+  .calc-savings {
+    padding: 12px 20px;
+    background: var(--gold-wash);
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--gold);
+  }
+
   .calc-total {
     display: flex;
-    align-items: baseline;
+    align-items: flex-start;
     justify-content: space-between;
+    gap: 16px;
     padding: 22px 20px;
     background: var(--surface-2);
   }
   .calc-total-label { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); }
-  .calc-total-value { font-family: var(--font-mono); font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .calc-total-sub { margin-top: 6px; font-size: 12px; color: var(--text-muted); }
+  .calc-total-value { font-family: var(--font-mono); font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; }
   .calc-total-value span { font-size: 15px; color: var(--text-dim); font-weight: 400; }
+  .calc-per-day { margin-top: 4px; font-size: 11.5px; color: var(--text-dim); font-family: var(--font-mono); text-align: right; }
 
   /* ---------- investment table ---------- */
 
   .invest { padding: 64px 0; border-bottom: 1px solid var(--border); scroll-margin-top: 70px; }
   .invest-head p { margin-top: 12px; max-width: 62ch; font-size: 15px; color: var(--text-muted); }
+  .invest-sub { margin-top: 44px; }
+  .invest-sub h3 { font-size: 15px; font-weight: 700; }
 
   .table-scroll { overflow-x: auto; margin-top: 28px; border: 1px solid var(--border); border-radius: 12px; }
 
@@ -355,7 +444,10 @@
     .tier-col { border-left: none; border-top: 1px solid var(--border); }
     .tier-col:first-child { border-top: none; }
     .tier-col::before { width: 3px; height: auto; top: 0; bottom: 0; right: auto; }
+    .infra-grid { grid-template-columns: 1fr; }
     .calc-row { grid-template-columns: 1fr; }
+    .calc-total { flex-direction: column; }
+    .calc-total-value, .calc-per-day { text-align: left; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -367,6 +459,7 @@
   <div class="topbar-inner">
     <div class="brand">Zennin <span class="g">Bistro</span></div>
     <nav class="quicknav" aria-label="Navegación de módulos">
+      <a href="#soporte">Soporte</a>
       <a href="#auth">Seguridad</a>
       <a href="#personal">Personal</a>
       <a href="#mesas">Mesas</a>
@@ -374,6 +467,7 @@
       <a href="#pagos">Pagos</a>
       <a href="#catalogo">Catálogo</a>
       <a href="#inventario">Inventario</a>
+      <a href="#infra">Infraestructura</a>
       <a href="#calculadora">Arma tu plan</a>
       <a href="#inversion">Inversión</a>
     </nav>
@@ -402,7 +496,7 @@
       </div>
       <div class="legend-card tier-premium">
         <div class="dot"></div>
-        <h3>Premium</h3>
+        <h3>Premium <span class="badge-rec">Recomendado</span></h3>
         <p>Lo que un restaurante necesita cuando ya tiene volumen y no puede darse el lujo de un error: control físico (impresoras, biometría), trazabilidad (auditoría, documentos) y reportes listos para salir del sistema hacia contabilidad.</p>
       </div>
       <div class="legend-card tier-gold">
@@ -412,7 +506,35 @@
       </div>
     </div>
     <div class="callout">
-      <strong>Los módulos no se agrupan entre sí.</strong> Subir Seguridad a Premium no obliga a subir Personal. Puede empezar con los siete en Básico e ir subiendo de nivel únicamente donde el negocio lo va pidiendo, mes a mes.
+      <strong>Los módulos no se agrupan entre sí.</strong> Subir Seguridad a Premium no obliga a subir Personal. Puede empezar con los siete en Básico e ir subiendo de nivel únicamente donde el negocio lo va pidiendo, mes a mes. La mayoría de nuestros clientes terminan en Premium en la mitad o más de sus módulos — es el punto donde el sistema deja de solo operar y empieza a proteger el negocio.
+    </div>
+  </div>
+</section>
+
+<!-- ================= SOPORTE ================= -->
+<section class="support" id="soporte">
+  <div class="wrap">
+    <p class="eyebrow">Incluido en todo nivel</p>
+    <div class="support-head">
+      <h2 style="margin-top:10px; font-size:24px; font-weight:800;">Soporte técnico, no es un módulo aparte</h2>
+      <p>No se compra por separado ni se activa por módulo: viene incluido según el nivel más alto que tenga activo en cualquier módulo de su cuenta. Entre más alto ese nivel, más rápido responde alguien del otro lado.</p>
+    </div>
+    <div class="legend-grid">
+      <div class="legend-card tier-basico">
+        <div class="dot"></div>
+        <h3>Básico</h3>
+        <p>Correo y chat en horario laboral (lunes a sábado, 8am–6pm). Respuesta en menos de 24 horas.</p>
+      </div>
+      <div class="legend-card tier-premium">
+        <div class="dot"></div>
+        <h3>Premium</h3>
+        <p>Chat prioritario todos los días. Respuesta en menos de 4 horas hábiles, con sesión de arranque incluida al contratar.</p>
+      </div>
+      <div class="legend-card tier-gold">
+        <div class="dot"></div>
+        <h3>Gold</h3>
+        <p>Línea directa y un gestor de cuenta dedicado. Respuesta en menos de 1 hora, con acompañamiento en sitio para cambios grandes.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -429,7 +551,7 @@
     <div class="tier-row">
       <div class="tier-col c-basico">
         <span class="tier-label">Básico</span>
-        <div class="tier-price">Q100 <small>/ mes</small></div>
+        <div class="tier-price">Q99 <small>/ mes</small></div>
         <ul class="tier-features">
           <li>Login separado Admin / Empleado</li>
           <li>Contraseña temporal generada y forzada a cambiar</li>
@@ -439,8 +561,8 @@
         <p class="tier-why">Ya cierra la puerta correcta a cada quien — la base de todo lo demás.</p>
       </div>
       <div class="tier-col c-premium">
-        <span class="tier-label">Premium</span>
-        <div class="tier-price">Q250 <small>/ mes</small></div>
+        <div class="tier-label-row"><span class="tier-label">Premium</span><span class="badge-rec">Recomendado</span></div>
+        <div class="tier-price">Q249 <small>/ mes</small></div>
         <ul class="tier-features">
           <li>Código de verificación (2FA) al iniciar sesión</li>
           <li>Códigos de respaldo si se pierde el dispositivo</li>
@@ -451,7 +573,7 @@
       </div>
       <div class="tier-col c-gold">
         <span class="tier-label">Gold</span>
-        <div class="tier-price">Q500 <small>/ mes</small></div>
+        <div class="tier-price">Q499 <small>/ mes</small></div>
         <ul class="tier-features">
           <li>Biometría / WebAuthn: huella o reconocimiento del sistema</li>
           <li>Llave de seguridad física para accesos críticos</li>
@@ -476,7 +598,7 @@
     <div class="tier-row">
       <div class="tier-col c-basico">
         <span class="tier-label">Básico</span>
-        <div class="tier-price">Q150 <small>/ mes</small></div>
+        <div class="tier-price">Q149 <small>/ mes</small></div>
         <ul class="tier-features">
           <li>Alta / edición / baja de empleados</li>
           <li>Usuario y contraseña generados automáticamente</li>
@@ -486,8 +608,8 @@
         <p class="tier-why">Cubre todo el ciclo de vida del empleado en el sistema, sin papeles sueltos.</p>
       </div>
       <div class="tier-col c-premium">
-        <span class="tier-label">Premium</span>
-        <div class="tier-price">Q350 <small>/ mes</small></div>
+        <div class="tier-label-row"><span class="tier-label">Premium</span><span class="badge-rec">Recomendado</span></div>
+        <div class="tier-price">Q349 <small>/ mes</small></div>
         <ul class="tier-features">
           <li>Expediente: DPI/pasaporte y contrato firmado</li>
           <li>Registro de capacitaciones</li>
@@ -497,7 +619,7 @@
       </div>
       <div class="tier-col c-gold">
         <span class="tier-label">Gold</span>
-        <div class="tier-price">Q700 <small>/ mes</small></div>
+        <div class="tier-price">Q699 <small>/ mes</small></div>
         <ul class="tier-features">
           <li>Onboarding automatizado de principio a fin</li>
           <li>Asignación multi-sucursal</li>
@@ -521,7 +643,7 @@
     <div class="tier-row">
       <div class="tier-col c-basico">
         <span class="tier-label">Básico</span>
-        <div class="tier-price">Q200 <small>/ mes</small></div>
+        <div class="tier-price">Q199 <small>/ mes</small></div>
         <ul class="tier-features">
           <li>Selección de mesa y estados en tiempo real</li>
           <li>Menú flotante por categorías, siempre a mano</li>
@@ -531,8 +653,8 @@
         <p class="tier-why">El flujo completo de un mesero, de sentar al cliente a mandar el pedido.</p>
       </div>
       <div class="tier-col c-premium">
-        <span class="tier-label">Premium</span>
-        <div class="tier-price">Q450 <small>/ mes</small></div>
+        <div class="tier-label-row"><span class="tier-label">Premium</span><span class="badge-rec">Recomendado</span></div>
+        <div class="tier-price">Q449 <small>/ mes</small></div>
         <ul class="tier-features">
           <li>Mapa visual interactivo del salón</li>
           <li>Unir y dividir mesas para grupos</li>
@@ -543,7 +665,7 @@
       </div>
       <div class="tier-col c-gold">
         <span class="tier-label">Gold</span>
-        <div class="tier-price">Q900 <small>/ mes</small></div>
+        <div class="tier-price">Q899 <small>/ mes</small></div>
         <ul class="tier-features">
           <li>% de ocupación y rotación en tiempo real</li>
           <li>Predicción de tráfico por zona y horario</li>
@@ -567,7 +689,7 @@
     <div class="tier-row">
       <div class="tier-col c-basico">
         <span class="tier-label">Básico</span>
-        <div class="tier-price">Q250 <small>/ mes</small></div>
+        <div class="tier-price">Q249 <small>/ mes</small></div>
         <ul class="tier-features">
           <li>Pantalla propia de Cocina y de Bar</li>
           <li>Enrutamiento automático por categoría</li>
@@ -577,8 +699,8 @@
         <p class="tier-why">Ya resuelve lo esencial: que cocina y bar nunca se pisen la información, al instante.</p>
       </div>
       <div class="tier-col c-premium">
-        <span class="tier-label">Premium</span>
-        <div class="tier-price">Q500 <small>/ mes</small></div>
+        <div class="tier-label-row"><span class="tier-label">Premium</span><span class="badge-rec">Recomendado</span></div>
+        <div class="tier-price">Q499 <small>/ mes</small></div>
         <ul class="tier-features">
           <li>Impresión de tickets físicos por estación</li>
           <li>Temporizador de preparación con alerta de demora</li>
@@ -588,7 +710,7 @@
       </div>
       <div class="tier-col c-gold">
         <span class="tier-label">Gold</span>
-        <div class="tier-price">Q950 <small>/ mes</small></div>
+        <div class="tier-price">Q949 <small>/ mes</small></div>
         <ul class="tier-features">
           <li>Analítica de tiempos por cocinero y turno</li>
           <li>Pedidos de apps de delivery entrando directo al KDS</li>
@@ -612,7 +734,7 @@
     <div class="tier-row">
       <div class="tier-col c-basico">
         <span class="tier-label">Básico</span>
-        <div class="tier-price">Q300 <small>/ mes</small></div>
+        <div class="tier-price">Q299 <small>/ mes</small></div>
         <ul class="tier-features">
           <li>Cobro de mesa por el propio mesero</li>
           <li>Caja para pedidos "para llevar"</li>
@@ -622,8 +744,8 @@
         <p class="tier-why">El cobro diario completo — dividir cuenta incluido, algo que otros sistemas cobran aparte.</p>
       </div>
       <div class="tier-col c-premium">
-        <span class="tier-label">Premium</span>
-        <div class="tier-price">Q600 <small>/ mes</small></div>
+        <div class="tier-label-row"><span class="tier-label">Premium</span><span class="badge-rec">Recomendado</span></div>
+        <div class="tier-price">Q599 <small>/ mes</small></div>
         <ul class="tier-features">
           <li>Impresión real de recibos en caja</li>
           <li>Conciliación de cajón de dinero contra el sistema</li>
@@ -633,7 +755,7 @@
       </div>
       <div class="tier-col c-gold">
         <span class="tier-label">Gold</span>
-        <div class="tier-price">Q1,200 <small>/ mes</small></div>
+        <div class="tier-price">Q1,199 <small>/ mes</small></div>
         <ul class="tier-features">
           <li>Facturación electrónica ante la SAT (FEL)</li>
           <li>Contabilización automática con plan de cuentas</li>
@@ -657,7 +779,7 @@
     <div class="tier-row">
       <div class="tier-col c-basico">
         <span class="tier-label">Básico</span>
-        <div class="tier-price">Q100 <small>/ mes</small></div>
+        <div class="tier-price">Q99 <small>/ mes</small></div>
         <ul class="tier-features">
           <li>Categorías y productos con foto y precio</li>
           <li>Orden de aparición editable</li>
@@ -666,8 +788,8 @@
         <p class="tier-why">Suficiente para operar el menú del día a día sin fricción.</p>
       </div>
       <div class="tier-col c-premium">
-        <span class="tier-label">Premium</span>
-        <div class="tier-price">Q250 <small>/ mes</small></div>
+        <div class="tier-label-row"><span class="tier-label">Premium</span><span class="badge-rec">Recomendado</span></div>
+        <div class="tier-price">Q249 <small>/ mes</small></div>
         <ul class="tier-features">
           <li>Subir fotos propias del restaurante</li>
           <li>Variantes: tamaños, extras, combos</li>
@@ -677,7 +799,7 @@
       </div>
       <div class="tier-col c-gold">
         <span class="tier-label">Gold</span>
-        <div class="tier-price">Q500 <small>/ mes</small></div>
+        <div class="tier-price">Q499 <small>/ mes</small></div>
         <ul class="tier-features">
           <li>Menú multi-idioma</li>
           <li>Menú QR interactivo para que el cliente ordene</li>
@@ -701,7 +823,7 @@
     <div class="tier-row">
       <div class="tier-col c-basico">
         <span class="tier-label">Básico</span>
-        <div class="tier-price">Q200 <small>/ mes</small></div>
+        <div class="tier-price">Q199 <small>/ mes</small></div>
         <ul class="tier-features">
           <li>Ingredientes con stock, mínimo y costo</li>
           <li>Recetas (BOM) por platillo</li>
@@ -712,8 +834,8 @@
         <p class="tier-why">Evita justo lo que más dinero se pierde sin darse cuenta en un restaurante: el inventario fantasma.</p>
       </div>
       <div class="tier-col c-premium">
-        <span class="tier-label">Premium</span>
-        <div class="tier-price">Q450 <small>/ mes</small></div>
+        <div class="tier-label-row"><span class="tier-label">Premium</span><span class="badge-rec">Recomendado</span></div>
+        <div class="tier-price">Q449 <small>/ mes</small></div>
         <ul class="tier-features">
           <li>Catálogo de proveedores con historial</li>
           <li>Órdenes de compra automáticas al llegar al mínimo</li>
@@ -723,7 +845,7 @@
       </div>
       <div class="tier-col c-gold">
         <span class="tier-label">Gold</span>
-        <div class="tier-price">Q900 <small>/ mes</small></div>
+        <div class="tier-price">Q899 <small>/ mes</small></div>
         <ul class="tier-features">
           <li>Predicción de demanda de insumos</li>
           <li>Integración directa con proveedores externos</li>
@@ -735,19 +857,86 @@
   </div>
 </section>
 
+<!-- ================= INFRAESTRUCTURA ================= -->
+<section class="infra" id="infra">
+  <div class="wrap">
+    <p class="eyebrow">Lo que sostiene todo lo demás</p>
+    <div class="infra-head">
+      <h2 style="margin-top:10px; font-size:24px; font-weight:800;">Infraestructura y hosting en AWS</h2>
+      <p>Los siete módulos son software — necesitan un lugar donde correr. Eso ya está diseñado como código de infraestructura (Terraform) listo para desplegar en Amazon Web Services, separado de cualquier combinación de planes que elija: es el terreno donde se construye la casa, no un cuarto más de la casa.</p>
+    </div>
+    <div class="infra-grid">
+      <div class="infra-card">
+        <span class="tier-label">Base · siempre incluida</span>
+        <div class="infra-price">Q399 <small>/ mes</small></div>
+        <div class="infra-setup">+ 4 días de puesta en marcha</div>
+        <ul>
+          <li>Servidor virtual (EC2) donde corre el sistema</li>
+          <li>Base de datos administrada (RDS PostgreSQL)</li>
+          <li>Caché en memoria (Redis) para el tiempo real de Cocina/Bar</li>
+          <li>Almacenamiento de archivos (S3) para fotos del menú</li>
+          <li>Red privada (VPC) con discos cifrados</li>
+        </ul>
+      </div>
+      <div class="infra-card opt">
+        <span class="tier-label">Alta disponibilidad · opcional</span>
+        <div class="infra-price">+Q899 <small>/ mes</small></div>
+        <div class="infra-setup">+ 10 días de puesta en marcha</div>
+        <ul>
+          <li>Load Balancer repartiendo tráfico entre varios servidores</li>
+          <li>Réplica automática de la base de datos (Multi-AZ)</li>
+          <li>Dominio propio con DNS administrado (Route 53)</li>
+          <li>Firewall de aplicaciones (WAF) contra tráfico malicioso</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout" style="border-left-color: var(--gold); background: var(--gold-wash);">
+      <strong>¿Cuándo conviene subir a Alta Disponibilidad?</strong> Cuando ya no es aceptable que el sistema se caiga ni un minuto en hora pico — típicamente al mismo tiempo que se sube Pagos o Cocina/Bar a Premium o Gold, porque ahí es donde un minuto caído sí se siente en la caja.
+    </div>
+  </div>
+</section>
+
 <!-- ================= CALCULADORA ================= -->
 <section class="calc" id="calculadora">
   <div class="wrap">
     <p class="eyebrow">Herramienta</p>
     <div class="calc-head">
       <h2 style="margin-top:10px; font-size:24px; font-weight:800;">Arme su propio plan</h2>
-      <p>Elija el nivel de cada módulo por separado — igual que en el ejemplo de Seguridad — y vea el total mensual actualizarse al momento.</p>
+      <p>Elija el nivel de cada módulo por separado — igual que en el ejemplo de Seguridad — o parta de un paquete completo y ajuste desde ahí. El total ya incluye la infraestructura base.</p>
     </div>
+
+    <div class="calc-presets">
+      <button type="button" data-preset="basico">Todo Básico</button>
+      <button type="button" data-preset="premium">Todo Premium <span class="badge-rec">Recomendado</span></button>
+      <button type="button" data-preset="gold">Todo Gold</button>
+    </div>
+
     <div class="calc-panel">
       <div id="calc-rows"></div>
+
+      <div class="calc-row">
+        <span class="calc-row-name">Infraestructura AWS base<span class="calc-row-sub">Servidor, base de datos, caché y almacenamiento — siempre incluida</span></span>
+        <span class="calc-row-fixed">Q399 / mes</span>
+      </div>
+      <div class="calc-row">
+        <span class="calc-row-name">Alta disponibilidad<span class="calc-row-sub">Load Balancer, réplica de base de datos, Route 53, WAF</span></span>
+        <label class="calc-switch">
+          <input type="checkbox" id="infra-ha" aria-label="Agregar infraestructura de alta disponibilidad">
+          <span></span>
+        </label>
+      </div>
+
+      <div class="calc-savings" id="calc-savings" hidden></div>
+
       <div class="calc-total">
-        <span class="calc-total-label">Total estimado</span>
-        <div class="calc-total-value" id="calc-total">Q0 <span>/ mes</span></div>
+        <div>
+          <span class="calc-total-label">Total estimado</span>
+          <div class="calc-total-sub" id="calc-support">Soporte incluido: Básico</div>
+        </div>
+        <div>
+          <div class="calc-total-value" id="calc-total">Q0 <span>/ mes</span></div>
+          <div class="calc-per-day" id="calc-per-day">≈ Q0 al día</div>
+        </div>
       </div>
     </div>
   </div>
@@ -780,63 +969,63 @@
             <td class="num">4 días</td>
             <td class="num">+9 días</td>
             <td class="num">+14 días</td>
-            <td class="num c-basico-text">Q100</td>
-            <td class="num c-premium-text">Q250</td>
-            <td class="num c-gold-text">Q500</td>
+            <td class="num c-basico-text">Q99</td>
+            <td class="num c-premium-text">Q249</td>
+            <td class="num c-gold-text">Q499</td>
           </tr>
           <tr>
             <td class="mod-name">Personal</td>
             <td class="num">3 días</td>
             <td class="num">+11 días</td>
             <td class="num">+17 días</td>
-            <td class="num c-basico-text">Q150</td>
-            <td class="num c-premium-text">Q350</td>
-            <td class="num c-gold-text">Q700</td>
+            <td class="num c-basico-text">Q149</td>
+            <td class="num c-premium-text">Q349</td>
+            <td class="num c-gold-text">Q699</td>
           </tr>
           <tr>
             <td class="mod-name">Mesas y Salón</td>
             <td class="num">5 días</td>
             <td class="num">+16 días</td>
             <td class="num">+22 días</td>
-            <td class="num c-basico-text">Q200</td>
-            <td class="num c-premium-text">Q450</td>
-            <td class="num c-gold-text">Q900</td>
+            <td class="num c-basico-text">Q199</td>
+            <td class="num c-premium-text">Q449</td>
+            <td class="num c-gold-text">Q899</td>
           </tr>
           <tr>
             <td class="mod-name">Cocina y Bar (KDS)</td>
             <td class="num">4 días</td>
             <td class="num">+11 días</td>
             <td class="num">+17 días</td>
-            <td class="num c-basico-text">Q250</td>
-            <td class="num c-premium-text">Q500</td>
-            <td class="num c-gold-text">Q950</td>
+            <td class="num c-basico-text">Q249</td>
+            <td class="num c-premium-text">Q499</td>
+            <td class="num c-gold-text">Q949</td>
           </tr>
           <tr>
             <td class="mod-name">Pagos y Facturación</td>
             <td class="num">7 días</td>
             <td class="num">+9 días</td>
             <td class="num">+25 días</td>
-            <td class="num c-basico-text">Q300</td>
-            <td class="num c-premium-text">Q600</td>
-            <td class="num c-gold-text">Q1,200</td>
+            <td class="num c-basico-text">Q299</td>
+            <td class="num c-premium-text">Q599</td>
+            <td class="num c-gold-text">Q1,199</td>
           </tr>
           <tr>
             <td class="mod-name">Catálogo y Menú</td>
             <td class="num">3 días</td>
             <td class="num">+9 días</td>
             <td class="num">+13 días</td>
-            <td class="num c-basico-text">Q100</td>
-            <td class="num c-premium-text">Q250</td>
-            <td class="num c-gold-text">Q500</td>
+            <td class="num c-basico-text">Q99</td>
+            <td class="num c-premium-text">Q249</td>
+            <td class="num c-gold-text">Q499</td>
           </tr>
           <tr>
             <td class="mod-name">Inventario y Recetas</td>
             <td class="num">5 días</td>
             <td class="num">+11 días</td>
             <td class="num">+17 días</td>
-            <td class="num c-basico-text">Q200</td>
-            <td class="num c-premium-text">Q450</td>
-            <td class="num c-gold-text">Q900</td>
+            <td class="num c-basico-text">Q199</td>
+            <td class="num c-premium-text">Q449</td>
+            <td class="num c-gold-text">Q899</td>
           </tr>
         </tbody>
         <tfoot>
@@ -845,14 +1034,42 @@
             <td class="num">31 días</td>
             <td class="num">76 días más</td>
             <td class="num">125 días más</td>
-            <td class="num c-basico-text">Q1,300</td>
-            <td class="num c-premium-text">Q2,850</td>
-            <td class="num c-gold-text">Q5,650</td>
+            <td class="num c-basico-text">Q1,293</td>
+            <td class="num c-premium-text">Q2,843</td>
+            <td class="num c-gold-text">Q5,643</td>
           </tr>
         </tfoot>
       </table>
     </div>
-    <p class="table-note">Días = jornadas de desarrollo de 8 horas, un solo desarrollador. Precios = suscripción mensual sugerida por módulo a ese nivel (no acumulan sobre el nivel anterior). Ambas columnas son estimaciones internas, no una cotización cerrada ni un estudio de mercado — sirven como punto de partida para decidir por dónde empezar.</p>
+    <p class="table-note">Días = jornadas de desarrollo de 8 horas, un solo desarrollador. Precios = suscripción mensual sugerida por módulo a ese nivel (no acumulan sobre el nivel anterior, y no incluyen infraestructura). Ambas columnas son estimaciones internas, no una cotización cerrada ni un estudio de mercado — sirven como punto de partida para decidir por dónde empezar.</p>
+
+    <div class="invest-sub">
+      <h3>Infraestructura AWS</h3>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Nivel</th>
+              <th>Puesta en marcha</th>
+              <th>Costo mensual AWS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="mod-name">Base (VM, base de datos, caché, almacenamiento)</td>
+              <td class="num">4 días</td>
+              <td class="num">Q399</td>
+            </tr>
+            <tr>
+              <td class="mod-name">+ Alta disponibilidad (Load Balancer, réplica de DB, Route 53, WAF)</td>
+              <td class="num">+10 días</td>
+              <td class="num">+Q899</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-note">El Terraform de la infraestructura Base ya está escrito; el trabajo pendiente es aplicarlo contra una cuenta de AWS real, conectar dominio y certificados, y verificar backups. Alta Disponibilidad todavía no tiene código de infraestructura escrito — son días de trabajo nuevo, no de ajuste.</p>
+    </div>
   </div>
 </section>
 
@@ -860,7 +1077,7 @@
   <div class="wrap">
     <p class="eyebrow">En resumen</p>
     <h2 style="margin-top:10px">El negocio elige, no el sistema</h2>
-    <p>Los siete módulos ya caminan hoy como demo funcional en Básico. Subir de nivel es una decisión por módulo, no un paquete cerrado — el dueño que solo necesita blindar el Login lo hace sin pagar por analítica de cocina que no va a usar, y el que ya quiere facturar formalmente ante la SAT sube Pagos a Gold sin tocar el resto.</p>
+    <p>Los siete módulos ya caminan hoy como demo funcional en Básico. Subir de nivel es una decisión por módulo, no un paquete cerrado — el dueño que solo necesita blindar el Login lo hace sin pagar por analítica de cocina que no va a usar, y el que ya quiere facturar formalmente ante la SAT sube Pagos a Gold sin tocar el resto. La infraestructura y el soporte técnico corren aparte de esa decisión: son la base que sostiene cualquier combinación que elija.</p>
     <div class="callout">
       <strong>Siguiente paso:</strong> decidir con qué combinación de niveles arranca la operación real, y de ahí planificar en qué orden se construye el resto — empezando por endurecer a producción los módulos Básico que ya están de pie.
     </div>
@@ -869,29 +1086,64 @@
 
 <script>
   const MODULES = [
-    { id: 'auth', name: 'Autenticación y Seguridad', prices: { basico: 100, premium: 250, gold: 500 } },
-    { id: 'personal', name: 'Personal', prices: { basico: 150, premium: 350, gold: 700 } },
-    { id: 'mesas', name: 'Mesas y Salón', prices: { basico: 200, premium: 450, gold: 900 } },
-    { id: 'kds', name: 'Cocina y Bar (KDS)', prices: { basico: 250, premium: 500, gold: 950 } },
-    { id: 'pagos', name: 'Pagos y Facturación', prices: { basico: 300, premium: 600, gold: 1200 } },
-    { id: 'catalogo', name: 'Catálogo y Menú', prices: { basico: 100, premium: 250, gold: 500 } },
-    { id: 'inventario', name: 'Inventario y Recetas', prices: { basico: 200, premium: 450, gold: 900 } },
+    { id: 'auth', name: 'Autenticación y Seguridad', prices: { basico: 99, premium: 249, gold: 499 } },
+    { id: 'personal', name: 'Personal', prices: { basico: 149, premium: 349, gold: 699 } },
+    { id: 'mesas', name: 'Mesas y Salón', prices: { basico: 199, premium: 449, gold: 899 } },
+    { id: 'kds', name: 'Cocina y Bar (KDS)', prices: { basico: 249, premium: 499, gold: 949 } },
+    { id: 'pagos', name: 'Pagos y Facturación', prices: { basico: 299, premium: 599, gold: 1199 } },
+    { id: 'catalogo', name: 'Catálogo y Menú', prices: { basico: 99, premium: 249, gold: 499 } },
+    { id: 'inventario', name: 'Inventario y Recetas', prices: { basico: 199, premium: 449, gold: 899 } },
   ];
+
+  const INFRA_BASE = 399;
+  const INFRA_HA = 899;
+  const BUNDLE_DISCOUNT = 0.10;
+  const TIER_LABEL = { basico: 'Básico', premium: 'Premium', gold: 'Gold' };
+  const TIER_RANK = { basico: 0, premium: 1, gold: 2 };
 
   const state = {};
   MODULES.forEach((m) => { state[m.id] = 'basico'; });
+  let infraHA = false;
 
   const rowsEl = document.getElementById('calc-rows');
   const totalEl = document.getElementById('calc-total');
+  const perDayEl = document.getElementById('calc-per-day');
+  const supportEl = document.getElementById('calc-support');
+  const savingsEl = document.getElementById('calc-savings');
+  const haToggle = document.getElementById('infra-ha');
 
   function fmt(n) {
-    return 'Q' + n.toLocaleString('es-GT');
+    return 'Q' + Math.round(n).toLocaleString('es-GT');
   }
 
   function render() {
-    let total = 0;
-    MODULES.forEach((m) => { total += m.prices[state[m.id]]; });
-    totalEl.innerHTML = fmt(total) + ' <span>/ mes</span>';
+    let moduleTotal = 0;
+    let highestTier = 'basico';
+    MODULES.forEach((m) => {
+      moduleTotal += m.prices[state[m.id]];
+      if (TIER_RANK[state[m.id]] > TIER_RANK[highestTier]) highestTier = state[m.id];
+    });
+
+    const firstTier = state[MODULES[0].id];
+    const allSame = MODULES.every((m) => state[m.id] === firstTier) ? firstTier : null;
+    let discount = 0;
+    if (allSame === 'premium' || allSame === 'gold') {
+      discount = moduleTotal * BUNDLE_DISCOUNT;
+    }
+
+    const infraTotal = INFRA_BASE + (infraHA ? INFRA_HA : 0);
+    const grandTotal = moduleTotal - discount + infraTotal;
+
+    if (discount > 0) {
+      savingsEl.hidden = false;
+      savingsEl.textContent = 'Ahorro por paquete completo ' + TIER_LABEL[allSame] + ' (10%): -' + fmt(discount) + ' / mes';
+    } else {
+      savingsEl.hidden = true;
+    }
+
+    totalEl.innerHTML = fmt(grandTotal) + ' <span>/ mes</span>';
+    perDayEl.textContent = '≈ ' + fmt(grandTotal / 30) + ' al día';
+    supportEl.textContent = 'Soporte incluido: ' + TIER_LABEL[highestTier];
 
     MODULES.forEach((m) => {
       ['basico', 'premium', 'gold'].forEach((tier) => {
@@ -917,7 +1169,7 @@
       btn.type = 'button';
       btn.id = 'btn-' + m.id + '-' + tier;
       btn.dataset.tier = tier;
-      btn.textContent = tier === 'basico' ? 'Básico' : tier === 'premium' ? 'Premium' : 'Gold';
+      btn.textContent = TIER_LABEL[tier];
       btn.setAttribute('data-active', state[m.id] === tier ? 'true' : 'false');
       btn.addEventListener('click', () => { state[m.id] = tier; render(); });
       toggle.appendChild(btn);
@@ -926,6 +1178,16 @@
 
     rowsEl.appendChild(row);
   });
+
+  document.querySelectorAll('.calc-presets button[data-preset]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const tier = btn.dataset.preset;
+      MODULES.forEach((m) => { state[m.id] = tier; });
+      render();
+    });
+  });
+
+  haToggle.addEventListener('change', () => { infraHA = haToggle.checked; render(); });
 
   render();
 </script>
