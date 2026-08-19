@@ -41,13 +41,18 @@
 
   * { box-sizing: border-box; }
 
+  html { overflow-x: hidden; }
   body {
     background: var(--ink);
     color: var(--linen);
     font-family: var(--font-body);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    max-width: 100vw;
   }
+
+  img, svg, table { max-width: 100%; }
 
   ::selection { background: var(--ember); color: var(--linen); }
 
@@ -286,6 +291,9 @@
   .quote-attr::before { content: "— "; }
 
   @media (max-width: 760px) {
+    .topbar-inner { padding: 13px 18px; }
+    .wrap { padding: 0 18px; }
+    .hero { padding: 56px 16px 52px; }
     .quicknav { display: none; }
     .legend-grid { grid-template-columns: 1fr; }
     .infra-grid { grid-template-columns: 1fr; }
@@ -293,9 +301,30 @@
     .calc-toggle { justify-content: flex-start; }
     .calc-total { flex-direction: column; }
     .calc-total-value, .calc-per-day { text-align: left; }
-    .menu-tier-head { flex-wrap: wrap; }
-    .menu-tier-leader { order: 3; flex-basis: 100%; margin-top: 6px; }
-    .menu-cover { padding: 40px 26px; outline-offset: 5px; }
+
+    .menu-cover { padding: 34px 22px; outline-offset: 5px; max-width: 100%; }
+    .cover-lede { font-size: 15.5px; }
+    .tier-swatches { gap: 18px; row-gap: 10px; flex-wrap: wrap; }
+
+    .module-head { gap: 6px; }
+    .menu-card { margin-top: 20px; }
+    .menu-tier { padding: 18px 18px; }
+    .menu-tier-head { flex-wrap: wrap; row-gap: 6px; }
+    .menu-tier-leader { display: none; }
+    .menu-tier-price { margin-left: auto; }
+    .menu-tier-features { gap: 5px 14px; }
+
+    .quote-text { font-size: 23px; }
+
+    thead th, tbody td, tfoot td { padding: 11px 12px; }
+  }
+
+  @media (max-width: 420px) {
+    .hero h1 { font-size: 26px; }
+    .cover-kicker { font-size: 11px; letter-spacing: 0.18em; }
+    .module-head h2 { font-size: 23px; }
+    .menu-tier-name { font-size: 18px; }
+    .quote-text { font-size: 21px; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -326,7 +355,7 @@
   <div class="wrap" style="display:flex; justify-content:center; padding:0;">
     <div class="menu-cover">
       <p class="cover-kicker">Carta de módulos</p>
-      <h1>Un plan distinto para cada módulo,<br>no para todo el sistema</h1>
+      <h1>Un plan distinto para cada módulo, no para todo el sistema</h1>
       <div class="rule-orn"></div>
       <p class="cover-lede">Zennin Bistro no se contrata en un solo bloque. Cada módulo — Personal, Mesas, Cocina, Pagos, Catálogo, Inventario y la capa de Seguridad — tiene su propio nivel Básico, Premium y Gold, y usted decide dónde vale la pena subir de nivel. Si lo único que le preocupa es que nadie entre al sistema sin permiso, sube solo el módulo de Seguridad a Premium y deja todo lo demás en Básico. Y si alguno de los siete no aplica a su operación, simplemente no se incluye — no paga por un módulo que no va a usar. El costo final de la inversión se arma según lo que el negocio necesita y puede pagar, no según un paquete cerrado.</p>
       <div class="rule-orn"></div>
@@ -986,6 +1015,7 @@
 
 <section class="closing">
   <div class="wrap">
+    <p class="eyebrow">En resumen</p>
     <h2>El negocio elige, no el sistema</h2>
     <p>Los siete módulos ya caminan hoy como demo funcional en Básico. Subir de nivel es una decisión por módulo, no un paquete cerrado — el dueño que solo necesita blindar el Login lo hace sin pagar por analítica de cocina que no va a usar, y el que ya quiere facturar formalmente ante la SAT sube Pagos a Gold sin tocar el resto. La infraestructura y el soporte técnico corren aparte de esa decisión: son la base que sostiene cualquier combinación que elija.</p>
     <div class="quote-block">
