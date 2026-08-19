@@ -104,6 +104,29 @@
   .quicknav a:hover { color: var(--linen); border-color: var(--ember); }
   .quicknav a:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
 
+  .nav-toggle {
+    display: none; margin-left: auto; padding: 8px; background: none; border: 1px solid var(--border-strong);
+    cursor: pointer; align-items: center; justify-content: center; gap: 4px; flex-direction: column;
+  }
+  .nav-toggle span { display: block; width: 20px; height: 2px; background: var(--linen); transition: transform .2s ease, opacity .2s ease; }
+  .nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+  .nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+  .nav-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+  .nav-toggle:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+
+  .mobile-nav {
+    display: none; flex-direction: column; max-height: 0; overflow: hidden;
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    transition: max-height .25s ease;
+  }
+  .mobile-nav.is-open { max-height: 560px; }
+  .mobile-nav a {
+    font-family: var(--font-body); font-weight: 600; font-size: 14px; letter-spacing: 0.02em;
+    text-decoration: none; color: var(--linen-dim); padding: 13px 22px; border-top: 1px solid var(--border);
+  }
+  .mobile-nav a:first-child { border-top: none; }
+  .mobile-nav a:hover, .mobile-nav a:focus-visible { color: var(--linen); background: var(--surface-2); }
+
   /* ---------- hero: menu cover ---------- */
 
   .hero { position: relative; padding: 80px 24px 76px; display: flex; justify-content: center; }
@@ -296,6 +319,8 @@
     .wrap { padding: 0 16px; }
     .hero { padding: 44px 14px 40px; }
     .quicknav { display: none; }
+    .nav-toggle { display: flex; }
+    .mobile-nav { display: flex; }
 
     /* mas ritmo, menos aire muerto entre secciones al hacer scroll */
     .legend, .support, .module, .infra, .calc, .invest { padding: 38px 0; }
@@ -375,7 +400,23 @@
       <a href="#calculadora">Arma tu plan</a>
       <a href="#inversion">Inversión</a>
     </nav>
+    <button type="button" class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="mobile-nav" aria-label="Abrir menú de módulos">
+      <span></span><span></span><span></span>
+    </button>
   </div>
+  <nav class="mobile-nav" id="mobile-nav" aria-label="Navegación de módulos (móvil)">
+    <a href="#soporte">Soporte</a>
+    <a href="#auth">Seguridad</a>
+    <a href="#personal">Personal</a>
+    <a href="#mesas">Mesas</a>
+    <a href="#kds">Cocina/Bar</a>
+    <a href="#pagos">Pagos</a>
+    <a href="#catalogo">Catálogo</a>
+    <a href="#inventario">Inventario</a>
+    <a href="#infra">Infraestructura</a>
+    <a href="#calculadora">Arma tu plan</a>
+    <a href="#inversion">Inversión</a>
+  </nav>
 </div>
 
 <header class="hero">
@@ -1056,6 +1097,20 @@
 </section>
 
 <script>
+  const navToggle = document.getElementById('nav-toggle');
+  const mobileNav = document.getElementById('mobile-nav');
+  function closeMobileNav() {
+    navToggle.setAttribute('aria-expanded', 'false');
+    mobileNav.classList.remove('is-open');
+  }
+  navToggle.addEventListener('click', () => {
+    const open = navToggle.getAttribute('aria-expanded') === 'true';
+    navToggle.setAttribute('aria-expanded', String(!open));
+    mobileNav.classList.toggle('is-open', !open);
+  });
+  mobileNav.addEventListener('click', (e) => { if (e.target.tagName === 'A') closeMobileNav(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMobileNav(); });
+
   const MODULES = [
     { id: 'auth', name: 'Autenticación y Seguridad', prices: { ninguno: 0, basico: 99, premium: 249, gold: 499 } },
     { id: 'personal', name: 'Personal', prices: { ninguno: 0, basico: 149, premium: 349, gold: 699 } },
