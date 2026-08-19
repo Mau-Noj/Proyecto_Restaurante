@@ -1,4 +1,5 @@
 <title>Planes Zennin Bistro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
   @font-face {
     font-family: 'Work Sans';
@@ -291,40 +292,66 @@
   .quote-attr::before { content: "— "; }
 
   @media (max-width: 760px) {
-    .topbar-inner { padding: 13px 18px; }
-    .wrap { padding: 0 18px; }
-    .hero { padding: 56px 16px 52px; }
+    .topbar-inner { padding: 12px 16px; }
+    .wrap { padding: 0 16px; }
+    .hero { padding: 44px 14px 40px; }
     .quicknav { display: none; }
+
+    /* mas ritmo, menos aire muerto entre secciones al hacer scroll */
+    .legend, .support, .module, .infra, .calc, .invest { padding: 38px 0; }
+    .closing { padding: 40px 0 60px; }
+
     .legend-grid { grid-template-columns: 1fr; }
     .infra-grid { grid-template-columns: 1fr; }
-    .calc-row { grid-template-columns: 1fr; }
-    .calc-toggle { justify-content: flex-start; }
-    .calc-total { flex-direction: column; }
-    .calc-total-value, .calc-per-day { text-align: left; }
 
-    .menu-cover { padding: 34px 22px; outline-offset: 5px; max-width: 100%; }
-    .cover-lede { font-size: 15.5px; }
-    .tier-swatches { gap: 18px; row-gap: 10px; flex-wrap: wrap; }
+    /* portada sin el marco doble: se ve mas ligera y ya no compite por espacio */
+    .menu-cover { padding: 30px 20px; border: 1px solid var(--border-strong); outline: none; max-width: 100%; }
+    .rule-orn { margin: 16px auto; width: 72px; }
+    .cover-lede { margin-top: 16px; font-size: 15px; }
+    .tier-swatches { gap: 16px; row-gap: 10px; flex-wrap: wrap; }
 
     .module-head { gap: 6px; }
-    .menu-card { margin-top: 20px; }
-    .menu-tier { padding: 18px 18px; }
+    .module-flow { margin-top: 10px; }
+    .menu-card { margin-top: 18px; }
+    .menu-tier { padding: 18px 16px; }
     .menu-tier-head { flex-wrap: wrap; row-gap: 6px; }
     .menu-tier-leader { display: none; }
     .menu-tier-price { margin-left: auto; }
-    .menu-tier-features { gap: 5px 14px; }
+    .menu-tier-features { gap: 5px 14px; margin-top: 11px; }
 
+    .quote-block { padding-top: 24px; }
     .quote-text { font-size: 23px; }
 
+    /* botones y controles con area de toque comoda para el dedo */
+    .calc-row { grid-template-columns: 1fr; row-gap: 10px; }
+    .calc-toggle { justify-content: flex-start; gap: 8px; }
+    .calc-toggle button { padding: 11px 14px; font-size: 12px; }
+    .calc-presets { gap: 8px; }
+    .calc-presets button { padding: 13px 18px; font-size: 12.5px; }
+    .calc-switch { width: 48px; height: 28px; }
+    .calc-switch span::before { width: 20px; height: 20px; }
+    .calc-switch input:checked + span::before { transform: translateX(20px); }
+    .calc-total { flex-direction: column; gap: 14px; }
+    .calc-total-value, .calc-per-day { text-align: left; }
+    .calc-total-value { font-size: 28px; }
+
+    .table-scroll { position: relative; }
+    .table-scroll::after {
+      content: "desliza para ver más →";
+      display: block; text-align: right; padding: 6px 14px 0 0;
+      font-family: var(--font-body); font-size: 10.5px; font-style: italic; color: var(--linen-dim);
+    }
     thead th, tbody td, tfoot td { padding: 11px 12px; }
   }
 
   @media (max-width: 420px) {
-    .hero h1 { font-size: 26px; }
-    .cover-kicker { font-size: 11px; letter-spacing: 0.18em; }
-    .module-head h2 { font-size: 23px; }
+    .hero h1 { font-size: 25px; }
+    .cover-kicker { font-size: 10.5px; letter-spacing: 0.16em; }
+    .module-head h2 { font-size: 22px; }
     .menu-tier-name { font-size: 18px; }
-    .quote-text { font-size: 21px; }
+    .menu-tier-price { font-size: 15.5px; }
+    .quote-text { font-size: 20px; }
+    .calc-toggle button { padding: 10px 11px; font-size: 11px; }
   }
 
   @media (prefers-reduced-motion: reduce) {
