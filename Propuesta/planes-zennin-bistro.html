@@ -91,22 +91,50 @@
     background: rgba(23,17,13,0.92); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border);
   }
-  .topbar-inner { max-width: 1040px; margin: 0 auto; padding: 15px 24px; display: flex; align-items: center; gap: 22px; }
-  .brand { font-family: var(--font-display); font-size: 19px; color: var(--linen); white-space: nowrap; }
+  .topbar-inner { max-width: 1040px; margin: 0 auto; padding: 15px 24px; display: flex; align-items: center; gap: 18px; }
+  .brand {
+    font-family: var(--font-display); font-size: 19px; letter-spacing: 0.01em; color: var(--linen); white-space: nowrap;
+    padding-right: 18px; border-right: 1px solid var(--border-strong);
+  }
   .brand .accent { color: var(--brass); }
-  .quicknav { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+  .topbar-orn { flex: 0 0 auto; color: var(--brass); font-size: 11px; opacity: 0.75; }
+  .quicknav { display: flex; align-items: center; gap: 10px; overflow-x: auto; padding: 8px 4px; scrollbar-width: none; }
   .quicknav::-webkit-scrollbar { display: none; }
   .quicknav a {
-    font-family: var(--font-body); font-weight: 600; font-size: 11.5px; letter-spacing: 0.05em; text-transform: uppercase;
-    text-decoration: none; color: var(--linen-dim); white-space: nowrap; padding: 8px 11px;
-    border-bottom: 2px solid transparent; background: transparent;
-    transition: color .15s ease, border-color .15s ease, background-color .15s ease, text-shadow .15s ease;
+    --scallop: 4px;
+    font-family: var(--font-body); font-weight: 600; font-size: 11.5px; letter-spacing: 0.03em; text-transform: uppercase;
+    text-decoration: none; color: var(--linen-dim); white-space: nowrap; padding: 9px 14px;
+    background: var(--surface); border: 1px solid var(--border-strong);
+    filter: drop-shadow(0 2px 0 rgba(0,0,0,0.4)) drop-shadow(0 5px 7px rgba(0,0,0,0.3));
+    transition: color .15s ease, background .15s ease, border-color .15s ease, transform .15s ease, filter .15s ease, text-shadow .15s ease;
   }
-  .quicknav a:hover, .quicknav a:focus-visible {
-    color: var(--linen); border-color: var(--ember); background: var(--ember-wash);
-    text-shadow: 0 0 10px rgba(193,85,42,0.7);
+  .quicknav a:nth-child(odd) { transform: rotate(-1.5deg); --neon: var(--ember); }
+  .quicknav a:nth-child(even) { transform: rotate(1.5deg); --neon: var(--brass); }
+
+  .quicknav a:hover, .quicknav a:focus-visible, .quicknav a.is-active {
+    color: #fff; background: #241407; border-color: var(--neon);
+    transform: translateY(-3px) rotate(0deg);
+    text-shadow: 0 0 6px var(--neon), 0 0 14px var(--neon);
+    filter:
+      drop-shadow(0 2px 0 rgba(0,0,0,0.4))
+      drop-shadow(0 0 8px var(--neon))
+      drop-shadow(0 0 22px var(--neon));
   }
   .quicknav a:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+  .quicknav a.is-active { animation: neon-flicker 0.6s ease-out; }
+  @keyframes neon-flicker {
+    0% { opacity: 0.3; filter: drop-shadow(0 2px 0 rgba(0,0,0,0.4)); text-shadow: none; }
+    8% { opacity: 1; }
+    18% { opacity: 0.4; }
+    28% { opacity: 1; }
+    40% { opacity: 0.6; }
+    52% {
+      opacity: 1;
+      filter: drop-shadow(0 2px 0 rgba(0,0,0,0.4)) drop-shadow(0 0 8px var(--neon)) drop-shadow(0 0 22px var(--neon));
+      text-shadow: 0 0 6px var(--neon), 0 0 14px var(--neon);
+    }
+    100% { opacity: 1; }
+  }
 
   .nav-toggle {
     display: none; margin-left: auto; padding: 8px; background: none; border: 1px solid var(--border-strong);
@@ -167,7 +195,7 @@
 
   /* ---------- napkin edge: scalloped border for standalone cards ---------- */
 
-  .menu-cover, .menu-card, .calc-panel, .callout {
+  .menu-cover, .menu-card, .calc-panel, .callout, .quicknav a {
     --scallop: 7px;
     border-radius: 10px;
     mask-image:
@@ -380,7 +408,6 @@
   .closing { padding: 60px 0 84px; }
   .closing h2 { font-size: 22px; }
   .closing p { margin-top: 14px; max-width: 62ch; font-size: 15px; color: var(--linen-dim); }
-  .closing .callout { margin-top: 22px; }
 
   .quote-block { margin-top: 30px; padding: 30px 0 4px; border-top: 1px solid var(--border); }
   .quote-text { font-family: var(--font-display); font-size: 30px; line-height: 1.42; color: var(--ember); max-width: 640px; }
@@ -391,7 +418,8 @@
     .topbar-inner { padding: 12px 16px; }
     .wrap { padding: 0 16px; }
     .hero { padding: 44px 14px 40px; }
-    .quicknav { display: none; }
+    .brand { padding-right: 0; border-right: none; }
+    .topbar-orn, .quicknav { display: none; }
     .nav-toggle { display: flex; }
 
     /* mas ritmo, menos aire muerto entre secciones al hacer scroll */
@@ -452,13 +480,14 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    * { transition: none !important; }
+    * { transition: none !important; animation: none !important; }
   }
 </style>
 
 <div class="topbar">
   <div class="topbar-inner">
     <div class="brand">Zennin <span class="accent">Bistro</span></div>
+    <span class="topbar-orn" aria-hidden="true">❖</span>
     <nav class="quicknav" aria-label="Navegación de módulos">
       <a href="#soporte">Soporte</a>
       <a href="#auth">Seguridad</a>
@@ -1199,15 +1228,11 @@
 
 <section class="closing">
   <div class="wrap">
-    <p class="eyebrow">En resumen</p>
     <h2>El negocio elige, no el sistema</h2>
     <p>Los siete módulos ya caminan hoy como demo funcional en Básico. Subir de nivel es una decisión por módulo, no un paquete cerrado — el dueño que solo necesita blindar el Login lo hace sin pagar por analítica de cocina que no va a usar, y el que ya quiere facturar formalmente ante la SAT sube Pagos a Gold sin tocar el resto. La infraestructura y el soporte técnico corren aparte de esa decisión: son la base que sostiene cualquier combinación que elija.</p>
     <div class="quote-block">
       <div class="quote-text">Un sistema que crece con el negocio, nunca antes que él.</div>
       <div class="quote-attr">Mauricio Noj, fundador de Zennin Bistro</div>
-    </div>
-    <div class="callout">
-      <strong>Siguiente paso:</strong> decidir con qué combinación de niveles arranca la operación real, y de ahí planificar en qué orden se construye el resto — empezando por endurecer a producción los módulos Básico que ya están de pie.
     </div>
   </div>
 </section>
@@ -1235,6 +1260,17 @@
     if (e.target === mobileNavOverlay || e.target.closest('.mobile-nav-item')) closeMobileNav();
   });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMobileNav(); });
+
+  document.querySelectorAll('.quicknav a').forEach((link) => {
+    link.addEventListener('click', () => {
+      document.querySelectorAll('.quicknav a.is-active').forEach((el) => {
+        if (el !== link) el.classList.remove('is-active');
+      });
+      link.classList.remove('is-active');
+      void link.offsetWidth;
+      link.classList.add('is-active');
+    });
+  });
 
   const MODULES = [
     { id: 'auth', name: 'Autenticación y Seguridad', prices: { ninguno: 0, basico: 99, premium: 249, gold: 499 } },
