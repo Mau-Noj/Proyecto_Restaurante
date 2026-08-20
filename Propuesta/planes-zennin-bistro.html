@@ -237,14 +237,16 @@
   }
   .menu-cover {
     position: relative; max-width: 680px; text-align: center;
-    border: 1px solid var(--border-strong); outline: 1px solid var(--border); outline-offset: 8px;
-    padding: 54px 46px; background: rgba(36,26,19,0.5);
+    border: 1px solid rgba(23,17,13,0.16); outline: 1px solid var(--border); outline-offset: 8px;
+    padding: 54px 46px; background: var(--linen);
   }
-  .cover-kicker { font-family: var(--font-body); font-weight: 600; font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--brass); }
-  .hero h1 { font-size: clamp(30px, 4.6vw, 44px); line-height: 1.22; color: var(--linen); margin-top: 4px; }
-  .cover-lede { margin-top: 22px; font-style: italic; font-size: 16.5px; line-height: 1.7; color: var(--linen-dim); max-width: 54ch; margin-left: auto; margin-right: auto; }
+  .menu-cover .rule-orn { background: rgba(23,17,13,0.16); }
+  .menu-cover .rule-orn::after { background: var(--linen); color: var(--ember); }
+  .cover-kicker { font-family: var(--font-body); font-weight: 600; font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--ember); }
+  .hero h1 { font-size: clamp(30px, 4.6vw, 44px); line-height: 1.22; color: var(--ink); margin-top: 4px; }
+  .cover-lede { margin-top: 22px; font-style: italic; font-size: 16.5px; line-height: 1.7; color: rgba(23,17,13,0.72); max-width: 54ch; margin-left: auto; margin-right: auto; }
   .tier-swatches { display: flex; justify-content: center; gap: 26px; margin-top: 4px; }
-  .swatch { display: flex; align-items: center; gap: 8px; font-family: var(--font-body); font-weight: 600; font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--linen-dim); }
+  .swatch { display: flex; align-items: center; gap: 8px; font-family: var(--font-body); font-weight: 600; font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(23,17,13,0.72); }
   .chip { width: 9px; height: 9px; display: inline-block; }
   .chip.basico { background: var(--bone); }
   .chip.premium { background: var(--ember); }
@@ -430,7 +432,7 @@
     .infra-grid { grid-template-columns: 1fr; }
 
     /* portada sin el marco doble: se ve mas ligera y ya no compite por espacio */
-    .menu-cover { padding: 30px 20px; border: 1px solid var(--border-strong); outline: none; max-width: 100%; }
+    .menu-cover { padding: 30px 20px; border: 1px solid rgba(23,17,13,0.16); outline: none; max-width: 100%; }
     .rule-orn { margin: 16px auto; width: 72px; }
     .cover-lede { margin-top: 16px; font-size: 15px; }
     .tier-swatches { gap: 16px; row-gap: 10px; flex-wrap: wrap; }
