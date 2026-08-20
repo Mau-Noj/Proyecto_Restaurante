@@ -117,6 +117,32 @@
   }
   .quicknav a:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
 
+  .quicknav a:nth-child(odd) { --neon: #ff2fd6; }
+  .quicknav a:nth-child(even) { --neon: #29f6ff; }
+  .quicknav a.is-active {
+    color: #fff; background: #150b19; border-color: var(--neon);
+    transform: translateY(-3px) rotate(0deg);
+    text-shadow: 0 0 6px var(--neon), 0 0 14px var(--neon);
+    filter:
+      drop-shadow(0 2px 0 rgba(0,0,0,0.4))
+      drop-shadow(0 0 8px var(--neon))
+      drop-shadow(0 0 22px var(--neon));
+    animation: neon-flicker 0.6s ease-out;
+  }
+  @keyframes neon-flicker {
+    0% { opacity: 0.3; filter: drop-shadow(0 2px 0 rgba(0,0,0,0.4)); text-shadow: none; }
+    8% { opacity: 1; }
+    18% { opacity: 0.4; }
+    28% { opacity: 1; }
+    40% { opacity: 0.6; }
+    52% {
+      opacity: 1;
+      filter: drop-shadow(0 2px 0 rgba(0,0,0,0.4)) drop-shadow(0 0 8px var(--neon)) drop-shadow(0 0 22px var(--neon));
+      text-shadow: 0 0 6px var(--neon), 0 0 14px var(--neon);
+    }
+    100% { opacity: 1; }
+  }
+
   .nav-toggle {
     display: none; margin-left: auto; padding: 8px; background: none; border: 1px solid var(--border-strong);
     cursor: pointer; align-items: center; justify-content: center; gap: 4px; flex-direction: column;
@@ -461,7 +487,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    * { transition: none !important; }
+    * { transition: none !important; animation: none !important; }
   }
 </style>
 
@@ -1241,6 +1267,17 @@
     if (e.target === mobileNavOverlay || e.target.closest('.mobile-nav-item')) closeMobileNav();
   });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMobileNav(); });
+
+  document.querySelectorAll('.quicknav a').forEach((link) => {
+    link.addEventListener('click', () => {
+      document.querySelectorAll('.quicknav a.is-active').forEach((el) => {
+        if (el !== link) el.classList.remove('is-active');
+      });
+      link.classList.remove('is-active');
+      void link.offsetWidth;
+      link.classList.add('is-active');
+    });
+  });
 
   const MODULES = [
     { id: 'auth', name: 'Autenticación y Seguridad', prices: { ninguno: 0, basico: 99, premium: 249, gold: 499 } },
