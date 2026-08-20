@@ -371,18 +371,6 @@
   tfoot td { padding: 14px 16px; font-weight: 700; font-variant-numeric: tabular-nums; background: var(--surface-2); border-top: 1px solid var(--border-strong); }
   .table-note { margin-top: 14px; font-size: 12.5px; color: var(--linen-dim); max-width: 68ch; }
 
-  /* ---------- closing ---------- */
-
-  .closing { padding: 60px 0 84px; }
-  .closing h2 { font-size: 22px; }
-  .closing p { margin-top: 14px; max-width: 62ch; font-size: 15px; color: var(--linen-dim); }
-  .closing .callout { margin-top: 22px; }
-
-  .quote-block { margin-top: 30px; padding: 30px 0 4px; border-top: 1px solid var(--border); }
-  .quote-text { font-family: var(--font-display); font-size: 30px; line-height: 1.42; color: var(--ember); max-width: 640px; }
-  .quote-attr { margin: 15px 0 0; font-family: var(--font-body); font-weight: 600; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--linen-dim); }
-  .quote-attr::before { content: "— "; }
-
   @media (max-width: 760px) {
     .topbar-inner { padding: 12px 16px; }
     .wrap { padding: 0 16px; }
@@ -392,7 +380,6 @@
 
     /* mas ritmo, menos aire muerto entre secciones al hacer scroll */
     .legend, .support, .module, .infra, .calc, .invest { padding: 38px 0; }
-    .closing { padding: 40px 0 60px; }
 
     .legend-grid { grid-template-columns: 1fr; }
     .infra-grid { grid-template-columns: 1fr; }
@@ -411,9 +398,6 @@
     .menu-tier-leader { display: none; }
     .menu-tier-price { margin-left: auto; }
     .menu-tier-features { gap: 5px 14px; margin-top: 11px; }
-
-    .quote-block { padding-top: 24px; }
-    .quote-text { font-size: 23px; }
 
     /* botones y controles con area de toque comoda para el dedo */
     .calc-row { grid-template-columns: 1fr; row-gap: 10px; }
@@ -443,7 +427,6 @@
     .module-head h2 { font-size: 22px; }
     .menu-tier-name { font-size: 18px; }
     .menu-tier-price { font-size: 15.5px; }
-    .quote-text { font-size: 20px; }
     .calc-toggle button { padding: 10px 11px; font-size: 11px; }
   }
 
@@ -1189,21 +1172,6 @@
         </table>
       </div>
       <p class="table-note">El Terraform de la infraestructura Base ya está escrito; el trabajo pendiente es aplicarlo contra una cuenta de AWS real, conectar dominio y certificados, y verificar backups. Alta Disponibilidad todavía no tiene código de infraestructura escrito — son días de trabajo nuevo, no de ajuste.</p>
-    </div>
-  </div>
-</section>
-
-<section class="closing">
-  <div class="wrap">
-    <p class="eyebrow">En resumen</p>
-    <h2>El negocio elige, no el sistema</h2>
-    <p>Los siete módulos ya caminan hoy como demo funcional en Básico. Subir de nivel es una decisión por módulo, no un paquete cerrado — el dueño que solo necesita blindar el Login lo hace sin pagar por analítica de cocina que no va a usar, y el que ya quiere facturar formalmente ante la SAT sube Pagos a Gold sin tocar el resto. La infraestructura y el soporte técnico corren aparte de esa decisión: son la base que sostiene cualquier combinación que elija.</p>
-    <div class="quote-block">
-      <div class="quote-text">Un sistema que crece con el negocio, nunca antes que él.</div>
-      <div class="quote-attr">Mauricio Noj, fundador de Zennin Bistro</div>
-    </div>
-    <div class="callout">
-      <strong>Siguiente paso:</strong> decidir con qué combinación de niveles arranca la operación real, y de ahí planificar en qué orden se construye el resto — empezando por endurecer a producción los módulos Básico que ya están de pie.
     </div>
   </div>
 </section>
