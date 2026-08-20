@@ -91,17 +91,24 @@
     background: rgba(23,17,13,0.92); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border);
   }
-  .topbar-inner { max-width: 1040px; margin: 0 auto; padding: 15px 24px; display: flex; align-items: center; gap: 22px; }
-  .brand { font-family: var(--font-display); font-size: 19px; color: var(--linen); white-space: nowrap; }
+  .topbar-inner { max-width: 1040px; margin: 0 auto; padding: 15px 24px; display: flex; align-items: center; gap: 18px; }
+  .brand {
+    font-family: var(--font-display); font-size: 19px; letter-spacing: 0.01em; color: var(--linen); white-space: nowrap;
+    padding-right: 18px; border-right: 1px solid var(--border-strong);
+  }
   .brand .accent { color: var(--brass); }
-  .quicknav { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+  .topbar-orn { flex: 0 0 auto; color: var(--brass); font-size: 11px; opacity: 0.75; }
+  .quicknav { display: flex; align-items: center; gap: 0; overflow-x: auto; scrollbar-width: none; }
   .quicknav::-webkit-scrollbar { display: none; }
   .quicknav a {
-    font-family: var(--font-body); font-weight: 600; font-size: 11.5px; letter-spacing: 0.05em; text-transform: uppercase;
-    text-decoration: none; color: var(--linen-dim); white-space: nowrap; padding: 8px 11px;
-    border-bottom: 2px solid transparent; transition: color .15s ease, border-color .15s ease;
+    font-family: var(--font-body); font-style: italic; font-weight: 500; font-size: 13px; letter-spacing: 0.01em;
+    text-decoration: none; color: var(--linen-dim); white-space: nowrap; padding: 8px 0;
+    transition: color .15s ease;
   }
-  .quicknav a:hover { color: var(--linen); border-color: var(--ember); }
+  .quicknav a:not(:last-child)::after {
+    content: "·"; font-style: normal; display: inline-block; margin: 0 13px; color: var(--brass); opacity: 0.55;
+  }
+  .quicknav a:hover, .quicknav a:focus-visible { color: var(--ember); }
   .quicknav a:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
 
   .nav-toggle {
@@ -386,7 +393,8 @@
     .topbar-inner { padding: 12px 16px; }
     .wrap { padding: 0 16px; }
     .hero { padding: 44px 14px 40px; }
-    .quicknav { display: none; }
+    .brand { padding-right: 0; border-right: none; }
+    .topbar-orn, .quicknav { display: none; }
     .nav-toggle { display: flex; }
 
     /* mas ritmo, menos aire muerto entre secciones al hacer scroll */
@@ -454,6 +462,7 @@
 <div class="topbar">
   <div class="topbar-inner">
     <div class="brand">Zennin <span class="accent">Bistro</span></div>
+    <span class="topbar-orn" aria-hidden="true">❖</span>
     <nav class="quicknav" aria-label="Navegación de módulos">
       <a href="#soporte">Soporte</a>
       <a href="#auth">Seguridad</a>
