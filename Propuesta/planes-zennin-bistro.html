@@ -376,6 +376,12 @@
   .calc-toggle button[data-active="true"][data-tier="premium"] { background: var(--ember); border-color: var(--ember); color: var(--linen); }
   .calc-toggle button[data-active="true"][data-tier="gold"] { background: var(--brass); border-color: var(--brass); color: var(--ink); }
 
+  .calc-pace-toggle button[data-active="true"][data-pace="estandar"] { background: rgba(23,17,13,0.16); border-color: rgba(23,17,13,0.16); color: var(--ink); }
+  .calc-pace-toggle button[data-active="true"][data-pace="acelerado"] { background: var(--brass); border-color: var(--brass); color: var(--ink); }
+  .calc-pace-toggle button[data-active="true"][data-pace="urgente"] { background: var(--ember); border-color: var(--ember); color: var(--linen); }
+
+  .calc-total-onetime { background: #f2e2bd; border-bottom: 1px solid var(--ink-border); }
+
   .calc-switch { position: relative; display: inline-block; width: 42px; height: 24px; }
   .calc-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
   .calc-switch span { position: absolute; inset: 0; background: var(--ink-border-strong); transition: background .15s ease; cursor: pointer; }
@@ -1057,7 +1063,7 @@
         </ul>
       </div>
     </div>
-    <div class="callout" style="border-left-color: var(--brass); background: var(--brass-wash);">
+    <div class="callout">
       <strong>¿Cuándo conviene subir a Alta Disponibilidad?</strong> Cuando ya no es aceptable que el sistema se caiga ni un minuto en hora pico — típicamente al mismo tiempo que se sube Pagos o Cocina/Bar a Premium o Gold, porque ahí es donde un minuto caído sí se siente en la caja.
     </div>
   </div>
@@ -1069,7 +1075,7 @@
     <p class="eyebrow">Herramienta</p>
     <div class="calc-head">
       <h2>Arme su propio plan</h2>
-      <p>Elija el nivel de cada módulo por separado, o quítelo por completo con "Ninguno" si no aplica a su operación — el total se ajusta a lo que decida incluir, no al revés. El total ya incluye la infraestructura base.</p>
+      <p>Elija el nivel de cada módulo por separado, o quítelo por completo con "Ninguno" si no aplica a su operación. Zennin Bistro se paga en dos partes: un <strong style="color:var(--linen)">pago único</strong> por construir y entregar el sistema (la adquisición), y después un <strong style="color:var(--linen)">pago mensual</strong> solo por seguir usándolo — nunca al revés.</p>
     </div>
 
     <div class="callout">
@@ -1099,9 +1105,29 @@
 
       <div class="calc-savings" id="calc-savings" hidden></div>
 
+      <div class="calc-row calc-pace-row">
+        <span class="calc-row-name">Ritmo de entrega<span class="calc-row-sub">Más rápido en calendario = más recursos en paralelo = mayor pago único</span></span>
+        <div class="calc-toggle calc-pace-toggle">
+          <button type="button" id="btn-pace-estandar" data-pace="estandar">Estándar</button>
+          <button type="button" id="btn-pace-acelerado" data-pace="acelerado">Acelerado</button>
+          <button type="button" id="btn-pace-urgente" data-pace="urgente">Urgente</button>
+        </div>
+      </div>
+
+      <div class="calc-total calc-total-onetime">
+        <div>
+          <span class="calc-total-label">Pago único · adquisición del sistema</span>
+          <div class="calc-total-sub" id="calc-onetime-sub">0 días de desarrollo</div>
+        </div>
+        <div>
+          <div class="calc-total-value" id="calc-onetime-total">Q0</div>
+          <div class="calc-per-day">se paga una sola vez, al iniciar</div>
+        </div>
+      </div>
+
       <div class="calc-total">
         <div>
-          <span class="calc-total-label">Total estimado</span>
+          <span class="calc-total-label">Pago mensual · uso del sistema</span>
           <div class="calc-total-sub" id="calc-support">Soporte incluido: Básico</div>
         </div>
         <div>
@@ -1110,6 +1136,7 @@
         </div>
       </div>
     </div>
+    <p class="table-note">Referencia interna del pago único: Q450 por día de desarrollo, con recargo si se acelera el calendario. No incluye capacitación ni pruebas piloto (ver sección de inversión). La cotización final puede variar.</p>
   </div>
 </section>
 
@@ -1316,25 +1343,34 @@
   });
 
   const MODULES = [
-    { id: 'auth', name: 'Autenticación y Seguridad', prices: { ninguno: 0, basico: 99, premium: 249, gold: 499 } },
-    { id: 'personal', name: 'Personal', prices: { ninguno: 0, basico: 149, premium: 349, gold: 699 } },
-    { id: 'mesas', name: 'Mesas y Salón', prices: { ninguno: 0, basico: 199, premium: 449, gold: 899 } },
-    { id: 'kds', name: 'Cocina y Bar (KDS)', prices: { ninguno: 0, basico: 249, premium: 499, gold: 949 } },
-    { id: 'pagos', name: 'Pagos y Facturación', prices: { ninguno: 0, basico: 299, premium: 599, gold: 1199 } },
-    { id: 'catalogo', name: 'Catálogo y Menú', prices: { ninguno: 0, basico: 99, premium: 249, gold: 499 } },
-    { id: 'inventario', name: 'Inventario y Recetas', prices: { ninguno: 0, basico: 199, premium: 449, gold: 899 } },
+    { id: 'auth', name: 'Autenticación y Seguridad', prices: { ninguno: 0, basico: 99, premium: 249, gold: 499 }, days: { ninguno: 0, basico: 5, premium: 17, gold: 35 } },
+    { id: 'personal', name: 'Personal', prices: { ninguno: 0, basico: 149, premium: 349, gold: 699 }, days: { ninguno: 0, basico: 4, premium: 18, gold: 40 } },
+    { id: 'mesas', name: 'Mesas y Salón', prices: { ninguno: 0, basico: 199, premium: 449, gold: 899 }, days: { ninguno: 0, basico: 7, premium: 28, gold: 57 } },
+    { id: 'kds', name: 'Cocina y Bar (KDS)', prices: { ninguno: 0, basico: 249, premium: 499, gold: 949 }, days: { ninguno: 0, basico: 5, premium: 19, gold: 41 } },
+    { id: 'pagos', name: 'Pagos y Facturación', prices: { ninguno: 0, basico: 299, premium: 599, gold: 1199 }, days: { ninguno: 0, basico: 9, premium: 21, gold: 54 } },
+    { id: 'catalogo', name: 'Catálogo y Menú', prices: { ninguno: 0, basico: 99, premium: 249, gold: 499 }, days: { ninguno: 0, basico: 4, premium: 16, gold: 33 } },
+    { id: 'inventario', name: 'Inventario y Recetas', prices: { ninguno: 0, basico: 199, premium: 449, gold: 899 }, days: { ninguno: 0, basico: 7, premium: 21, gold: 43 } },
   ];
 
   const TIERS = ['ninguno', 'basico', 'premium', 'gold'];
   const INFRA_BASE = 399;
   const INFRA_HA = 899;
+  const INFRA_DAYS_BASE = 5;
+  const INFRA_DAYS_HA = 13;
   const BUNDLE_DISCOUNT = 0.10;
+  const DAY_RATE = 450;
+  const PACE = [
+    { id: 'estandar', label: 'Estándar', costMult: 1.00, speedFactor: 1.0, desc: 'Un desarrollador, ritmo normal' },
+    { id: 'acelerado', label: 'Acelerado', costMult: 1.35, speedFactor: 1.6, desc: 'Equipo ampliado en paralelo' },
+    { id: 'urgente', label: 'Urgente', costMult: 1.75, speedFactor: 2.3, desc: 'Prioridad total sobre otros proyectos' },
+  ];
   const TIER_LABEL = { ninguno: 'Ninguno', basico: 'Básico', premium: 'Premium', gold: 'Gold' };
   const TIER_RANK = { ninguno: -1, basico: 0, premium: 1, gold: 2 };
 
   const state = {};
   MODULES.forEach((m) => { state[m.id] = 'basico'; });
   let infraHA = false;
+  let pace = 'estandar';
   const rowEls = {};
 
   const rowsEl = document.getElementById('calc-rows');
@@ -1344,6 +1380,8 @@
   const savingsEl = document.getElementById('calc-savings');
   const haToggle = document.getElementById('infra-ha');
   const panelEl = document.getElementById('calc-panel');
+  const onetimeTotalEl = document.getElementById('calc-onetime-total');
+  const onetimeSubEl = document.getElementById('calc-onetime-sub');
 
   function fmt(n) {
     return 'Q' + Math.round(n).toLocaleString('es-GT');
@@ -1351,12 +1389,14 @@
 
   function render() {
     let moduleTotal = 0;
+    let totalDays = INFRA_DAYS_BASE + (infraHA ? INFRA_DAYS_HA : 0);
     let includedCount = 0;
     let highestTier = null;
     const activeTiers = [];
     MODULES.forEach((m) => {
       const tier = state[m.id];
       moduleTotal += m.prices[tier];
+      totalDays += m.days[tier];
       if (tier !== 'ninguno') {
         includedCount++;
         activeTiers.push(tier);
@@ -1387,6 +1427,17 @@
     totalEl.innerHTML = fmt(grandTotal) + ' <span>/ mes</span>';
     perDayEl.textContent = '≈ ' + fmt(grandTotal / 30) + ' al día';
     supportEl.textContent = includedCount + ' de ' + MODULES.length + ' módulos incluidos · Soporte: ' + (highestTier ? TIER_LABEL[highestTier] : '—');
+
+    const paceInfo = PACE.find((p) => p.id === pace);
+    const oneTimeCost = Math.round((totalDays * DAY_RATE * paceInfo.costMult) / 10) * 10;
+    const calendarWeeks = Math.ceil(totalDays / 5 / paceInfo.speedFactor);
+    onetimeTotalEl.textContent = fmt(oneTimeCost);
+    onetimeSubEl.textContent = totalDays + ' días de desarrollo · listo en ≈ ' + calendarWeeks + (calendarWeeks === 1 ? ' semana' : ' semanas');
+
+    PACE.forEach((p) => {
+      const btn = document.getElementById('btn-pace-' + p.id);
+      if (btn) btn.setAttribute('data-active', pace === p.id ? 'true' : 'false');
+    });
 
     MODULES.forEach((m) => {
       TIERS.forEach((tier) => {
@@ -1432,6 +1483,10 @@
   });
 
   haToggle.addEventListener('change', () => { infraHA = haToggle.checked; render(); });
+
+  document.querySelectorAll('.calc-pace-toggle button[data-pace]').forEach((btn) => {
+    btn.addEventListener('click', () => { pace = btn.dataset.pace; render(); });
+  });
 
   render();
 </script>
