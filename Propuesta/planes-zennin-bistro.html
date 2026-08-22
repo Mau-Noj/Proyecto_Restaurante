@@ -345,7 +345,16 @@
   .calc-presets button:hover { color: var(--linen); border-color: var(--brass); }
   .calc-presets button:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
 
-  .calc-panel { margin-top: 22px; border: 1px solid var(--ink-border); }
+  .calc-panel { margin-top: 22px; border: 1px solid var(--ink-border); transition: border-color .2s ease; }
+  .calc-panel.tier-basico { border-color: #8a7357; }
+  .calc-panel.tier-basico .calc-total-value { color: #8a7357; }
+  .calc-panel.tier-basico .calc-total-label { color: #8a7357; }
+  .calc-panel.tier-premium { border-color: var(--ember); }
+  .calc-panel.tier-premium .calc-total-value { color: var(--ember); }
+  .calc-panel.tier-premium .calc-total-label { color: var(--ember); }
+  .calc-panel.tier-gold { border-color: var(--brass); }
+  .calc-panel.tier-gold .calc-total-value { color: #a3813a; }
+  .calc-panel.tier-gold .calc-total-label { color: #a3813a; }
 
   .calc-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 16px; padding: 14px 20px; border-bottom: 1px solid var(--ink-border); background: var(--linen); }
   .calc-row.is-off { background: #e9dfca; }
@@ -379,9 +388,9 @@
   .calc-savings { padding: 12px 20px; background: #f2e2bd; border-bottom: 1px solid var(--ink-border); font-weight: 600; font-size: 13px; color: #8a6a2e; }
 
   .calc-total { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 22px 20px; background: #ece0c8; }
-  .calc-total-label { font-family: var(--font-body); font-weight: 600; font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-dim); }
+  .calc-total-label { font-family: var(--font-body); font-weight: 600; font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-dim); transition: color .2s ease; }
   .calc-total-sub { margin-top: 6px; font-size: 12px; color: var(--ink-dim); }
-  .calc-total-value { font-family: var(--font-display); font-size: 32px; color: var(--ink); text-align: right; }
+  .calc-total-value { font-family: var(--font-display); font-size: 32px; color: var(--ink); text-align: right; transition: color .2s ease; }
   .calc-total-value span { font-family: var(--font-body); font-size: 14px; color: var(--ink-dim); font-weight: 500; }
   .calc-per-day { margin-top: 4px; font-size: 11.5px; color: var(--ink-dim); text-align: right; }
 
@@ -594,7 +603,7 @@
     <div class="legend-grid">
       <div class="legend-card t-basico">
         <h3>Básico</h3>
-        <p>La operación diaria del restaurante, completa. Es lo que ya está construido y funcionando hoy como demo: tomar pedidos, cobrar, controlar inventario, dar de alta personal. Nada de esto es un recorte — es el negocio corriendo de punta a punta.</p>
+        <p>La operación diaria del restaurante, completa: tomar pedidos, cobrar, controlar inventario, dar de alta personal. Hoy existe como un recorrido interactivo de interfaz (UI/UX) — se ve y se navega como sería el sistema real, pero todavía no tiene lógica ni datos reales detrás; construirlo es el trabajo que cubre esta propuesta.</p>
       </div>
       <div class="legend-card t-premium">
         <h3>Premium <span class="rec-mark">Recomendado</span></h3>
@@ -1049,7 +1058,7 @@
         </ul>
       </div>
     </div>
-    <div class="callout" style="border-left-color: var(--brass); background: var(--brass-wash);">
+    <div class="callout">
       <strong>¿Cuándo conviene subir a Alta Disponibilidad?</strong> Cuando ya no es aceptable que el sistema se caiga ni un minuto en hora pico — típicamente al mismo tiempo que se sube Pagos o Cocina/Bar a Premium o Gold, porque ahí es donde un minuto caído sí se siente en la caja.
     </div>
   </div>
@@ -1064,13 +1073,17 @@
       <p>Elija el nivel de cada módulo por separado, o quítelo por completo con "Ninguno" si no aplica a su operación — el total se ajusta a lo que decida incluir, no al revés. El total ya incluye la infraestructura base.</p>
     </div>
 
+    <div class="callout">
+      <strong>Tarifa de cliente fundador:</strong> por ser el primer negocio en operar con Zennin Bistro, el precio mensual que elija hoy por cada módulo queda congelado mientras mantenga el servicio activo — no sube después, aunque el precio de lista suba para los clientes que lleguen más adelante.
+    </div>
+
     <div class="calc-presets">
       <button type="button" data-preset="basico">Todo Básico</button>
       <button type="button" data-preset="premium">Todo Premium <span class="rec-mark">Recomendado</span></button>
       <button type="button" data-preset="gold">Todo Gold</button>
     </div>
 
-    <div class="calc-panel">
+    <div class="calc-panel" id="calc-panel">
       <div id="calc-rows"></div>
 
       <div class="calc-row">
@@ -1107,7 +1120,7 @@
     <p class="eyebrow">Para uso interno</p>
     <div class="invest-head">
       <h2>Desglose de inversión en desarrollo</h2>
-      <p>Lo que existe hoy en cada módulo es un <strong style="color:var(--linen)">demo funcional</strong>: la lógica y la pantalla ya trabajan de punta a punta, pero falta el endurecimiento de producción (pruebas de carga, manejo de errores reales, seguridad revisada) antes de cobrarlo como Básico. Los días de Premium y Gold son adicionales, sobre ese Básico ya terminado — y asumen un solo desarrollador; con un equipo pequeño, el tiempo baja.</p>
+      <p>Lo que existe hoy en cada módulo es un <strong style="color:var(--linen)">demo de interfaz (UI/UX)</strong>: las pantallas ya están diseñadas y se pueden recorrer, pero es una maqueta interactiva, no software funcionando — falta construir la lógica real, conectarla a una base de datos, y todo el endurecimiento de producción (pruebas de carga, manejo de errores reales, seguridad revisada) antes de poder cobrarlo como Básico. Los días de Premium y Gold son adicionales, calculados sobre ese Básico una vez construido — y asumen un solo desarrollador; con un equipo pequeño, el tiempo baja.</p>
     </div>
     <div class="table-scroll">
       <table>
@@ -1125,63 +1138,63 @@
         <tbody>
           <tr>
             <td class="mod-name">Autenticación y Seguridad</td>
-            <td class="num">4 días</td>
-            <td class="num">+9 días</td>
-            <td class="num">+14 días</td>
+            <td class="num">5 días</td>
+            <td class="num">+12 días</td>
+            <td class="num">+18 días</td>
             <td class="num c-basico-text">Q99</td>
             <td class="num c-premium-text">Q249</td>
             <td class="num c-gold-text">Q499</td>
           </tr>
           <tr>
             <td class="mod-name">Personal</td>
-            <td class="num">3 días</td>
-            <td class="num">+11 días</td>
-            <td class="num">+17 días</td>
+            <td class="num">4 días</td>
+            <td class="num">+14 días</td>
+            <td class="num">+22 días</td>
             <td class="num c-basico-text">Q149</td>
             <td class="num c-premium-text">Q349</td>
             <td class="num c-gold-text">Q699</td>
           </tr>
           <tr>
             <td class="mod-name">Mesas y Salón</td>
-            <td class="num">5 días</td>
-            <td class="num">+16 días</td>
-            <td class="num">+22 días</td>
+            <td class="num">7 días</td>
+            <td class="num">+21 días</td>
+            <td class="num">+29 días</td>
             <td class="num c-basico-text">Q199</td>
             <td class="num c-premium-text">Q449</td>
             <td class="num c-gold-text">Q899</td>
           </tr>
           <tr>
             <td class="mod-name">Cocina y Bar (KDS)</td>
-            <td class="num">4 días</td>
-            <td class="num">+11 días</td>
-            <td class="num">+17 días</td>
+            <td class="num">5 días</td>
+            <td class="num">+14 días</td>
+            <td class="num">+22 días</td>
             <td class="num c-basico-text">Q249</td>
             <td class="num c-premium-text">Q499</td>
             <td class="num c-gold-text">Q949</td>
           </tr>
           <tr>
             <td class="mod-name">Pagos y Facturación</td>
-            <td class="num">7 días</td>
-            <td class="num">+9 días</td>
-            <td class="num">+25 días</td>
+            <td class="num">9 días</td>
+            <td class="num">+12 días</td>
+            <td class="num">+33 días</td>
             <td class="num c-basico-text">Q299</td>
             <td class="num c-premium-text">Q599</td>
             <td class="num c-gold-text">Q1,199</td>
           </tr>
           <tr>
             <td class="mod-name">Catálogo y Menú</td>
-            <td class="num">3 días</td>
-            <td class="num">+9 días</td>
-            <td class="num">+13 días</td>
+            <td class="num">4 días</td>
+            <td class="num">+12 días</td>
+            <td class="num">+17 días</td>
             <td class="num c-basico-text">Q99</td>
             <td class="num c-premium-text">Q249</td>
             <td class="num c-gold-text">Q499</td>
           </tr>
           <tr>
             <td class="mod-name">Inventario y Recetas</td>
-            <td class="num">5 días</td>
-            <td class="num">+11 días</td>
-            <td class="num">+17 días</td>
+            <td class="num">7 días</td>
+            <td class="num">+14 días</td>
+            <td class="num">+22 días</td>
             <td class="num c-basico-text">Q199</td>
             <td class="num c-premium-text">Q449</td>
             <td class="num c-gold-text">Q899</td>
@@ -1190,9 +1203,9 @@
         <tfoot>
           <tr>
             <td>Total (los 7 módulos)</td>
-            <td class="num">31 días</td>
-            <td class="num">76 días más</td>
-            <td class="num">125 días más</td>
+            <td class="num">41 días</td>
+            <td class="num">99 días más</td>
+            <td class="num">163 días más</td>
             <td class="num c-basico-text">Q1,293</td>
             <td class="num c-premium-text">Q2,843</td>
             <td class="num c-gold-text">Q5,643</td>
@@ -1200,7 +1213,7 @@
         </tfoot>
       </table>
     </div>
-    <p class="table-note">Días = jornadas de desarrollo de 8 horas, un solo desarrollador. Precios = suscripción mensual sugerida por módulo a ese nivel (no acumulan sobre el nivel anterior, y no incluyen infraestructura). Ambas columnas son estimaciones internas, no una cotización cerrada ni un estudio de mercado — sirven como punto de partida para decidir por dónde empezar. Ningún módulo de esta tabla es obligatorio: la inversión final depende de cuáles decida incluir la empresa y de lo que pueda pagar, no de contratar los siete.</p>
+    <p class="table-note">Días = jornadas de desarrollo de 8 horas, un solo desarrollador, e incluyen pruebas, corrección de errores, una ronda de ajustes tras revisión con el cliente y un margen por imprevistos — no es tiempo de código puro. Precios = suscripción mensual sugerida por módulo a ese nivel (no acumulan sobre el nivel anterior, y no incluyen infraestructura). Ambas columnas son estimaciones internas, no una cotización cerrada ni un estudio de mercado — sirven como punto de partida para decidir por dónde empezar. Ningún módulo de esta tabla es obligatorio: la inversión final depende de cuáles decida incluir la empresa y de lo que pueda pagar, no de contratar los siete.</p>
 
     <div class="invest-sub">
       <h3>Infraestructura AWS</h3>
@@ -1216,18 +1229,43 @@
           <tbody>
             <tr>
               <td class="mod-name">Base (VM, base de datos, caché, almacenamiento)</td>
-              <td class="num">4 días</td>
+              <td class="num">5 días</td>
               <td class="num">Q399</td>
             </tr>
             <tr>
               <td class="mod-name">+ Alta disponibilidad (Load Balancer, réplica de DB, Route 53, WAF)</td>
-              <td class="num">+10 días</td>
+              <td class="num">+13 días</td>
               <td class="num">+Q899</td>
             </tr>
           </tbody>
         </table>
       </div>
-      <p class="table-note">El Terraform de la infraestructura Base ya está escrito; el trabajo pendiente es aplicarlo contra una cuenta de AWS real, conectar dominio y certificados, y verificar backups. Alta Disponibilidad todavía no tiene código de infraestructura escrito — son días de trabajo nuevo, no de ajuste.</p>
+      <p class="table-note">El Terraform de la infraestructura Base ya está escrito; el trabajo pendiente es aplicarlo contra una cuenta de AWS real, conectar dominio y certificados, y verificar backups. Alta Disponibilidad todavía no tiene código de infraestructura escrito — son días de trabajo nuevo, no de ajuste. El registro del dominio propio (por ejemplo zenninbistro.com) corre por separado, directo con el registrador: entre USD 10 y 20 al año según la extensión, a veces más — no está incluido en el costo mensual de AWS.</p>
+    </div>
+
+    <div class="invest-sub">
+      <h3>Capacitación y puesta en marcha</h3>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Actividad</th>
+              <th>Tiempo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="mod-name">Capacitación al personal (meseros, cocina, caja, administración)</td>
+              <td class="num">2 días</td>
+            </tr>
+            <tr>
+              <td class="mod-name">Pruebas piloto en operación real, en paralelo al sistema actual</td>
+              <td class="num">5 días</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-note">Antes de apagar el sistema anterior, el equipo aprende a usar Zennin Bistro con capacitación práctica por rol, y el sistema corre en paralelo durante el piloto para confirmar que la operación real — hora pico incluida — funciona sin sorpresas.</p>
     </div>
   </div>
 </section>
@@ -1235,7 +1273,7 @@
 <section class="closing">
   <div class="wrap">
     <h2>El negocio elige, no el sistema</h2>
-    <p>Los siete módulos ya caminan hoy como demo funcional en Básico. Subir de nivel es una decisión por módulo, no un paquete cerrado — el dueño que solo necesita blindar el Login lo hace sin pagar por analítica de cocina que no va a usar, y el que ya quiere facturar formalmente ante la SAT sube Pagos a Gold sin tocar el resto. La infraestructura y el soporte técnico corren aparte de esa decisión: son la base que sostiene cualquier combinación que elija.</p>
+    <p>Los siete módulos ya tienen su interfaz recorrible a nivel Básico, lista para mostrar cómo se sentiría usar el sistema — construirlos de verdad es la inversión que cubre esta propuesta. Subir de nivel es una decisión por módulo, no un paquete cerrado — el dueño que solo necesita blindar el Login lo hace sin pagar por analítica de cocina que no va a usar, y el que ya quiere facturar formalmente ante la SAT sube Pagos a Gold sin tocar el resto. La infraestructura y el soporte técnico corren aparte de esa decisión: son la base que sostiene cualquier combinación que elija.</p>
     <div class="quote-block">
       <div class="quote-text">Un sistema que crece con el negocio, nunca antes que él.</div>
       <div class="quote-attr">Mauricio Noj, fundador de Zennin Bistro</div>
@@ -1306,6 +1344,7 @@
   const supportEl = document.getElementById('calc-support');
   const savingsEl = document.getElementById('calc-savings');
   const haToggle = document.getElementById('infra-ha');
+  const panelEl = document.getElementById('calc-panel');
 
   function fmt(n) {
     return 'Q' + Math.round(n).toLocaleString('es-GT');
@@ -1328,6 +1367,9 @@
     });
 
     const allSame = activeTiers.length > 0 && activeTiers.every((t) => t === activeTiers[0]) ? activeTiers[0] : null;
+    panelEl.classList.toggle('tier-basico', allSame === 'basico');
+    panelEl.classList.toggle('tier-premium', allSame === 'premium');
+    panelEl.classList.toggle('tier-gold', allSame === 'gold');
     let discount = 0;
     if (allSame === 'premium' || allSame === 'gold') {
       discount = moduleTotal * BUNDLE_DISCOUNT;
