@@ -68,8 +68,8 @@ Nuevo Producto
 <tr class="hover:bg-white/5 transition-colors">
 <td class="px-5 py-3 text-white">
 <div class="flex items-center gap-3">
-{% if product.image_url %}
-<img src="{{ product.image_url }}" alt="" class="w-9 h-9 rounded-lg object-cover border border-white/10 shrink-0"/>
+{% if product.display_image_url %}
+<img src="{{ product.display_image_url }}" alt="" class="w-9 h-9 rounded-lg object-cover border border-white/10 shrink-0"/>
 {% else %}
 <span class="w-9 h-9 rounded-lg border border-white/10 bg-white/5 flex items-center justify-center shrink-0">
 <span class="material-symbols-outlined text-[18px] text-gray-500">restaurant</span>

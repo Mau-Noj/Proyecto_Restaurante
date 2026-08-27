@@ -30,15 +30,17 @@ class Category(models.Model):
 class Product(models.Model):
     """Producto del menú (RF-CAT-001 Básico).
 
-    image_url apunta a una imagen externa (por ahora, fotos de Wikimedia
-    Commons como relleno) en vez de un archivo subido — evita depender de
-    almacenamiento de medios (S3/MEDIA_ROOT) hasta que se defina esa pieza.
+    La foto puede subirse como archivo (campo `image`, va a MEDIA_ROOT) o
+    quedar como enlace externo (`image_url`, ej. fotos de Wikimedia Commons
+    de relleno en los productos de muestra). `display_image_url` decide
+    cuál usar: el archivo subido tiene prioridad si existe.
     """
 
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="products")
     name = models.CharField("Nombre", max_length=150)
     price = models.DecimalField("Precio", max_digits=8, decimal_places=2)
-    image_url = models.URLField("Imagen", blank=True)
+    image = models.ImageField("Foto", upload_to="productos/", blank=True, null=True)
+    image_url = models.URLField("Foto (enlace externo)", blank=True)
     order = models.PositiveSmallIntegerField("Orden", default=0)
 
     class Meta:
@@ -48,3 +50,9 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def display_image_url(self):
+        if self.image:
+            return self.image.url
+        return self.image_url

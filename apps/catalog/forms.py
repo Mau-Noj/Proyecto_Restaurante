@@ -24,18 +24,20 @@ class CategoryForm(forms.ModelForm):
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ["category", "name", "price", "image_url", "order"]
+        fields = ["category", "name", "price", "image", "image_url", "order"]
         labels = {
             "category": "Categoría",
             "name": "Nombre",
             "price": "Precio (Q)",
-            "image_url": "Foto (URL)",
+            "image": "Subir foto",
+            "image_url": "O enlace externo",
             "order": "Orden",
         }
         widgets = {
             "category": forms.Select(attrs=_INPUT_ATTRS),
             "name": forms.TextInput(attrs=_INPUT_ATTRS),
             "price": forms.NumberInput(attrs={**_INPUT_ATTRS, "step": "0.01", "min": "0"}),
+            "image": forms.ClearableFileInput(attrs={**_INPUT_ATTRS, "accept": "image/*"}),
             "image_url": forms.URLInput(
                 attrs={**_INPUT_ATTRS, "placeholder": "https://..."}
             ),

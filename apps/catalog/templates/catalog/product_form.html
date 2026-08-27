@@ -38,7 +38,7 @@
 </div>
 {% endif %}
 
-<form method="post" class="glass-panel rounded-2xl border border-white/10 p-5 sm:p-8 space-y-6">
+<form method="post" enctype="multipart/form-data" class="glass-panel rounded-2xl border border-white/10 p-5 sm:p-8 space-y-6">
 {% csrf_token %}
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 <div class="sm:col-span-2">
@@ -54,11 +54,16 @@
 {{ form.price }}
 </div>
 <div class="sm:col-span-2">
-<label class="field-label" for="{{ form.image_url.id_for_label }}">Foto (URL)</label>
-{{ form.image_url }}
-{% if form.instance.image_url %}
-<img src="{{ form.instance.image_url }}" alt="" class="mt-3 w-20 h-20 rounded-xl object-cover border border-white/10"/>
+{% if form.instance.display_image_url %}
+<img src="{{ form.instance.display_image_url }}" alt="" class="mb-3 w-20 h-20 rounded-xl object-cover border border-white/10"/>
 {% endif %}
+<label class="field-label" for="{{ form.image.id_for_label }}">Subir foto</label>
+{{ form.image }}
+{% for error in form.image.errors %}<p class="text-red-400 text-xs mt-1">{{ error }}</p>{% endfor %}
+</div>
+<div class="sm:col-span-2">
+<label class="field-label" for="{{ form.image_url.id_for_label }}">O enlace externo (si no subes un archivo)</label>
+{{ form.image_url }}
 </div>
 <div>
 <label class="field-label" for="{{ form.order.id_for_label }}">Orden</label>
