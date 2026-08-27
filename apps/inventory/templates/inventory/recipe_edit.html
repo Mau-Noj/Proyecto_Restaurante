@@ -41,7 +41,7 @@
 {% csrf_token %}
 {{ formset.management_form }}
 
-<div class="space-y-3">
+<div class="space-y-3" id="recipe-rows">
 {% for form in formset %}
 <div class="flex flex-col sm:flex-row sm:items-end gap-3 pb-3 border-b border-white/5 last:border-0">
 {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
@@ -65,11 +65,53 @@ Eliminar
 {% endfor %}
 </div>
 
+<template id="empty-form-template">
+<div class="flex flex-col sm:flex-row sm:items-end gap-3 pb-3 border-b border-white/5 last:border-0">
+{% for hidden in formset.empty_form.hidden_fields %}{{ hidden }}{% endfor %}
+<div class="flex-1">
+<label class="field-label">Ingrediente</label>
+{{ formset.empty_form.ingredient }}
+</div>
+<div class="w-full sm:w-32">
+<label class="field-label">Cantidad</label>
+{{ formset.empty_form.quantity }}
+</div>
+{% if formset.empty_form.DELETE %}
+<label class="flex items-center gap-2 text-xs text-gray-400 pb-2.5 shrink-0">
+{{ formset.empty_form.DELETE }}
+Eliminar
+</label>
+{% endif %}
+</div>
+</template>
+
+<button type="button" id="add-ingredient-row" class="text-sm text-neon-cyan hover:text-white transition-colors inline-flex items-center gap-1">
+<span class="text-lg leading-none">+</span> Agregar ingrediente
+</button>
+
 <div class="pt-4 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
 <a href="{% url 'inventory:recipe_list' %}" class="px-4 py-2 rounded-xl border border-white/10 text-gray-400 hover:text-white transition-colors text-sm text-center">Cancelar</a>
 <button class="px-6 py-2 rounded-xl bg-gradient-to-r from-neon-cyan/20 to-neon-violet/20 border border-neon-cyan/50 text-white hover:bg-neon-cyan/30 transition-all text-sm font-headline-sm" type="submit">Guardar Receta</button>
 </div>
 </form>
 </main>
+
+<script>
+(function () {
+  const addButton = document.getElementById("add-ingredient-row");
+  const rowsContainer = document.getElementById("recipe-rows");
+  const template = document.getElementById("empty-form-template");
+  const totalFormsInput = document.querySelector("input[name$='-TOTAL_FORMS']");
+
+  addButton.addEventListener("click", function () {
+    const formIndex = parseInt(totalFormsInput.value, 10);
+    const html = template.innerHTML.replace(/__prefix__/g, formIndex);
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = html.trim();
+    rowsContainer.appendChild(wrapper.firstElementChild);
+    totalFormsInput.value = formIndex + 1;
+  });
+})();
+</script>
 </body>
 </html>
