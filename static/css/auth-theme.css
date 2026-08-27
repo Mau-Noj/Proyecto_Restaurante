@@ -23,6 +23,35 @@ body {
     outline: none;
     box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
 }
+
+/* Input de archivo (subir foto): el boton nativo del navegador se ve
+   claro/gris y desentona con el tema oscuro, asi que se restyla el
+   boton via ::file-selector-button (y su equivalente -webkit- viejo). */
+.field-input[type="file"] {
+    padding: 0.5rem 0.75rem;
+    color: #9ca3af !important;
+    cursor: pointer;
+}
+.field-input[type="file"]::file-selector-button,
+.field-input[type="file"]::-webkit-file-upload-button {
+    margin-right: 0.75rem;
+    padding: 0.5rem 0.875rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(0, 243, 255, 0.4);
+    background: linear-gradient(90deg, rgba(0, 243, 255, 0.15), rgba(188, 19, 254, 0.15));
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.field-input[type="file"]:hover::file-selector-button,
+.field-input[type="file"]:hover::-webkit-file-upload-button {
+    border-color: #00f3ff;
+    background: linear-gradient(90deg, rgba(0, 243, 255, 0.3), rgba(188, 19, 254, 0.3));
+}
 .field-label {
     display: block;
     color: #9ca3af;
