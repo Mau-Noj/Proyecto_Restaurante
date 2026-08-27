@@ -12,5 +12,6 @@ urlpatterns = [
     path("kds/", include("apps.kds.urls")),
     path("inventario/", include("apps.inventory.urls")),
     path("pagos/", include("apps.payments.urls")),
+    path("catalogo/", include("apps.catalog.urls")),
     path("healthz/", healthz, name="healthz"),
 ]

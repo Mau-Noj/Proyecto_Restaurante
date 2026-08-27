@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Zennin Bistro - {{ title }}</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: { extend: { colors: { "neon-cyan": "#00f3ff", "neon-violet": "#bc13fe" },
+          fontFamily: { "body-md": ["Inter"], "headline-md": ["Inter"], "headline-lg": ["Inter"], "label-md": ["JetBrains Mono"] } } }
+      }
+</script>
+<link href="{% static 'css/auth-theme.css' %}" rel="stylesheet"/>
+</head>
+<body class="font-body-md">
+<div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+<div class="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full bg-neon-violet opacity-10 blur-[150px]"></div>
+<div class="absolute bottom-[0%] -right-[10%] w-[50%] h-[50%] rounded-full bg-neon-cyan opacity-5 blur-[120px]"></div>
+</div>
+
+{% include "dashboard/_topbar.html" with breadcrumb="Catálogo / Categorías" %}
+
+<main class="relative z-10 max-w-xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+<h2 class="font-headline-lg text-2xl font-bold text-white mb-1">{{ title }}</h2>
+<p class="text-gray-400 text-sm mb-8">La estación decide a qué pantalla de KDS (Cocina o Bar) llegan los productos de esta categoría.</p>
+
+{% if form.non_field_errors or form.errors %}
+<div class="form-error rounded-xl px-4 py-3 mb-6 text-sm" role="alert">
+{% for field in form %}{% for error in field.errors %}<p>{{ field.label }}: {{ error }}</p>{% endfor %}{% endfor %}
+{% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+</div>
+{% endif %}
+
+<form method="post" class="glass-panel rounded-2xl border border-white/10 p-5 sm:p-8 space-y-6">
+{% csrf_token %}
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="sm:col-span-2">
+<label class="field-label" for="{{ form.name.id_for_label }}">Nombre</label>
+{{ form.name }}
+</div>
+<div>
+<label class="field-label" for="{{ form.station.id_for_label }}">Estación (KDS)</label>
+{{ form.station }}
+</div>
+<div>
+<label class="field-label" for="{{ form.order.id_for_label }}">Orden</label>
+{{ form.order }}
+</div>
+</div>
+
+<div class="pt-4 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+<a href="{% url 'catalog:category_list' %}" class="px-4 py-2 rounded-xl border border-white/10 text-gray-400 hover:text-white transition-colors text-sm text-center">Cancelar</a>
+<button class="px-6 py-2 rounded-xl bg-gradient-to-r from-neon-cyan/20 to-neon-violet/20 border border-neon-cyan/50 text-white hover:bg-neon-cyan/30 transition-all text-sm font-headline-sm" type="submit">Guardar</button>
+</div>
+</form>
+</main>
+</body>
+</html>

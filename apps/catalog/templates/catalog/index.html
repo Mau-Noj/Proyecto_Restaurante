@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Zennin Bistro - Catálogo y Menú</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: { extend: { colors: { "neon-cyan": "#00f3ff", "neon-violet": "#bc13fe" },
+          fontFamily: { "body-md": ["Inter"], "headline-md": ["Inter"], "headline-lg": ["Inter"], "label-md": ["JetBrains Mono"] } } }
+      }
+</script>
+<link href="{% static 'css/auth-theme.css' %}" rel="stylesheet"/>
+</head>
+<body class="font-body-md">
+<div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+<div class="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full bg-neon-violet opacity-10 blur-[150px]"></div>
+<div class="absolute bottom-[0%] -right-[10%] w-[50%] h-[50%] rounded-full bg-neon-cyan opacity-5 blur-[120px]"></div>
+</div>
+
+{% include "dashboard/_topbar.html" with breadcrumb="Catálogo y Menú" %}
+
+<main class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+<div class="mb-8">
+<h2 class="font-headline-lg text-2xl font-bold text-white mb-1">Catálogo y Menú</h2>
+<p class="text-gray-400 text-sm">Categorías y productos del menú — lo que arma el mesero al tomar un pedido.</p>
+</div>
+
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+<a href="{% url 'catalog:category_list' %}" class="glass-panel rounded-xl p-5 border border-neon-cyan/30 hover:border-neon-cyan transition-colors flex flex-col items-center text-center gap-2">
+<span class="material-symbols-outlined text-3xl text-neon-cyan">category</span>
+<span class="text-sm text-white font-medium">Categorías</span>
+<span class="text-xs text-gray-400">{{ category_count }} registradas</span>
+</a>
+<a href="{% url 'catalog:product_list' %}" class="glass-panel rounded-xl p-5 border border-neon-cyan/30 hover:border-neon-cyan transition-colors flex flex-col items-center text-center gap-2">
+<span class="material-symbols-outlined text-3xl text-neon-cyan">restaurant_menu</span>
+<span class="text-sm text-white font-medium">Productos</span>
+<span class="text-xs text-gray-400">{{ product_count }} en el menú</span>
+</a>
+<a href="{% url 'catalog:product_create' %}" class="glass-panel rounded-xl p-5 border border-neon-cyan/30 hover:border-neon-cyan transition-colors flex flex-col items-center text-center gap-2">
+<span class="material-symbols-outlined text-3xl text-neon-cyan">add_circle</span>
+<span class="text-sm text-white font-medium">Nuevo Producto</span>
+<span class="text-xs text-gray-400">Agregar al menú</span>
+</a>
+</div>
+</main>
+</body>
+</html>
