@@ -3,6 +3,33 @@
 body {
     background-color: #050505;
     color: #ffffff;
+    overflow-x: hidden;
+}
+
+/* Scrollbars propios en vez del estilo por defecto del navegador/SO
+   (esos scrollbars anchos y grises desentonan totalmente con el tema
+   oscuro). scrollbar-width/color cubre Firefox; los ::-webkit-* cubren
+   Chrome/Edge/Safari. */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 243, 255, 0.35) rgba(255, 255, 255, 0.05);
+}
+*::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+*::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+*::-webkit-scrollbar-thumb {
+    background: rgba(0, 243, 255, 0.35);
+    border-radius: 999px;
+}
+*::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 243, 255, 0.55);
+}
+*::-webkit-scrollbar-corner {
+    background: transparent;
 }
 
 /* ---------- Jerarquia de planes: Zen / Zennin / Zennin Shin ----------
