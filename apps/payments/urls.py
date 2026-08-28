@@ -39,4 +39,5 @@ urlpatterns = [
     path("reportes/meseros/", views.report_by_waiter, name="report_by_waiter"),
     path("reportes/turno/", views.report_shift, name="report_shift"),
     path("reportes/auditoria/", views.report_audit, name="report_audit"),
+    path("reportes/platillos/", views.report_top_products, name="report_top_products"),
 ]

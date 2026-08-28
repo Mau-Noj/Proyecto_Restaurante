@@ -1,8 +1,11 @@
 from collections import defaultdict
+from datetime import timedelta
 from decimal import Decimal
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count, DecimalField, ExpressionWrapper, F, Sum
+from django.db.models.functions import ExtractHour
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -334,5 +337,48 @@ def report_audit(request):
             "chart_labels": chart_labels,
             "sales_data": sales_data,
             "tips_data": tips_data,
+        },
+    )
+
+
+@staff_required
+def report_top_products(request):
+    """Platos más vendidos y horas pico (RF-BI), en un rango de fechas (30 días por defecto)."""
+    hasta = parse_date(request.GET.get("hasta", "")) or timezone.localdate()
+    desde = parse_date(request.GET.get("desde", "")) or hasta - timedelta(days=30)
+
+    items = OrderItem.objects.filter(
+        order__created_at__date__gte=desde, order__created_at__date__lte=hasta
+    )
+    revenue_expr = ExpressionWrapper(
+        F("quantity") * F("product__price"), output_field=DecimalField(max_digits=12, decimal_places=2)
+    )
+    product_rows = list(
+        items.values("product__name")
+        .annotate(total_quantity=Sum("quantity"), total_revenue=Sum(revenue_expr))
+        .order_by("-total_quantity")[:15]
+    )
+
+    hour_counts = {
+        row["hour"]: row["count"]
+        for row in Order.objects.filter(created_at__date__gte=desde, created_at__date__lte=hasta)
+        .annotate(hour=ExtractHour("created_at", tzinfo=timezone.get_current_timezone()))
+        .values("hour")
+        .annotate(count=Count("id"))
+    }
+    hour_labels = [f"{hour:02d}:00" for hour in range(24)]
+    hour_data = [hour_counts.get(hour, 0) for hour in range(24)]
+
+    return render(
+        request,
+        "payments/report_top_products.html",
+        {
+            "desde": desde,
+            "hasta": hasta,
+            "product_rows": product_rows,
+            "chart_product_labels": [row["product__name"] for row in product_rows],
+            "chart_product_quantities": [row["total_quantity"] for row in product_rows],
+            "chart_hour_labels": hour_labels,
+            "chart_hour_data": hour_data,
         },
     )

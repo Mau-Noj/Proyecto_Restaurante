@@ -33,7 +33,7 @@
 <p class="text-gray-400 text-sm">Ingredientes, recetas, movimientos de bodega y costos por platillo.</p>
 </div>
 
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
 <a href="{% url 'inventory:ingredient_list' %}" class="glass-panel rounded-xl p-5 border border-neon-cyan/30 hover:border-neon-cyan transition-colors flex flex-col items-center text-center gap-2">
 <span class="material-symbols-outlined text-3xl text-neon-cyan">nutrition</span>
 <span class="text-sm text-white font-medium">Ingredientes</span>
@@ -53,6 +53,11 @@
 <span class="material-symbols-outlined text-3xl text-neon-cyan">monitoring</span>
 <span class="text-sm text-white font-medium">Costos y Utilidad</span>
 <span class="text-xs text-gray-400">Costo por platillo</span>
+</a>
+<a href="{% url 'inventory:waste_report' %}" class="glass-panel rounded-xl p-5 border border-neon-cyan/30 hover:border-neon-cyan transition-colors flex flex-col items-center text-center gap-2">
+<span class="material-symbols-outlined text-3xl text-neon-cyan">delete_sweep</span>
+<span class="text-sm text-white font-medium">Mermas y Caducidades</span>
+<span class="text-xs text-gray-400">Pérdida económica del mes</span>
 </a>
 </div>
 </main>

@@ -1,6 +1,10 @@
+from decimal import Decimal
+
 from django.contrib import messages
+from django.db.models import DecimalField, ExpressionWrapper, F, Sum
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils import timezone
 
 from apps.accounts.decorators import staff_required
 from apps.catalog.models import Product
@@ -178,5 +182,53 @@ def cost_report(request):
             "chart_costs": chart_costs,
             "chart_prices": chart_prices,
             "chart_utilities": chart_utilities,
+        },
+    )
+
+
+@staff_required
+def waste_report(request):
+    """Pérdida económica del mes por mermas y caducidades (cantidad × costo unitario)."""
+    today = timezone.localdate()
+    month_param = request.GET.get("mes")
+    year, month = today.year, today.month
+    if month_param:
+        try:
+            year, month = (int(part) for part in month_param.split("-"))
+        except ValueError:
+            pass
+
+    loss_expr = ExpressionWrapper(
+        F("quantity") * F("ingredient__unit_cost"),
+        output_field=DecimalField(max_digits=12, decimal_places=2),
+    )
+    movements = StockMovement.objects.filter(
+        movement_type__in=[StockMovement.MovementType.MERMA, StockMovement.MovementType.CADUCIDAD],
+        created_at__year=year,
+        created_at__month=month,
+    )
+
+    rows = (
+        movements.values("ingredient__name")
+        .annotate(total_quantity=Sum("quantity"), total_loss=Sum(loss_expr))
+        .order_by("-total_loss")
+    )
+    by_type = {
+        row["movement_type"]: row["total_loss"]
+        for row in movements.values("movement_type").annotate(total_loss=Sum(loss_expr))
+    }
+    grand_total = movements.aggregate(total=Sum(loss_expr))["total"] or Decimal("0")
+
+    return render(
+        request,
+        "inventory/waste_report.html",
+        {
+            "month_value": f"{year:04d}-{month:02d}",
+            "rows": rows,
+            "merma_total": by_type.get(StockMovement.MovementType.MERMA, Decimal("0")),
+            "caducidad_total": by_type.get(StockMovement.MovementType.CADUCIDAD, Decimal("0")),
+            "grand_total": grand_total,
+            "chart_labels": [row["ingredient__name"] for row in rows],
+            "chart_losses": [float(row["total_loss"]) for row in rows],
         },
     )

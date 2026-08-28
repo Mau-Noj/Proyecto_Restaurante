@@ -33,7 +33,7 @@
 <p class="text-gray-400 text-sm">Reportes de cobro. El registro de pagos en sí ocurre en la pantalla de mesa (mesero) o de caja (pedidos para llevar).</p>
 </div>
 
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+<div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
 <a href="{% url 'payments:report_by_waiter' %}" class="glass-panel rounded-xl p-5 border border-neon-cyan/30 hover:border-neon-cyan transition-colors flex flex-col items-center text-center gap-2">
 <span class="material-symbols-outlined text-3xl text-neon-cyan">badge</span>
 <span class="text-sm text-white font-medium">Reporte por Mesero</span>
@@ -48,6 +48,11 @@
 <span class="material-symbols-outlined text-3xl text-neon-cyan">monitoring</span>
 <span class="text-sm text-white font-medium">Dashboard de Auditoría</span>
 <span class="text-xs text-gray-400">Gráficas y cuentas cerradas</span>
+</a>
+<a href="{% url 'payments:report_top_products' %}" class="glass-panel rounded-xl p-5 border border-neon-cyan/30 hover:border-neon-cyan transition-colors flex flex-col items-center text-center gap-2">
+<span class="material-symbols-outlined text-3xl text-neon-cyan">local_fire_department</span>
+<span class="text-sm text-white font-medium">Platos Más Vendidos</span>
+<span class="text-xs text-gray-400">Y horas pico</span>
 </a>
 </div>
 </main>
