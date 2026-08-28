@@ -31,7 +31,7 @@
 <main class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
 <div class="mb-8">
 <h2 class="font-headline-lg text-2xl font-bold text-white mb-1">Tiempos de Preparación</h2>
-<p class="text-gray-400 text-sm">Minutos promedio desde que un ítem entra a la comanda hasta que se marca entregado, por platillo y por quien lo entregó.</p>
+<p class="text-gray-400 text-sm">Minutos promedio desde que un ítem entra a la comanda hasta que se marca entregado, por platillo y por quien lo entregó. Cuando se usó el botón "Empezar" en el KDS, se desglosa además cuánto fue espera en cola y cuánto preparación real.</p>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
@@ -51,7 +51,9 @@
 <thead class="bg-black/40 text-gray-400 font-label-md text-xs uppercase tracking-widest">
 <tr>
 <th class="text-left px-5 py-3">Platillo</th>
-<th class="text-left px-5 py-3">Prom. (min)</th>
+<th class="text-left px-5 py-3">Total (min)</th>
+<th class="text-left px-5 py-3">Cola</th>
+<th class="text-left px-5 py-3">Preparación</th>
 <th class="text-left px-5 py-3">Entregas</th>
 </tr>
 </thead>
@@ -60,11 +62,13 @@
 <tr class="hover:bg-white/5 transition-colors">
 <td class="px-5 py-3 text-white">{{ row.name }}</td>
 <td class="px-5 py-3 {% if row.avg_minutes >= 20 %}text-red-400{% elif row.avg_minutes >= 10 %}text-amber-400{% else %}text-emerald-400{% endif %}">{{ row.avg_minutes }}</td>
+<td class="px-5 py-3 text-gray-400">{{ row.avg_queue_minutes|default_if_none:"—" }}</td>
+<td class="px-5 py-3 text-gray-400">{{ row.avg_prep_minutes|default_if_none:"—" }}</td>
 <td class="px-5 py-3 text-gray-400">{{ row.count }}</td>
 </tr>
 {% empty %}
 <tr>
-<td class="px-5 py-8 text-center text-gray-500" colspan="3">Todavía no hay ítems entregados.</td>
+<td class="px-5 py-8 text-center text-gray-500" colspan="5">Todavía no hay ítems entregados.</td>
 </tr>
 {% endfor %}
 </tbody>

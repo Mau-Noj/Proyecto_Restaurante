@@ -33,6 +33,7 @@ class OrderItem(models.Model):
 
     class Status(models.TextChoices):
         PENDIENTE = "PENDIENTE", "Pendiente"
+        EN_PREPARACION = "EN_PREPARACION", "En preparación"
         ENTREGADO = "ENTREGADO", "Entregado"
 
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
@@ -45,6 +46,14 @@ class OrderItem(models.Model):
         max_length=20, choices=Status.choices, default=Status.PENDIENTE
     )
     created_at = models.DateTimeField(auto_now_add=True)
+    started_at = models.DateTimeField(null=True, blank=True)
+    started_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        related_name="items_started",
+    )
     delivered_at = models.DateTimeField(null=True, blank=True)
     delivered_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,

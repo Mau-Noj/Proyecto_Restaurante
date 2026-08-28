@@ -50,7 +50,7 @@ def _table_receipts(station):
     receipts = [
         receipt
         for receipt in receipts_by_key.values()
-        if any(item.status == OrderItem.Status.PENDIENTE for item in receipt["items"])
+        if any(item.status != OrderItem.Status.ENTREGADO for item in receipt["items"])
     ]
     for receipt in receipts:
         receipt["items"].sort(key=lambda item: item.created_at)
@@ -80,9 +80,25 @@ def bar_display(request):
 
 
 @position_required(Employee.Position.COCINERO, Employee.Position.BARTENDER)
-def mark_delivered(request, item_id):
+def start_preparing(request, item_id):
     item = get_object_or_404(OrderItem, pk=item_id)
     if request.method == "POST" and item.status == OrderItem.Status.PENDIENTE:
+        item.status = OrderItem.Status.EN_PREPARACION
+        item.started_at = timezone.now()
+        item.started_by = request.user
+        item.save(update_fields=["status", "started_at", "started_by"])
+        station = "bar" if item.product.category.station == Category.Station.BAR else "cocina"
+        notify_station(station)
+    if item.product.category.station == Category.Station.BAR:
+        return redirect("kds:bar")
+    return redirect("kds:kitchen")
+
+
+@position_required(Employee.Position.COCINERO, Employee.Position.BARTENDER)
+def mark_delivered(request, item_id):
+    item = get_object_or_404(OrderItem, pk=item_id)
+    deliverable = (OrderItem.Status.PENDIENTE, OrderItem.Status.EN_PREPARACION)
+    if request.method == "POST" and item.status in deliverable:
         item.status = OrderItem.Status.ENTREGADO
         item.delivered_at = timezone.now()
         item.delivered_by = request.user
@@ -96,21 +112,32 @@ def mark_delivered(request, item_id):
 
 @staff_required
 def report_prep_times(request):
-    """Tiempo medio de preparación (created_at -> delivered_at) por platillo y por
-    quien lo marcó entregado, para detectar cuellos de botella en cocina/bar."""
-    duration = ExpressionWrapper(F("delivered_at") - F("created_at"), output_field=DurationField())
+    """Tiempo medio por platillo y por quien lo marcó entregado, para detectar
+    cuellos de botella en cocina/bar. Cuando el item pasó por "Empezar a
+    preparar" (started_at), se desglosa en espera en cola (created_at ->
+    started_at) y preparación real (started_at -> delivered_at); si no,
+    solo se conoce el total (created_at -> delivered_at)."""
+    total_duration = ExpressionWrapper(F("delivered_at") - F("created_at"), output_field=DurationField())
     items = (
         OrderItem.objects.filter(status=OrderItem.Status.ENTREGADO, delivered_at__isnull=False)
         .select_related("product", "delivered_by")
-        .annotate(prep_time=duration)
+        .annotate(total_time=total_duration)
     )
 
-    by_product = defaultdict(lambda: {"seconds": 0.0, "count": 0})
+    by_product = defaultdict(
+        lambda: {"seconds": 0.0, "count": 0, "queue_seconds": 0.0, "queue_count": 0, "prep_seconds": 0.0, "prep_count": 0}
+    )
     by_staff = defaultdict(lambda: {"seconds": 0.0, "count": 0})
     for item in items:
-        seconds = item.prep_time.total_seconds()
-        by_product[item.product.name]["seconds"] += seconds
-        by_product[item.product.name]["count"] += 1
+        seconds = item.total_time.total_seconds()
+        bucket = by_product[item.product.name]
+        bucket["seconds"] += seconds
+        bucket["count"] += 1
+        if item.started_at:
+            bucket["queue_seconds"] += (item.started_at - item.created_at).total_seconds()
+            bucket["queue_count"] += 1
+            bucket["prep_seconds"] += (item.delivered_at - item.started_at).total_seconds()
+            bucket["prep_count"] += 1
         staff_name = (
             item.delivered_by.get_full_name() or item.delivered_by.username
             if item.delivered_by
@@ -119,17 +146,29 @@ def report_prep_times(request):
         by_staff[staff_name]["seconds"] += seconds
         by_staff[staff_name]["count"] += 1
 
-    def _rows(bucket):
-        return sorted(
-            (
-                {"name": name, "avg_minutes": round(v["seconds"] / v["count"] / 60, 1), "count": v["count"]}
-                for name, v in bucket.items()
-            ),
-            key=lambda row: -row["avg_minutes"],
-        )
+    def _avg(total, count):
+        return round(total / count / 60, 1) if count else None
 
-    product_rows = _rows(by_product)
-    staff_rows = _rows(by_staff)
+    product_rows = sorted(
+        (
+            {
+                "name": name,
+                "avg_minutes": _avg(v["seconds"], v["count"]),
+                "avg_queue_minutes": _avg(v["queue_seconds"], v["queue_count"]),
+                "avg_prep_minutes": _avg(v["prep_seconds"], v["prep_count"]),
+                "count": v["count"],
+            }
+            for name, v in by_product.items()
+        ),
+        key=lambda row: -(row["avg_minutes"] or 0),
+    )
+    staff_rows = sorted(
+        (
+            {"name": name, "avg_minutes": _avg(v["seconds"], v["count"]), "count": v["count"]}
+            for name, v in by_staff.items()
+        ),
+        key=lambda row: -(row["avg_minutes"] or 0),
+    )
 
     return render(
         request,

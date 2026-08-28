@@ -418,6 +418,35 @@ body {
 .receipt-row:last-child { border-bottom: none; }
 .receipt-row.is-done { opacity: 0.4; }
 .receipt-row.is-done .receipt-row-name { text-decoration: line-through; }
+.receipt-row.is-preparing { cursor: pointer; }
+
+.receipt-start-btn {
+    flex: 0 0 auto;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #00f3ff;
+    background: rgba(0, 243, 255, 0.08);
+    border: 1px solid rgba(0, 243, 255, 0.4);
+    border-radius: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+.receipt-start-btn:hover { background: rgba(0, 243, 255, 0.18); border-color: #00f3ff; }
+
+.receipt-status-badge {
+    flex: 0 0 auto;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #fbbf24;
+    border: 1px solid rgba(251, 191, 36, 0.4);
+    border-radius: 6px;
+    padding: 1px 6px;
+}
 
 .receipt-row-text {
     display: flex;

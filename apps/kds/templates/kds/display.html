@@ -51,13 +51,28 @@
 <div class="receipt-body">
 {% for item in receipt.items %}
 {% if item.status == "PENDIENTE" %}
-<form method="post" action="{% url 'kds:mark_delivered' item.pk %}" class="receipt-row-form" data-item-id="{{ item.pk }}">
+<form method="post" action="{% url 'kds:start_preparing' item.pk %}" class="receipt-row-form">
 {% csrf_token %}
-<label class="receipt-row">
+<div class="receipt-row">
 <span class="receipt-row-text">
 <span class="receipt-row-name">
 <span class="receipt-timer-dot" data-created="{{ item.created_at.isoformat }}"></span>
 {{ item.product.name }}{% if item.quantity > 1 %} &times;{{ item.quantity }}{% endif %}
+</span>
+{% if item.notes %}<span class="receipt-row-notes">{{ item.notes }}</span>{% endif %}
+</span>
+<button type="submit" class="receipt-start-btn">Empezar</button>
+</div>
+</form>
+{% elif item.status == "EN_PREPARACION" %}
+<form method="post" action="{% url 'kds:mark_delivered' item.pk %}" class="receipt-row-form" data-item-id="{{ item.pk }}">
+{% csrf_token %}
+<label class="receipt-row is-preparing">
+<span class="receipt-row-text">
+<span class="receipt-row-name">
+<span class="receipt-timer-dot" data-created="{{ item.created_at.isoformat }}"></span>
+{{ item.product.name }}{% if item.quantity > 1 %} &times;{{ item.quantity }}{% endif %}
+<span class="receipt-status-badge">Preparando</span>
 </span>
 {% if item.notes %}<span class="receipt-row-notes">{{ item.notes }}</span>{% endif %}
 </span>
