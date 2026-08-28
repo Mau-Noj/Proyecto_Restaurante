@@ -3,5 +3,7 @@ channels[daphne]>=4.1
 channels-redis>=4.2
 psycopg[binary]>=3.2
 django-environ>=0.11
-redis>=5.0
+# <6: redis-py 8.x rompe la conexion persistente que channels_redis 4.3
+# usa para el WebSocket del KDS (Timeout reading, se desconecta solo).
+redis>=5.0,<6
 Pillow>=10.0
