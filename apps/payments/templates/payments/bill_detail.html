@@ -137,7 +137,12 @@ Personalizada
 </div>
 </div>
 <div>
+<div class="flex items-center justify-between">
 <label class="field-label">{{ split_form.amount.label }}</label>
+{% if bill.balance_due > 0 %}
+<button type="button" onclick="document.getElementById('id_amount').value = '{{ bill.balance_due }}'" class="text-[11px] text-neon-cyan hover:underline mb-1.5">Cubrir todo (Q{{ bill.balance_due }})</button>
+{% endif %}
+</div>
 {{ split_form.amount }}
 </div>
 <button type="submit" class="w-full h-10 rounded-xl border border-white/15 text-gray-300 text-sm hover:border-neon-cyan hover:text-neon-cyan transition-colors">Agregar Pago</button>
@@ -155,7 +160,12 @@ Personalizada
 
 <form method="post" action="{% url 'payments:confirm_bill' bill.pk %}">
 {% csrf_token %}
+{% if bill.balance_due > 0 %}
+<button type="submit" disabled title="Agrega un pago que cubra el total antes de confirmar" class="w-full h-12 bg-white/5 border border-white/10 text-gray-500 rounded-xl font-headline-sm text-sm tracking-widest uppercase cursor-not-allowed">Confirmar Pago</button>
+<p class="text-center text-amber-400 text-xs mt-2">Agrega arriba un pago que cubra Q{{ bill.balance_due }} para poder confirmar.</p>
+{% else %}
 <button type="submit" class="w-full h-12 bg-gradient-to-r from-neon-cyan/20 to-neon-violet/20 border border-neon-cyan/50 text-white rounded-xl font-headline-sm text-sm tracking-widest uppercase hover:bg-neon-cyan/30 transition-all">Confirmar Pago</button>
+{% endif %}
 </form>
 <div class="flex justify-center mt-4">
 <span class="locked-chip"><span class="material-symbols-outlined">print</span>Imprimir recibo · Próximamente</span>
