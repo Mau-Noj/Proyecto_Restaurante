@@ -9,19 +9,41 @@ _INPUT_ATTRS = {"class": "field-input"}
 TIP_PRESETS = ["10", "12", "15"]
 
 
+class CommaDecimalField(forms.DecimalField):
+    """DecimalField que acepta coma o punto como separador decimal.
+
+    Un <input type="number"> rechaza "50,00" en silencio (el navegador
+    manda el campo vacio) en cualquier configuracion regional que use
+    coma para decimales -- el usuario cree que no escribio nada, cuando
+    en realidad el valor nunca llego a validarse. Por eso el widget es
+    de texto (con teclado numerico en movil via inputmode) en vez de
+    number, y aqui se normaliza la coma antes de intentar convertir a
+    Decimal.
+    """
+
+    widget = forms.TextInput
+
+    def to_python(self, value):
+        if isinstance(value, str):
+            value = value.strip().replace(",", ".")
+        return super().to_python(value)
+
+
 class TipForm(forms.Form):
     preset = forms.ChoiceField(
         label="Propina sugerida",
         choices=[(pct, f"{pct}%") for pct in TIP_PRESETS] + [("custom", "Personalizada")],
         widget=forms.RadioSelect,
     )
-    custom_amount = forms.DecimalField(
+    custom_amount = CommaDecimalField(
         label="Monto personalizado",
         max_digits=10,
         decimal_places=2,
         min_value=Decimal("0"),
         required=False,
-        widget=forms.NumberInput(attrs={**_INPUT_ATTRS, "step": "0.01", "min": "0"}),
+        widget=forms.TextInput(
+            attrs={**_INPUT_ATTRS, "inputmode": "decimal", "placeholder": "0.00"}
+        ),
     )
 
     def __init__(self, *args, subtotal: Decimal, **kwargs):
@@ -55,10 +77,12 @@ class SplitForm(forms.Form):
     method = forms.ChoiceField(
         label="Método", choices=PaymentSplit.Method.choices, widget=forms.Select(attrs=_INPUT_ATTRS)
     )
-    amount = forms.DecimalField(
+    amount = CommaDecimalField(
         label="Monto",
         max_digits=10,
         decimal_places=2,
         min_value=Decimal("0.01"),
-        widget=forms.NumberInput(attrs={**_INPUT_ATTRS, "step": "0.01", "min": "0.01"}),
+        widget=forms.TextInput(
+            attrs={**_INPUT_ATTRS, "inputmode": "decimal", "placeholder": "0.00"}
+        ),
     )

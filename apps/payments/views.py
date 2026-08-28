@@ -74,6 +74,12 @@ def set_bill_tip(request, pk):
         form = TipForm(request.POST, subtotal=bill.subtotal)
         if form.is_valid():
             set_tip(bill, form.cleaned_data["tip"])
+        else:
+            for error in form.non_field_errors():
+                messages.error(request, error)
+            for field in form:
+                for error in field.errors:
+                    messages.error(request, f"{field.label}: {error}")
     return redirect(reverse("payments:bill_detail", args=[bill.pk]))
 
 
@@ -89,6 +95,10 @@ def add_bill_split(request, pk):
                 method=form.cleaned_data["method"],
                 amount=form.cleaned_data["amount"],
             )
+        else:
+            for field in form:
+                for error in field.errors:
+                    messages.error(request, f"{field.label}: {error}")
     return redirect(reverse("payments:bill_detail", args=[bill.pk]))
 
 
