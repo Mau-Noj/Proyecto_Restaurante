@@ -62,17 +62,21 @@
 </div>
 {% else %}
 {% if table.status == "OCUPADA" or cart_count %}
-{# Ya hay un pedido registrado (o un carrito sin enviar) para esta mesa:
-   se va directo a revisar/agregar, que ya incluye el Menu adentro --
-   mostrar tambien el boton de Menu aqui seria un segundo camino
-   redundante hacia lo mismo. #}
+{% comment %}
+Ya hay un pedido registrado (o un carrito sin enviar) para esta mesa:
+se va directo a revisar/agregar, que ya incluye el Menu adentro --
+mostrar tambien el boton de Menu aqui seria un segundo camino
+redundante hacia lo mismo.
+{% endcomment %}
 <a href="{% url 'tables:preorder' table.number %}" class="block px-4 py-3 rounded-xl border border-dashed border-[#ff5c7a]/40 bg-[#ff5c7a]/5 text-center hover:border-[#ff5c7a] transition-colors mb-3">
 <p class="text-[#ff8fa3] text-sm">Agregar productos a un pedido{% if cart_count %} ({{ cart_count }}){% endif %}</p>
 <p class="text-gray-500 text-[10px] mt-1 uppercase tracking-widest font-label-md">Ver / agregar a la orden actual de la mesa</p>
 </a>
 {% else %}
-{# Mesa recien libre, todavia sin ningun pedido: solo tiene sentido
-   arrancar desde el Menu, no hay nada que "agregar" todavia. #}
+{% comment %}
+Mesa recien libre, todavia sin ningun pedido: solo tiene sentido
+arrancar desde el Menu, no hay nada que "agregar" todavia.
+{% endcomment %}
 {% include "tables/_category_menu.html" %}
 {% endif %}
 
