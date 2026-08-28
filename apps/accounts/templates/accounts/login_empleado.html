@@ -1,4 +1,4 @@
-{% load static %}
+{% load static cache_bust %}
 <!DOCTYPE html>
 <html class="dark" lang="es">
 <head>
@@ -66,7 +66,7 @@
         }
       }
 </script>
-<link href="{% static 'css/auth-theme.css' %}" rel="stylesheet"/>
+<link href="{% static_v 'css/auth-theme.css' %}" rel="stylesheet"/>
 </head>
 <body class="min-h-screen flex items-center justify-center relative font-body-md py-12">
 <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
@@ -154,7 +154,7 @@ Ver Zennin Shin
 </button>
 </div>
 </main>
-<script src="{% static 'js/feature-tour.js' %}"></script>
+<script src="{% static_v 'js/feature-tour.js' %}"></script>
 <script>
         const ZENNIN_TOUR = [
             { selector: "#feature-verification", title: "Código de verificación · Zennin", text: "Después del PIN se pide un código enviado al dispositivo del empleado, para que un PIN robado no alcance para iniciar turno." },

@@ -1,4 +1,4 @@
-{% load static %}
+{% load static cache_bust %}
 <!DOCTYPE html>
 <html class="dark" lang="es">
 <head>
@@ -6,7 +6,7 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Zennin Bistro - Panel de Personal</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<link href="{% static 'css/auth-theme.css' %}" rel="stylesheet"/>
+<link href="{% static_v 'css/auth-theme.css' %}" rel="stylesheet"/>
 </head>
 <body class="min-h-screen flex items-center justify-center text-white">
 <main class="text-center space-y-4 px-4 max-w-md">

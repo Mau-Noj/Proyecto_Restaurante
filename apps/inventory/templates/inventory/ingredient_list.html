@@ -1,4 +1,4 @@
-{% load static %}
+{% load static cache_bust %}
 <!DOCTYPE html>
 <html class="dark" lang="es">
 <head>
@@ -17,7 +17,7 @@
           fontFamily: { "body-md": ["Inter"], "headline-md": ["Inter"], "headline-lg": ["Inter"], "label-md": ["JetBrains Mono"] } } }
       }
 </script>
-<link href="{% static 'css/auth-theme.css' %}" rel="stylesheet"/>
+<link href="{% static_v 'css/auth-theme.css' %}" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 </head>
 <body class="font-body-md">

@@ -41,7 +41,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "apps.accounts.middleware.ForcePasswordChangeMiddleware",
-    "config.middleware.DevStaticNoCacheMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
