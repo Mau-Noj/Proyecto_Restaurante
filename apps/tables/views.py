@@ -138,13 +138,26 @@ def submit_order(request, number):
                 OrderItem.objects.create(
                     order=order, product_id=int(product_id), quantity=quantity
                 )
-        discount_recipe_for_order(order, request.user)
+        low_stock = discount_recipe_for_order(order, request.user)
         notify_order_stations(order)
         table.status = Table.Status.OCUPADA
         table.save(update_fields=["status"])
         request.session["cart"][str(number)] = {}
         request.session.modified = True
         messages.success(request, "Pedido enviado a cocina/bar.")
+        for ingredient in low_stock:
+            if ingredient.stock < 0:
+                messages.warning(
+                    request,
+                    f"'{ingredient.name}' quedó con stock negativo "
+                    f"({ingredient.stock} {ingredient.get_unit_display()}). Revisa el inventario.",
+                )
+            else:
+                messages.warning(
+                    request,
+                    f"Stock bajo de '{ingredient.name}': {ingredient.stock} "
+                    f"{ingredient.get_unit_display()} (mínimo {ingredient.min_stock}).",
+                )
         return redirect(reverse("tables:detail", args=[number]))
 
     return redirect(reverse("tables:preorder", args=[number]))

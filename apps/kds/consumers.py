@@ -28,9 +28,13 @@ class KdsConsumer(AsyncWebsocketConsumer):
     def _user_can_access(user, station: str) -> bool:
         from apps.employees.models import Employee
 
+        if user.is_superuser:
+            return True
         employee = getattr(user, "employee_profile", None)
         if not employee:
             return False
+        if employee.position == Employee.Position.GERENTE:
+            return True
         if station == "cocina":
             return employee.position == Employee.Position.COCINERO
         return employee.position == Employee.Position.BARTENDER

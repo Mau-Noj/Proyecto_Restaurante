@@ -88,14 +88,27 @@ def stock_exit(request):
     if request.method == "POST":
         form = StockExitForm(request.POST)
         if form.is_valid():
+            ingredient = form.cleaned_data["ingredient"]
             register_movement(
-                ingredient=form.cleaned_data["ingredient"],
+                ingredient=ingredient,
                 movement_type=form.cleaned_data["movement_type"],
                 quantity=form.cleaned_data["quantity"],
                 created_by=request.user,
                 reference=form.cleaned_data["reference"],
             )
             messages.success(request, "Salida registrada.")
+            if ingredient.stock < 0:
+                messages.warning(
+                    request,
+                    f"'{ingredient.name}' quedó con stock negativo "
+                    f"({ingredient.stock} {ingredient.get_unit_display()}).",
+                )
+            elif ingredient.status in ("CRITICO", "BAJO"):
+                messages.warning(
+                    request,
+                    f"Stock bajo de '{ingredient.name}': {ingredient.stock} "
+                    f"{ingredient.get_unit_display()} (mínimo {ingredient.min_stock}).",
+                )
             return redirect(reverse("inventory:kardex"))
     else:
         form = StockExitForm()
