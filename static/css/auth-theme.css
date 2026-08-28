@@ -5,6 +5,77 @@ body {
     color: #ffffff;
 }
 
+/* ---------- Jerarquia de planes: Zen / Zennin / Zennin Shin ----------
+   Tokens centralizados aqui (en vez de duplicar hex en el tailwind.config
+   de cada plantilla) para que cualquier chip/heading/badge de nivel salga
+   siempre del mismo lugar. Todos los pares texto/fondo estan pensados
+   para texto claro sobre fondos oscuros (unico modo que usa esta app),
+   con contraste AA holgado (>7:1) contra #050505/#111827. */
+:root {
+    --zen-accent: #2dd4bf;
+    --zen-accent-alt: #38bdf8;
+    --zen-bg: rgba(45, 212, 191, 0.1);
+    --zen-border: #134e4a;
+    --zen-text: #5eead4;
+
+    --zennin-accent: #a855f7;
+    --zennin-accent-alt: #818cf8;
+    --zennin-bg: rgba(168, 85, 247, 0.1);
+    --zennin-border: #3b0764;
+    --zennin-text: #c084fc;
+
+    --shin-accent: #f59e0b;
+    --shin-accent-alt: #eab308;
+    --shin-bg: rgba(245, 158, 11, 0.1);
+    --shin-border: #451a03;
+    --shin-text: #fcd34d;
+}
+
+.tier-heading-zen { color: var(--zen-text); }
+.tier-heading-zennin { color: var(--zennin-text); }
+.tier-heading-shin { color: var(--shin-text); }
+
+/* Badge/pill de nivel (ej. botones "Ver Zennin" / "Ver Zennin Shin" que
+   disparan el mini-tour de features bloqueadas). */
+.tier-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid;
+    background: transparent;
+    cursor: pointer;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+}
+.tier-pill:active { transform: scale(0.97); }
+.tier-pill:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+
+.tier-pill-zen {
+    border-color: var(--zen-border);
+    color: var(--zen-text);
+    background: var(--zen-bg);
+}
+.tier-pill-zen:hover { background: rgba(45, 212, 191, 0.2); box-shadow: 0 0 15px rgba(45, 212, 191, 0.25); }
+
+.tier-pill-zennin {
+    border-color: var(--zennin-accent);
+    color: var(--zennin-text);
+    background: var(--zennin-bg);
+}
+.tier-pill-zennin:hover { background: rgba(168, 85, 247, 0.2); box-shadow: 0 0 15px rgba(168, 85, 247, 0.3); }
+
+.tier-pill-shin {
+    border-color: var(--shin-accent);
+    color: var(--shin-text);
+    background: var(--shin-bg);
+}
+.tier-pill-shin:hover { background: rgba(245, 158, 11, 0.2); box-shadow: 0 0 15px rgba(245, 158, 11, 0.3); }
+
 /* Campos de formulario compartidos (crear/editar empleado, confirmaciones).
    !important porque el plugin "forms" de Tailwind (CDN) inyecta su propio
    reset con fondo blanco DESPUES de este stylesheet y empata en

@@ -6,14 +6,14 @@
  *   startFeatureTour([
  *     { selector: '#feature-2fa', title: '2FA', text: '...' },
  *     ...
- *   ], 'violet');
+ *   ], 'zennin');
  */
 (function (window) {
   "use strict";
 
   const ACCENTS = {
-    violet: { border: "#bc13fe", glow: "rgba(188, 19, 254, 0.6)", text: "#bc13fe" },
-    gold: { border: "#ffb800", glow: "rgba(255, 184, 0, 0.6)", text: "#ffb800" },
+    zennin: { border: "#a855f7", glow: "rgba(168, 85, 247, 0.6)", text: "#c084fc" },
+    shin: { border: "#f59e0b", glow: "rgba(245, 158, 11, 0.6)", text: "#fcd34d" },
   };
 
   let state = null;

@@ -142,26 +142,26 @@
 </div>
 </div>
 <div class="mt-6 flex flex-wrap justify-center gap-3">
-<button type="button" onclick="startFeatureTour(PREMIUM_TOUR, 'violet')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-neon-violet/40 text-neon-violet hover:bg-neon-violet/10 transition-colors text-xs font-label-md tracking-widest uppercase">
+<button type="button" onclick="startFeatureTour(ZENNIN_TOUR, 'zennin')" class="tier-pill tier-pill-zennin">
 <span class="material-symbols-outlined text-[16px]">workspace_premium</span>
-Ver Premium
+Ver Zennin
 </button>
-<button type="button" onclick="startFeatureTour(GOLD_TOUR, 'gold')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#ffb800]/40 text-[#ffb800] hover:bg-[#ffb800]/10 transition-colors text-xs font-label-md tracking-widest uppercase">
+<button type="button" onclick="startFeatureTour(SHIN_TOUR, 'shin')" class="tier-pill tier-pill-shin">
 <span class="material-symbols-outlined text-[16px]">star</span>
-Ver Gold
+Ver Zennin Shin
 </button>
 </div>
 <script src="{% static 'js/feature-tour.js' %}"></script>
 <script>
-  const PREMIUM_TOUR = [
-    { selector: "#feature-2fa", title: "2FA · Premium", text: "Cada inicio de sesión pide un código de un solo uso, así que aunque roben la contraseña no pueden entrar solos con eso." },
-    { selector: "#feature-backup-codes", title: "Códigos de respaldo · Premium", text: "Si el administrador pierde el dispositivo del 2FA, puede entrar con un código de un solo uso generado de antemano." },
-    { selector: "#feature-audit-log", title: "Bitácora de auditoría · Premium", text: "Queda un registro de cada inicio de sesión (quién, cuándo, desde dónde) para poder investigar accesos sospechosos." },
+  const ZENNIN_TOUR = [
+    { selector: "#feature-2fa", title: "2FA · Zennin", text: "Cada inicio de sesión pide un código de un solo uso, así que aunque roben la contraseña no pueden entrar solos con eso." },
+    { selector: "#feature-backup-codes", title: "Códigos de respaldo · Zennin", text: "Si el administrador pierde el dispositivo del 2FA, puede entrar con un código de un solo uso generado de antemano." },
+    { selector: "#feature-audit-log", title: "Bitácora de auditoría · Zennin", text: "Queda un registro de cada inicio de sesión (quién, cuándo, desde dónde) para poder investigar accesos sospechosos." },
   ];
-  const GOLD_TOUR = [
-    { selector: "#feature-biometric", title: "Biometría / WebAuthn · Gold", text: "El administrador entra con huella digital o reconocimiento del sistema operativo (WebAuthn/FIDO2), sin depender solo de una contraseña." },
-    { selector: "#feature-hardware-key", title: "Llave de seguridad física · Gold", text: "Se puede exigir una llave física (tipo YubiKey) para accesos críticos, el nivel más alto de protección contra robo de cuenta." },
-    { selector: "#feature-trusted-devices", title: "Dispositivos confiables · Gold", text: "El sistema recuerda qué dispositivos ya fueron verificados y avisa si alguien intenta entrar desde uno nuevo." },
+  const SHIN_TOUR = [
+    { selector: "#feature-biometric", title: "Biometría / WebAuthn · Zennin Shin", text: "El administrador entra con huella digital o reconocimiento del sistema operativo (WebAuthn/FIDO2), sin depender solo de una contraseña." },
+    { selector: "#feature-hardware-key", title: "Llave de seguridad física · Zennin Shin", text: "Se puede exigir una llave física (tipo YubiKey) para accesos críticos, el nivel más alto de protección contra robo de cuenta." },
+    { selector: "#feature-trusted-devices", title: "Dispositivos confiables · Zennin Shin", text: "El sistema recuerda qué dispositivos ya fueron verificados y avisa si alguien intenta entrar desde uno nuevo." },
   ];
 </script>
 </main>

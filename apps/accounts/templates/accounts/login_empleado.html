@@ -144,25 +144,25 @@
 <p class="font-label-md text-gray-500 tracking-widest uppercase text-[10px]">¿Necesitas ayuda? Contacta a tu Gerente de Turno</p>
 </div>
 <div class="mt-6 flex flex-wrap justify-center gap-3">
-<button type="button" onclick="startFeatureTour(PREMIUM_TOUR, 'violet', { onStart: showVerificationStep, onEnd: restoreStepOne })" class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-neon-violet/40 text-neon-violet hover:bg-neon-violet/10 transition-colors text-xs font-label-md tracking-widest uppercase">
+<button type="button" onclick="startFeatureTour(ZENNIN_TOUR, 'zennin', { onStart: showVerificationStep, onEnd: restoreStepOne })" class="tier-pill tier-pill-zennin">
 <span class="material-symbols-outlined text-[16px]">workspace_premium</span>
-Ver Premium
+Ver Zennin
 </button>
-<button type="button" onclick="startFeatureTour(GOLD_TOUR, 'gold')" class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#ffb800]/40 text-[#ffb800] hover:bg-[#ffb800]/10 transition-colors text-xs font-label-md tracking-widest uppercase">
+<button type="button" onclick="startFeatureTour(SHIN_TOUR, 'shin')" class="tier-pill tier-pill-shin">
 <span class="material-symbols-outlined text-[16px]">star</span>
-Ver Gold
+Ver Zennin Shin
 </button>
 </div>
 </main>
 <script src="{% static 'js/feature-tour.js' %}"></script>
 <script>
-        const PREMIUM_TOUR = [
-            { selector: "#feature-verification", title: "Código de verificación · Premium", text: "Después del PIN se pide un código enviado al dispositivo del empleado, para que un PIN robado no alcance para iniciar turno." },
-            { selector: "#feature-attendance-clock", title: "Reloj biométrico · Premium", text: "La asistencia se marca con huella en vez de PIN, evitando que un compañero marque turno por otro." },
+        const ZENNIN_TOUR = [
+            { selector: "#feature-verification", title: "Código de verificación · Zennin", text: "Después del PIN se pide un código enviado al dispositivo del empleado, para que un PIN robado no alcance para iniciar turno." },
+            { selector: "#feature-attendance-clock", title: "Reloj biométrico · Zennin", text: "La asistencia se marca con huella en vez de PIN, evitando que un compañero marque turno por otro." },
         ];
-        const GOLD_TOUR = [
-            { selector: "#feature-employee-biometric", title: "Huella para iniciar turno · Gold", text: "El personal entra directo con huella digital, sin escribir ID ni PIN, agilizando el arranque de turno en hora pico." },
-            { selector: "#feature-employee-trusted-devices", title: "Dispositivos confiables · Gold", text: "El sistema reconoce las tablets/terminales habituales de cada sucursal y marca como sospechoso cualquier acceso desde un dispositivo nuevo." },
+        const SHIN_TOUR = [
+            { selector: "#feature-employee-biometric", title: "Huella para iniciar turno · Zennin Shin", text: "El personal entra directo con huella digital, sin escribir ID ni PIN, agilizando el arranque de turno en hora pico." },
+            { selector: "#feature-employee-trusted-devices", title: "Dispositivos confiables · Zennin Shin", text: "El sistema reconoce las tablets/terminales habituales de cada sucursal y marca como sospechoso cualquier acceso desde un dispositivo nuevo." },
         ];
 
         function showStep2Panel() {
