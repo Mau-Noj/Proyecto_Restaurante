@@ -28,6 +28,18 @@ body {
 *::-webkit-scrollbar-thumb:hover {
     background: rgba(0, 243, 255, 0.55);
 }
+/* Para paneles pensados para uso movil (ej. el modal de Menu por mesa):
+   la barra de scroll no aporta nada ahi y se ve como un elemento de
+   escritorio fuera de lugar -- el scroll sigue funcionando con el dedo
+   o la rueda, solo se oculta la barra visual. */
+.scrollbar-hidden {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+}
+
 *::-webkit-scrollbar-corner {
     background: transparent;
 }
