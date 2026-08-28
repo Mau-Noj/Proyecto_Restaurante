@@ -46,6 +46,13 @@ class OrderItem(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     delivered_at = models.DateTimeField(null=True, blank=True)
+    delivered_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        related_name="items_delivered",
+    )
 
     class Meta:
         ordering = ["created_at"]

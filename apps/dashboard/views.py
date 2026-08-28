@@ -9,7 +9,12 @@ MODULES = [
     {"code": "REG", "name": "Personal", "icon": "badge", "url_name": "employees:list"},
     {"code": "MESA", "name": "Mesas y Salón", "icon": "table_restaurant"},
     {"code": "ORD", "name": "Órdenes", "icon": "receipt_long"},
-    {"code": "COC", "name": "Cocina (KDS)", "icon": "soup_kitchen"},
+    {
+        "code": "COC",
+        "name": "Cocina (KDS)",
+        "icon": "soup_kitchen",
+        "url_name": "kds:report_prep_times",
+    },
     {"code": "PAG", "name": "Pagos", "icon": "point_of_sale", "url_name": "payments:index"},
     {
         "code": "CAT",
