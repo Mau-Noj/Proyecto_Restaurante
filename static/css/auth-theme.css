@@ -419,11 +419,39 @@ body {
 .receipt-row.is-done { opacity: 0.4; }
 .receipt-row.is-done .receipt-row-name { text-decoration: line-through; }
 
+.receipt-row-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
 .receipt-row-name {
     font-family: "JetBrains Mono", monospace;
     font-size: 13px;
     color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
+
+.receipt-row-notes {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    color: #fbbf24;
+    white-space: normal;
+}
+
+.receipt-timer-dot {
+    flex: 0 0 auto;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #34d399;
+    transition: background-color 0.3s ease;
+}
+.receipt-timer-dot.is-warn { background: #fbbf24; }
+.receipt-timer-dot.is-late { background: #f87171; box-shadow: 0 0 6px rgba(248, 113, 113, 0.7); }
 
 .receipt-check {
     appearance: none;

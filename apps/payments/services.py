@@ -42,7 +42,7 @@ def open_bill_for_table(table: Table, opened_by) -> Bill:
         )
     Order.objects.filter(table=table, bill__isnull=True).update(bill=bill)
     bill.subtotal = _orders_subtotal(bill.orders.all())
-    bill.total = bill.subtotal + bill.tip
+    bill.total = bill.subtotal + bill.tip - bill.discount
     bill.save(update_fields=["subtotal", "total"])
     table.status = Table.Status.CUENTA_PEDIDA
     table.save(update_fields=["status"])
@@ -61,8 +61,15 @@ def open_bill_for_takeout(order: Order, opened_by) -> Bill:
 
 def set_tip(bill: Bill, tip: Decimal) -> Bill:
     bill.tip = tip
-    bill.total = bill.subtotal + tip
+    bill.total = bill.subtotal + tip - bill.discount
     bill.save(update_fields=["tip", "total"])
+    return bill
+
+
+def set_discount(bill: Bill, discount: Decimal) -> Bill:
+    bill.discount = discount
+    bill.total = bill.subtotal + bill.tip - discount
+    bill.save(update_fields=["discount", "total"])
     return bill
 
 

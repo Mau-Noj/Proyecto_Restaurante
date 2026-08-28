@@ -53,6 +53,15 @@
 <button type="submit" class="w-7 h-7 flex items-center justify-center rounded-lg border border-white/15 text-white hover:border-neon-cyan hover:text-neon-cyan transition-colors">+</button>
 </form>
 </div>
+{% if item.quantity > 0 %}
+<form method="post" action="{% url 'tables:cart_set_notes' table.number category.pk item.product.pk %}" class="w-full flex items-center gap-1 mt-1">
+{% csrf_token %}
+<input type="text" name="notes" value="{{ item.notes }}" maxlength="200" placeholder="Notas (ej. sin cebolla)" class="field-input !h-8 !py-1 !text-xs flex-1 min-w-0"/>
+<button type="submit" class="w-8 h-8 shrink-0 flex items-center justify-center rounded-lg border border-white/15 text-gray-400 hover:border-neon-cyan hover:text-neon-cyan transition-colors" aria-label="Guardar nota">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</button>
+</form>
+{% endif %}
 </div>
 </div>
 {% empty %}

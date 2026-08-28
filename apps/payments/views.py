@@ -17,9 +17,16 @@ from apps.kds.notify import notify_order_stations
 from apps.orders.models import Order, OrderItem
 from apps.tables.models import Table
 
-from .forms import TIP_PRESETS, SplitForm, TipForm
+from .forms import DISCOUNT_PRESETS, TIP_PRESETS, DiscountForm, SplitForm, TipForm
 from .models import Bill, PaymentSplit
-from .services import bill_lines, close_bill, open_bill_for_table, open_bill_for_takeout, set_tip
+from .services import (
+    bill_lines,
+    close_bill,
+    open_bill_for_table,
+    open_bill_for_takeout,
+    set_discount,
+    set_tip,
+)
 
 # --- Mesa: abrir/cancelar el cobro de una mesa (mesero) ---------------------
 
@@ -49,10 +56,16 @@ def cancel_table_bill(request, number):
 def bill_detail(request, pk):
     bill = get_object_or_404(Bill, pk=pk)
     tip_form = TipForm(subtotal=bill.subtotal)
+    discount_base = bill.subtotal + bill.tip
+    discount_form = DiscountForm(base_total=discount_base)
     split_form = SplitForm(initial={"label": f"Persona {bill.splits.count() + 1}"})
     tip_suggestions = [
         (pct, (bill.subtotal * Decimal(pct) / Decimal("100")).quantize(Decimal("0.01")))
         for pct in TIP_PRESETS
+    ]
+    discount_suggestions = [
+        (pct, (discount_base * Decimal(pct) / Decimal("100")).quantize(Decimal("0.01")))
+        for pct in DISCOUNT_PRESETS
     ]
     return render(
         request,
@@ -63,6 +76,8 @@ def bill_detail(request, pk):
             "tip_form": tip_form,
             "split_form": split_form,
             "tip_suggestions": tip_suggestions,
+            "discount_form": discount_form,
+            "discount_suggestions": discount_suggestions,
         },
     )
 
@@ -74,6 +89,22 @@ def set_bill_tip(request, pk):
         form = TipForm(request.POST, subtotal=bill.subtotal)
         if form.is_valid():
             set_tip(bill, form.cleaned_data["tip"])
+        else:
+            for error in form.non_field_errors():
+                messages.error(request, error)
+            for field in form:
+                for error in field.errors:
+                    messages.error(request, f"{field.label}: {error}")
+    return redirect(reverse("payments:bill_detail", args=[bill.pk]))
+
+
+@login_required(login_url="accounts:login_empleado")
+def set_bill_discount(request, pk):
+    bill = get_object_or_404(Bill, pk=pk)
+    if request.method == "POST":
+        form = DiscountForm(request.POST, base_total=bill.subtotal + bill.tip)
+        if form.is_valid():
+            set_discount(bill, form.cleaned_data["discount"])
         else:
             for error in form.non_field_errors():
                 messages.error(request, error)

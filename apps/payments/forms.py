@@ -7,6 +7,7 @@ from .models import PaymentSplit
 _INPUT_ATTRS = {"class": "field-input"}
 
 TIP_PRESETS = ["10", "12", "15"]
+DISCOUNT_PRESETS = ["10", "20", "100"]
 
 
 class CommaDecimalField(forms.DecimalField):
@@ -62,6 +63,44 @@ class TipForm(forms.Form):
             cleaned_data["tip"] = (self.subtotal * Decimal(preset) / Decimal("100")).quantize(
                 Decimal("0.01")
             )
+        return cleaned_data
+
+
+class DiscountForm(forms.Form):
+    preset = forms.ChoiceField(
+        label="Descuento / Cortesía",
+        choices=[(pct, f"{pct}%") for pct in DISCOUNT_PRESETS] + [("custom", "Monto fijo")],
+        widget=forms.RadioSelect,
+    )
+    custom_amount = CommaDecimalField(
+        label="Monto de descuento",
+        max_digits=10,
+        decimal_places=2,
+        min_value=Decimal("0"),
+        required=False,
+        widget=forms.TextInput(
+            attrs={**_INPUT_ATTRS, "inputmode": "decimal", "placeholder": "0.00"}
+        ),
+    )
+
+    def __init__(self, *args, base_total: Decimal, **kwargs):
+        self.base_total = base_total
+        super().__init__(*args, **kwargs)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        preset = cleaned_data.get("preset")
+        if preset == "custom":
+            if cleaned_data.get("custom_amount") is None:
+                self.add_error("custom_amount", "Ingresa el monto del descuento.")
+                return cleaned_data
+            cleaned_data["discount"] = cleaned_data["custom_amount"]
+        elif preset:
+            cleaned_data["discount"] = (
+                self.base_total * Decimal(preset) / Decimal("100")
+            ).quantize(Decimal("0.01"))
+        if cleaned_data.get("discount") is not None and cleaned_data["discount"] > self.base_total:
+            self.add_error(None, "El descuento no puede ser mayor que el total de la cuenta.")
         return cleaned_data
 
 

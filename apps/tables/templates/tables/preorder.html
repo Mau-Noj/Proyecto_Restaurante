@@ -43,6 +43,9 @@
 <div class="min-w-0">
 <p class="text-white text-sm truncate">{{ line.product.name }}</p>
 <p class="text-gray-500 text-xs font-label-md">{{ line.quantity }} × Q{{ line.product.price }}</p>
+{% if line.notes %}
+<p class="text-amber-400 text-xs mt-0.5 truncate">&#128221; {{ line.notes }}</p>
+{% endif %}
 </div>
 <span class="text-neon-cyan text-sm font-label-md shrink-0">Q{{ line.subtotal }}</span>
 </div>

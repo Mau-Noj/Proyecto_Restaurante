@@ -10,6 +10,7 @@ urlpatterns = [
     path("mesa/<int:number>/cancelar-cobro/", views.cancel_table_bill, name="cancel_table_bill"),
     path("cuenta/<int:pk>/", views.bill_detail, name="bill_detail"),
     path("cuenta/<int:pk>/propina/", views.set_bill_tip, name="set_bill_tip"),
+    path("cuenta/<int:pk>/descuento/", views.set_bill_discount, name="set_bill_discount"),
     path("cuenta/<int:pk>/pagos/agregar/", views.add_bill_split, name="add_bill_split"),
     path(
         "cuenta/<int:pk>/pagos/<int:split_id>/eliminar/",

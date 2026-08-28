@@ -54,13 +54,22 @@
 <form method="post" action="{% url 'kds:mark_delivered' item.pk %}" class="receipt-row-form" data-item-id="{{ item.pk }}">
 {% csrf_token %}
 <label class="receipt-row">
-<span class="receipt-row-name">{{ item.product.name }}{% if item.quantity > 1 %} &times;{{ item.quantity }}{% endif %}</span>
+<span class="receipt-row-text">
+<span class="receipt-row-name">
+<span class="receipt-timer-dot" data-created="{{ item.created_at.isoformat }}"></span>
+{{ item.product.name }}{% if item.quantity > 1 %} &times;{{ item.quantity }}{% endif %}
+</span>
+{% if item.notes %}<span class="receipt-row-notes">{{ item.notes }}</span>{% endif %}
+</span>
 <input type="checkbox" class="receipt-check" onchange="deliverRow(this)"/>
 </label>
 </form>
 {% else %}
 <div class="receipt-row is-done">
+<span class="receipt-row-text">
 <span class="receipt-row-name">{{ item.product.name }}{% if item.quantity > 1 %} &times;{{ item.quantity }}{% endif %}</span>
+{% if item.notes %}<span class="receipt-row-notes">{{ item.notes }}</span>{% endif %}
+</span>
 <input type="checkbox" class="receipt-check" checked disabled/>
 </div>
 {% endif %}
@@ -86,6 +95,25 @@
             checkboxEl.closest('form').submit();
         }, 500);
     }
+
+    // Semaforo de tiempos de espera: verde < 10 min, amarillo 10-20 min,
+    // rojo > 20 min desde que el item entro a la comanda (created_at).
+    function updateTimers() {
+        const now = Date.now();
+        document.querySelectorAll('.receipt-timer-dot[data-created]').forEach((dot) => {
+            const created = new Date(dot.dataset.created).getTime();
+            if (Number.isNaN(created)) return;
+            const minutes = (now - created) / 60000;
+            dot.classList.remove('is-warn', 'is-late');
+            if (minutes >= 20) {
+                dot.classList.add('is-late');
+            } else if (minutes >= 10) {
+                dot.classList.add('is-warn');
+            }
+        });
+    }
+    updateTimers();
+    setInterval(updateTimers, 15000);
 
     // Tiempo real (RNF-008): la pantalla se une a un grupo por estacion via
     // WebSocket y se refresca en cuanto llega o se entrega un pedido, en vez

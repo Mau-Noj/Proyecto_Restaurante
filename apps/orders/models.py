@@ -38,6 +38,9 @@ class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
     product = models.ForeignKey("catalog.Product", on_delete=models.PROTECT)
     quantity = models.PositiveSmallIntegerField(default=1)
+    notes = models.CharField(
+        "Notas", max_length=200, blank=True, default="", help_text='Ej. "sin cebolla", "bien cocido"'
+    )
     status = models.CharField(
         max_length=20, choices=Status.choices, default=Status.PENDIENTE
     )
