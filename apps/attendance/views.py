@@ -11,7 +11,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.dateparse import parse_date
 
-from apps.accounts.decorators import staff_required
+from apps.employees.decorators import position_required
 from apps.employees.models import Employee
 
 from .forms import AdjustmentForm, KioskForm, OvertimeRequestForm, OvertimeResponseForm, ShiftForm
@@ -33,16 +33,23 @@ from .services import (
     worked_summary,
 )
 
+# Estas pantallas de administracion de asistencia (kioscos, turnos, horas
+# extra) las puede usar tanto un admin/is_staff de Django como cualquier
+# Employee con puesto Gerente -- son conceptos separados en este proyecto
+# (is_staff no implica tener ficha de empleado, y viceversa), mismo criterio
+# ya usado para el acceso al KDS.
+gerente_required = position_required(Employee.Position.GERENTE)
+
 # --- Kioscos -----------------------------------------------------------------
 
 
-@staff_required
+@gerente_required
 def kiosk_list(request):
     kiosks = Kiosk.objects.all()
     return render(request, "attendance/kiosk_list.html", {"kiosks": kiosks})
 
 
-@staff_required
+@gerente_required
 def kiosk_create(request):
     if request.method == "POST":
         form = KioskForm(request.POST)
@@ -55,7 +62,7 @@ def kiosk_create(request):
     return render(request, "attendance/kiosk_form.html", {"form": form})
 
 
-@staff_required
+@gerente_required
 def kiosk_display(request, kiosk_id):
     kiosk = get_object_or_404(Kiosk, pk=kiosk_id)
     leaving = employees_leaving_now()
@@ -73,7 +80,7 @@ def _qr_response(url: str) -> HttpResponse:
     return response
 
 
-@staff_required
+@gerente_required
 def kiosk_qr_image(request, kiosk_id):
     kiosk = get_object_or_404(Kiosk, pk=kiosk_id)
     token = generate_kiosk_token(kiosk)
@@ -83,7 +90,7 @@ def kiosk_qr_image(request, kiosk_id):
     return _qr_response(url)
 
 
-@staff_required
+@gerente_required
 def kiosk_qr_static_entrada_image(request, kiosk_id):
     kiosk = get_object_or_404(Kiosk, pk=kiosk_id)
     token = static_entrada_token(kiosk)
@@ -93,7 +100,7 @@ def kiosk_qr_static_entrada_image(request, kiosk_id):
     return _qr_response(url)
 
 
-@staff_required
+@gerente_required
 def kiosk_qr_scoped_image(request, kiosk_id, employee_id):
     kiosk = get_object_or_404(Kiosk, pk=kiosk_id)
     employee = get_object_or_404(Employee, pk=employee_id)
@@ -230,7 +237,7 @@ def my_attendance(request):
     )
 
 
-@staff_required
+@gerente_required
 def entry_adjust(request, entry_id):
     entry = get_object_or_404(TimeEntry, pk=entry_id)
     if request.method == "POST":
@@ -246,7 +253,7 @@ def entry_adjust(request, entry_id):
     return render(request, "attendance/entry_adjust.html", {"form": form, "entry": entry})
 
 
-@staff_required
+@gerente_required
 def report_hours(request):
     hasta = parse_date(request.GET.get("hasta", "")) or timezone.localdate()
     desde = parse_date(request.GET.get("desde", "")) or hasta - timedelta(days=30)
@@ -296,7 +303,7 @@ def report_hours(request):
 # --- Turnos --------------------------------------------------------------------
 
 
-@staff_required
+@gerente_required
 def shift_list(request):
     today = timezone.localdate()
     shifts = (
@@ -308,7 +315,7 @@ def shift_list(request):
     return render(request, "attendance/shift_list.html", {"shifts": shifts, "today": today})
 
 
-@staff_required
+@gerente_required
 def shift_create(request):
     if request.method == "POST":
         form = ShiftForm(request.POST)
@@ -354,7 +361,7 @@ def overtime_request_create(request, shift_id):
     return redirect(reverse("attendance:my_attendance"))
 
 
-@staff_required
+@gerente_required
 def overtime_propose(request, shift_id):
     shift = get_object_or_404(Shift, pk=shift_id)
     if request.method == "POST":
@@ -403,7 +410,7 @@ def overtime_respond(request, request_id):
     return redirect(reverse("attendance:my_attendance"))
 
 
-@staff_required
+@gerente_required
 def overtime_decide(request, request_id):
     overtime = get_object_or_404(OvertimeRequest, pk=request_id)
     if request.method == "POST":
@@ -420,7 +427,7 @@ def overtime_decide(request, request_id):
     return redirect(reverse("attendance:overtime_list"))
 
 
-@staff_required
+@gerente_required
 def overtime_list(request):
     pending = (
         OvertimeRequest.objects.filter(status=OvertimeRequest.Status.PENDIENTE)

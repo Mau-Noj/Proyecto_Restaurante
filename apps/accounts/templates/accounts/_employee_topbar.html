@@ -13,6 +13,13 @@
 {% endif %}
 </div>
 <div class="flex items-center justify-between sm:justify-end gap-3 shrink-0">
+{% if user.is_staff or user.employee_profile.position == "GERENTE" %}
+<a href="{% url 'attendance:report_hours' %}" title="Administrar Asistencia" class="flex items-center gap-1.5 text-gray-400 hover:text-neon-cyan transition-colors text-xs font-label-md uppercase tracking-widest">
+<span class="material-symbols-outlined text-[16px] leading-none">manage_accounts</span>
+<span class="hidden sm:inline">Administrar Asistencia</span>
+</a>
+<span class="hidden sm:block w-px h-4 bg-white/10"></span>
+{% endif %}
 <a href="{% url 'attendance:my_attendance' %}" title="Mi Asistencia" class="flex items-center gap-1.5 text-gray-400 hover:text-neon-cyan transition-colors text-xs font-label-md uppercase tracking-widest">
 <span class="material-symbols-outlined text-[16px] leading-none">schedule</span>
 <span class="hidden sm:inline">Mi Asistencia</span>
