@@ -28,6 +28,12 @@
 {% include "accounts/_employee_topbar.html" with breadcrumb="Mi Asistencia" %}
 
 <main class="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+{% if messages %}
+{% for message in messages %}
+<div class="form-error rounded-xl px-4 py-3 mb-6 text-sm {% if message.tags == 'success' %}!bg-[rgba(0,243,255,0.1)] !border-neon-cyan/40 !text-neon-cyan{% endif %}" role="alert">{{ message }}</div>
+{% endfor %}
+{% endif %}
+
 <div class="mb-6">
 <h2 class="font-headline-lg text-2xl font-bold text-white mb-1">Mi Asistencia</h2>
 <p class="text-gray-400 text-sm">Últimos 30 días. Cualquier corrección que haga un administrador sobre tus marcaciones aparece acá, con el motivo.</p>
@@ -43,6 +49,42 @@
 <p class="text-white text-2xl font-bold">{{ summary|length }}</p>
 </div>
 </div>
+
+{% if today_shift %}
+<div class="glass-panel rounded-2xl border border-white/10 p-5 mb-6">
+<h3 class="font-headline-sm text-sm text-neon-cyan uppercase tracking-widest mb-3">Turno de Hoy</h3>
+<p class="text-white text-sm mb-3">{{ today_shift.start_time|time:"H:i" }} - {{ today_shift.end_time|time:"H:i" }}</p>
+<form method="post" action="{% url 'attendance:overtime_request_create' today_shift.pk %}" class="flex items-end gap-2 flex-wrap">
+{% csrf_token %}
+<div>
+<label class="field-label">{{ overtime_form.minutes.label }}</label>
+{{ overtime_form.minutes }}
+</div>
+<button type="submit" class="h-10 px-4 rounded-xl border border-neon-cyan/40 text-neon-cyan text-sm hover:bg-neon-cyan/10 transition-colors">Pedir horas extra</button>
+</form>
+</div>
+{% endif %}
+
+{% if pending_proposals %}
+<div class="mb-6">
+<h3 class="font-headline-sm text-sm text-amber-400 uppercase tracking-widest mb-3">Propuestas de Administración</h3>
+{% for proposal in pending_proposals %}
+<div class="glass-panel rounded-xl border border-amber-500/30 p-4 mb-2">
+<p class="text-white text-sm mb-1">Te proponen {{ proposal.requested_minutes }} minutos extra el {{ proposal.shift.date }}.</p>
+{% if proposal.note %}<p class="text-gray-500 text-xs mb-3">{{ proposal.note }}</p>{% endif %}
+<form method="post" action="{% url 'attendance:overtime_respond' proposal.pk %}" class="flex items-end gap-2 flex-wrap">
+{% csrf_token %}
+<div>
+<label class="field-label">¿Cuántos minutos podés hacer? (máx. {{ proposal.requested_minutes }})</label>
+<input type="number" name="accepted_minutes" min="0" max="{{ proposal.requested_minutes }}" value="{{ proposal.requested_minutes }}" class="field-input"/>
+</div>
+<button type="submit" name="action" value="aceptar" class="h-10 px-4 rounded-xl border border-emerald-500/40 text-emerald-400 text-sm hover:bg-emerald-500/10 transition-colors">Responder</button>
+<button type="submit" name="action" value="rechazar" class="h-10 px-4 rounded-xl border border-red-500/40 text-red-400 text-sm hover:bg-red-500/10 transition-colors">No puedo</button>
+</form>
+</div>
+{% endfor %}
+</div>
+{% endif %}
 
 <h3 class="font-headline-sm text-sm text-neon-cyan uppercase tracking-widest mb-3">Marcaciones</h3>
 <div class="space-y-2 mb-8">
@@ -72,6 +114,18 @@
 <p class="glass-panel rounded-xl border border-white/10 px-5 py-8 text-center text-gray-500 text-sm">Todavía no tenés marcaciones registradas.</p>
 {% endfor %}
 </div>
+
+{% if my_requests %}
+<h3 class="font-headline-sm text-sm text-gray-400 uppercase tracking-widest mb-3">Mis Solicitudes de Horas Extra</h3>
+<div class="space-y-2">
+{% for req in my_requests %}
+<div class="glass-panel rounded-xl border border-white/10 p-3 flex items-center justify-between text-sm">
+<span class="text-gray-300">{{ req.get_origin_display }} · {{ req.requested_minutes }} min · {{ req.shift.date }}</span>
+<span class="{% if req.status == 'APROBADA' %}text-emerald-400{% elif req.status == 'PENDIENTE' %}text-amber-400{% else %}text-red-400{% endif %}">{{ req.get_status_display }}</span>
+</div>
+{% endfor %}
+</div>
+{% endif %}
 </main>
 </body>
 </html>

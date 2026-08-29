@@ -4,6 +4,7 @@ from io import BytesIO
 import qrcode
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db import IntegrityError
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -13,16 +14,26 @@ from django.utils.dateparse import parse_date
 from apps.accounts.decorators import staff_required
 from apps.employees.models import Employee
 
-from .forms import AdjustmentForm, KioskForm
-from .models import Kiosk, TimeEntry
+from .forms import AdjustmentForm, KioskForm, OvertimeRequestForm, OvertimeResponseForm, ShiftForm
+from .models import Kiosk, OvertimeRequest, Shift, TimeEntry
 from .services import (
     ClockError,
     clock_employee,
+    clock_scoped,
+    clock_static_entrada,
     create_adjustment,
+    decide_overtime_request,
+    employees_leaving_now,
     generate_kiosk_token,
+    generate_scoped_token,
     next_entry_type,
+    request_overtime,
+    respond_overtime_proposal,
+    static_entrada_token,
     worked_summary,
 )
+
+# --- Kioscos -----------------------------------------------------------------
 
 
 @staff_required
@@ -47,16 +58,13 @@ def kiosk_create(request):
 @staff_required
 def kiosk_display(request, kiosk_id):
     kiosk = get_object_or_404(Kiosk, pk=kiosk_id)
-    return render(request, "attendance/kiosk_display.html", {"kiosk": kiosk})
-
-
-@staff_required
-def kiosk_qr_image(request, kiosk_id):
-    kiosk = get_object_or_404(Kiosk, pk=kiosk_id)
-    token = generate_kiosk_token(kiosk)
-    url = request.build_absolute_uri(
-        reverse("attendance:mark_confirm") + f"?k={kiosk.pk}&t={token}"
+    leaving = employees_leaving_now()
+    return render(
+        request, "attendance/kiosk_display.html", {"kiosk": kiosk, "leaving": leaving}
     )
+
+
+def _qr_response(url: str) -> HttpResponse:
     image = qrcode.make(url)
     buffer = BytesIO()
     image.save(buffer, format="PNG")
@@ -65,12 +73,49 @@ def kiosk_qr_image(request, kiosk_id):
     return response
 
 
+@staff_required
+def kiosk_qr_image(request, kiosk_id):
+    kiosk = get_object_or_404(Kiosk, pk=kiosk_id)
+    token = generate_kiosk_token(kiosk)
+    url = request.build_absolute_uri(
+        reverse("attendance:mark_confirm") + f"?k={kiosk.pk}&mode=generico&t={token}"
+    )
+    return _qr_response(url)
+
+
+@staff_required
+def kiosk_qr_static_entrada_image(request, kiosk_id):
+    kiosk = get_object_or_404(Kiosk, pk=kiosk_id)
+    token = static_entrada_token(kiosk)
+    url = request.build_absolute_uri(
+        reverse("attendance:mark_confirm") + f"?k={kiosk.pk}&mode=entrada&t={token}"
+    )
+    return _qr_response(url)
+
+
+@staff_required
+def kiosk_qr_scoped_image(request, kiosk_id, employee_id):
+    kiosk = get_object_or_404(Kiosk, pk=kiosk_id)
+    employee = get_object_or_404(Employee, pk=employee_id)
+    token = generate_scoped_token(kiosk, employee)
+    url = request.build_absolute_uri(
+        reverse("attendance:mark_confirm") + f"?k={kiosk.pk}&mode=salida&e={employee.pk}&t={token}"
+    )
+    return _qr_response(url)
+
+
+# --- Marcar (escaneado desde el celular del empleado) -----------------------
+
+
 @login_required(login_url="accounts:login_empleado")
 def mark_confirm(request):
-    kiosk_id = request.GET.get("k") or request.POST.get("k")
-    token = request.GET.get("t") or request.POST.get("t")
-    employee = getattr(request.user, "employee_profile", None)
+    params = request.GET if request.method == "GET" else request.POST
+    kiosk_id = params.get("k")
+    mode = params.get("mode", "generico")
+    token = params.get("t")
+    owner_id = params.get("e")
 
+    employee = getattr(request.user, "employee_profile", None)
     if not employee:
         return render(
             request,
@@ -86,19 +131,55 @@ def mark_confirm(request):
             {"message": "Código inválido. Escanea el QR del kiosco de nuevo."},
         )
 
+    owner_employee = None
+    if mode == "salida":
+        owner_employee = Employee.objects.filter(pk=owner_id).select_related("user").first()
+        if not owner_employee:
+            return render(
+                request, "attendance/mark_error.html", {"message": "Código inválido."}
+            )
+        if owner_employee.pk != employee.pk:
+            owner_name = owner_employee.user.get_full_name() or owner_employee.user.username
+            return render(
+                request,
+                "attendance/mark_error.html",
+                {"message": f"Este código es para {owner_name}, no para vos."},
+            )
+
     if request.method == "POST":
         try:
-            entry = clock_employee(employee, kiosk, token)
+            if mode == "entrada":
+                entry = clock_static_entrada(employee, kiosk, token)
+            elif mode == "salida":
+                entry = clock_scoped(employee, kiosk, token, owner_employee)
+            else:
+                entry = clock_employee(employee, kiosk, token)
         except ClockError as exc:
             return render(request, "attendance/mark_error.html", {"message": str(exc)})
         return render(request, "attendance/mark_success.html", {"entry": entry})
 
-    preview_type = next_entry_type(employee)
+    if mode == "entrada":
+        preview_type = TimeEntry.EntryType.ENTRADA
+    elif mode == "salida":
+        preview_type = TimeEntry.EntryType.SALIDA
+    else:
+        preview_type = next_entry_type(employee)
+
     return render(
         request,
         "attendance/mark_confirm.html",
-        {"kiosk": kiosk, "token": token, "employee": employee, "preview_type": preview_type},
+        {
+            "kiosk": kiosk,
+            "mode": mode,
+            "token": token,
+            "owner_id": owner_id,
+            "employee": employee,
+            "preview_type": preview_type,
+        },
     )
+
+
+# --- Vista del empleado -------------------------------------------------------
 
 
 @login_required(login_url="accounts:login_empleado")
@@ -120,6 +201,17 @@ def my_attendance(request):
     )
     summary = worked_summary(employee, date_from, today)
     total_hours = round(sum(row["hours"] for row in summary), 2)
+
+    today_shift = Shift.objects.filter(employee=employee, date=today).prefetch_related(
+        "overtime_requests"
+    ).first()
+    pending_proposals = OvertimeRequest.objects.filter(
+        employee=employee, origin=OvertimeRequest.Origin.ADMIN, status=OvertimeRequest.Status.PENDIENTE
+    ).select_related("shift", "requested_by")
+    my_requests = OvertimeRequest.objects.filter(employee=employee).select_related(
+        "shift", "requested_by", "responded_by"
+    )[:10]
+
     return render(
         request,
         "attendance/my_attendance.html",
@@ -129,6 +221,11 @@ def my_attendance(request):
             "total_hours": total_hours,
             "date_from": date_from,
             "date_to": today,
+            "today_shift": today_shift,
+            "pending_proposals": pending_proposals,
+            "my_requests": my_requests,
+            "overtime_form": OvertimeRequestForm(),
+            "response_form": OvertimeResponseForm(),
         },
     )
 
@@ -163,6 +260,10 @@ def report_hours(request):
             {
                 "employee": employee,
                 "days": len(summary),
+                "regular": round(sum(r["regular"] for r in summary), 2),
+                "overtime": round(sum(r["overtime"] for r in summary), 2),
+                "unauthorized": round(sum(r["unauthorized"] for r in summary), 2),
+                "no_shift": round(sum(r["no_shift"] for r in summary), 2),
                 "hours": round(sum(r["hours"] for r in summary), 2),
                 "daily": summary,
             }
@@ -186,6 +287,151 @@ def report_hours(request):
             "chart_labels": [
                 row["employee"].user.get_full_name() or row["employee"].user.username for row in rows
             ],
-            "chart_hours": [row["hours"] for row in rows],
+            "chart_regular": [row["regular"] for row in rows],
+            "chart_overtime": [row["overtime"] for row in rows],
         },
+    )
+
+
+# --- Turnos --------------------------------------------------------------------
+
+
+@staff_required
+def shift_list(request):
+    today = timezone.localdate()
+    shifts = (
+        Shift.objects.filter(date__gte=today - timedelta(days=1))
+        .select_related("employee__user")
+        .prefetch_related("overtime_requests")
+        .order_by("date", "start_time")[:100]
+    )
+    return render(request, "attendance/shift_list.html", {"shifts": shifts, "today": today})
+
+
+@staff_required
+def shift_create(request):
+    if request.method == "POST":
+        form = ShiftForm(request.POST)
+        if form.is_valid():
+            shift = form.save(commit=False)
+            shift.created_by = request.user
+            try:
+                shift.save()
+            except IntegrityError:
+                messages.error(
+                    request, "Ese empleado ya tiene un turno asignado ese día. Editalo en vez de duplicarlo."
+                )
+                return render(request, "attendance/shift_form.html", {"form": form})
+            messages.success(request, "Turno asignado.")
+            return redirect(reverse("attendance:shift_list"))
+    else:
+        form = ShiftForm()
+    return render(request, "attendance/shift_form.html", {"form": form})
+
+
+# --- Horas extra -----------------------------------------------------------------
+
+
+@login_required(login_url="accounts:login_empleado")
+def overtime_request_create(request, shift_id):
+    employee = getattr(request.user, "employee_profile", None)
+    shift = get_object_or_404(Shift, pk=shift_id, employee=employee)
+    if request.method == "POST":
+        form = OvertimeRequestForm(request.POST)
+        if form.is_valid():
+            request_overtime(
+                shift,
+                request.user,
+                OvertimeRequest.Origin.EMPLEADO,
+                form.cleaned_data["minutes"],
+                form.cleaned_data["note"],
+            )
+            messages.success(request, "Solicitud enviada. Un gerente tiene que aprobarla.")
+        else:
+            for field in form:
+                for error in field.errors:
+                    messages.error(request, f"{field.label}: {error}")
+    return redirect(reverse("attendance:my_attendance"))
+
+
+@staff_required
+def overtime_propose(request, shift_id):
+    shift = get_object_or_404(Shift, pk=shift_id)
+    if request.method == "POST":
+        form = OvertimeRequestForm(request.POST)
+        if form.is_valid():
+            request_overtime(
+                shift,
+                request.user,
+                OvertimeRequest.Origin.ADMIN,
+                form.cleaned_data["minutes"],
+                form.cleaned_data["note"],
+            )
+            messages.success(request, "Propuesta enviada al empleado.")
+        else:
+            for field in form:
+                for error in field.errors:
+                    messages.error(request, f"{field.label}: {error}")
+    return redirect(reverse("attendance:shift_list"))
+
+
+@login_required(login_url="accounts:login_empleado")
+def overtime_respond(request, request_id):
+    employee = getattr(request.user, "employee_profile", None)
+    overtime = get_object_or_404(
+        OvertimeRequest, pk=request_id, employee=employee, origin=OvertimeRequest.Origin.ADMIN
+    )
+    if request.method == "POST":
+        action = request.POST.get("action")
+        try:
+            if action == "rechazar":
+                respond_overtime_proposal(overtime, request.user, 0)
+                messages.success(request, "Propuesta rechazada.")
+            else:
+                form = OvertimeResponseForm(request.POST)
+                if form.is_valid():
+                    respond_overtime_proposal(
+                        overtime, request.user, form.cleaned_data["accepted_minutes"]
+                    )
+                    messages.success(request, "Respuesta registrada.")
+                else:
+                    for field in form:
+                        for error in field.errors:
+                            messages.error(request, f"{field.label}: {error}")
+        except ClockError as exc:
+            messages.error(request, str(exc))
+    return redirect(reverse("attendance:my_attendance"))
+
+
+@staff_required
+def overtime_decide(request, request_id):
+    overtime = get_object_or_404(OvertimeRequest, pk=request_id)
+    if request.method == "POST":
+        action = request.POST.get("action")
+        try:
+            if action == "aprobar":
+                decide_overtime_request(overtime, request.user, True, overtime.requested_minutes)
+                messages.success(request, "Solicitud aprobada.")
+            else:
+                decide_overtime_request(overtime, request.user, False)
+                messages.success(request, "Solicitud rechazada.")
+        except ClockError as exc:
+            messages.error(request, str(exc))
+    return redirect(reverse("attendance:overtime_list"))
+
+
+@staff_required
+def overtime_list(request):
+    pending = (
+        OvertimeRequest.objects.filter(status=OvertimeRequest.Status.PENDIENTE)
+        .select_related("employee__user", "shift", "requested_by")
+        .order_by("created_at")
+    )
+    history = (
+        OvertimeRequest.objects.exclude(status=OvertimeRequest.Status.PENDIENTE)
+        .select_related("employee__user", "shift", "responded_by")
+        .order_by("-responded_at")[:50]
+    )
+    return render(
+        request, "attendance/overtime_list.html", {"pending": pending, "history": history}
     )

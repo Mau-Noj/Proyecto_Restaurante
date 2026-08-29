@@ -1,0 +1,103 @@
+{% load static cache_bust %}
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Zennin Bistro - Turnos</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: { extend: { colors: { "neon-cyan": "#00f3ff", "neon-violet": "#bc13fe" },
+          fontFamily: { "body-md": ["Inter"], "headline-md": ["Inter"], "headline-lg": ["Inter"], "label-md": ["JetBrains Mono"] } } }
+      }
+</script>
+<link href="{% static_v 'css/auth-theme.css' %}" rel="stylesheet"/>
+</head>
+<body class="font-body-md">
+<div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+<div class="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full bg-neon-violet opacity-10 blur-[150px]"></div>
+<div class="absolute bottom-[0%] -right-[10%] w-[50%] h-[50%] rounded-full bg-neon-cyan opacity-5 blur-[120px]"></div>
+</div>
+
+{% include "dashboard/_topbar.html" with breadcrumb="Asistencia / Turnos" %}
+
+<main class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+{% if messages %}
+{% for message in messages %}
+<div class="form-error rounded-xl px-4 py-3 mb-6 text-sm {% if message.tags == 'success' %}!bg-[rgba(0,243,255,0.1)] !border-neon-cyan/40 !text-neon-cyan{% endif %}" role="alert">{{ message }}</div>
+{% endfor %}
+{% endif %}
+
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+<div>
+<h2 class="font-headline-lg text-2xl font-bold text-white mb-1">Turnos</h2>
+<p class="text-gray-400 text-sm">La hora de salida es lo que hace aparecer el QR nombrado de esa persona en el kiosco.</p>
+</div>
+<a href="{% url 'attendance:shift_create' %}" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-neon-cyan/20 to-neon-violet/20 border border-neon-cyan/50 text-white hover:bg-neon-cyan/30 transition-all text-sm font-headline-sm shrink-0">
+<span class="material-symbols-outlined text-[18px]">add</span>
+Nuevo Turno
+</a>
+</div>
+
+<div class="glass-panel rounded-xl border border-white/10 overflow-x-auto">
+<table class="w-full text-sm min-w-[560px]">
+<thead class="bg-black/40 text-gray-400 font-label-md text-xs uppercase tracking-widest">
+<tr>
+<th class="text-left px-5 py-3">Fecha</th>
+<th class="text-left px-5 py-3">Empleado</th>
+<th class="text-left px-5 py-3">Horario</th>
+<th class="text-left px-5 py-3">Horas extra</th>
+<th class="text-right px-5 py-3"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5">
+{% for shift in shifts %}
+<tr class="hover:bg-white/5 transition-colors {% if shift.date == today %}bg-neon-cyan/5{% endif %}">
+<td class="px-5 py-3 text-white">{{ shift.date }}{% if shift.date == today %} <span class="text-neon-cyan text-xs">(hoy)</span>{% endif %}</td>
+<td class="px-5 py-3 text-gray-300">{{ shift.employee.user.get_full_name|default:shift.employee.user.username }}</td>
+<td class="px-5 py-3 text-gray-400 font-label-md">{{ shift.start_time|time:"H:i" }} - {{ shift.end_time|time:"H:i" }}</td>
+<td class="px-5 py-3 text-gray-400">
+{% for req in shift.overtime_requests.all %}
+<span class="{% if req.status == 'APROBADA' %}text-emerald-400{% elif req.status == 'PENDIENTE' %}text-amber-400{% else %}text-gray-600{% endif %}">{{ req.requested_minutes }}min ({{ req.get_status_display }})</span>{% if not forloop.last %}, {% endif %}
+{% empty %}
+<span class="text-gray-600">—</span>
+{% endfor %}
+</td>
+<td class="px-5 py-3 text-right">
+<form method="post" action="{% url 'attendance:overtime_propose' shift.pk %}" class="inline-flex items-center gap-1 justify-end">
+{% csrf_token %}
+<input type="hidden" name="minutes" value=""/>
+<button type="button" onclick="promptOvertime(this)" class="inline-flex items-center gap-1 text-gray-400 hover:text-neon-cyan transition-colors text-xs font-label-md uppercase tracking-widest">
+<span class="material-symbols-outlined text-[16px]">more_time</span>
+Proponer extra
+</button>
+</form>
+</td>
+</tr>
+{% empty %}
+<tr>
+<td class="px-5 py-8 text-center text-gray-500" colspan="5">Todavía no hay turnos asignados.</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</main>
+
+<script>
+    function promptOvertime(button) {
+        const minutes = window.prompt('¿Cuántos minutos extra proponés?', '60');
+        if (!minutes) return;
+        const form = button.closest('form');
+        form.querySelector('input[name="minutes"]').value = minutes;
+        form.submit();
+    }
+</script>
+</body>
+</html>

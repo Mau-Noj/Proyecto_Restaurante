@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Zennin Bistro - Marcar Asistencia</title>
+<title>Zennin Bistro - Nuevo Turno</title>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -19,33 +19,45 @@
 </script>
 <link href="{% static_v 'css/auth-theme.css' %}" rel="stylesheet"/>
 </head>
-<body class="font-body-md min-h-screen flex items-center justify-center">
+<body class="font-body-md">
 <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
 <div class="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full bg-neon-violet opacity-10 blur-[150px]"></div>
 <div class="absolute bottom-[0%] -right-[10%] w-[50%] h-[50%] rounded-full bg-neon-cyan opacity-5 blur-[120px]"></div>
 </div>
 
-<main class="relative z-10 text-center px-6 max-w-sm w-full">
-<span class="material-symbols-outlined text-5xl text-neon-cyan mb-3 block">
-{% if preview_type == "ENTRADA" %}login{% else %}logout{% endif %}
-</span>
-<p class="text-gray-400 text-xs font-label-md uppercase tracking-widest mb-1">{{ kiosk.name }}</p>
-<h1 class="font-headline-lg text-2xl font-bold text-white mb-2">
-Marcar {% if preview_type == "ENTRADA" %}Entrada{% else %}Salida{% endif %}
-</h1>
-<p class="text-gray-300 text-sm mb-8">{{ employee.user.get_full_name|default:employee.user.username }}</p>
+{% include "dashboard/_topbar.html" with breadcrumb="Asistencia / Nuevo Turno" %}
 
-<form method="post" action="{% url 'attendance:mark_confirm' %}">
-{% csrf_token %}
-<input type="hidden" name="k" value="{{ kiosk.pk }}"/>
-<input type="hidden" name="mode" value="{{ mode }}"/>
-<input type="hidden" name="t" value="{{ token }}"/>
-{% if owner_id %}<input type="hidden" name="e" value="{{ owner_id }}"/>{% endif %}
-<button type="submit" class="w-full h-12 bg-gradient-to-r from-neon-cyan/20 to-neon-violet/20 border border-neon-cyan/50 text-white rounded-xl font-headline-sm text-sm tracking-widest uppercase hover:bg-neon-cyan/30 transition-all">Confirmar</button>
-</form>
-{% if mode != "entrada" %}
-<p class="text-gray-500 text-xs mt-4">El código vence en unos segundos — si expira, volvé a escanear el QR.</p>
+<main class="relative z-10 max-w-md mx-auto px-4 sm:px-6 py-10 sm:py-16">
+<h2 class="font-headline-lg text-2xl font-bold text-white mb-6">Nuevo Turno</h2>
+
+{% if form.errors %}
+<div class="form-error rounded-xl px-4 py-3 mb-6 text-sm" role="alert">
+{% for field in form %}{% for error in field.errors %}{{ field.label }}: {{ error }}<br/>{% endfor %}{% endfor %}
+</div>
 {% endif %}
+
+<form method="post" class="glass-panel neon-border rounded-2xl p-6 space-y-4">
+{% csrf_token %}
+<div>
+<label class="field-label">{{ form.employee.label }}</label>
+{{ form.employee }}
+</div>
+<div>
+<label class="field-label">{{ form.date.label }}</label>
+{{ form.date }}
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div>
+<label class="field-label">{{ form.start_time.label }}</label>
+{{ form.start_time }}
+</div>
+<div>
+<label class="field-label">{{ form.end_time.label }}</label>
+{{ form.end_time }}
+</div>
+</div>
+<button type="submit" class="w-full h-11 bg-gradient-to-r from-neon-cyan/20 to-neon-violet/20 border border-neon-cyan/50 text-white rounded-xl text-sm font-headline-sm hover:bg-neon-cyan/30 transition-all">Asignar Turno</button>
+</form>
 </main>
 </body>
 </html>

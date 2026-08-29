@@ -29,4 +29,12 @@ Cerrar sesión
 </form>
 </div>
 </div>
+{% if shift_alert %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 pb-3">
+<a href="{% url 'attendance:my_attendance' %}" class="flex items-center gap-2 px-3 py-2 rounded-lg border {% if shift_alert.ended %}border-red-500/30 bg-red-500/10 text-red-400{% else %}border-amber-500/30 bg-amber-500/10 text-amber-400{% endif %} text-xs">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+{% if shift_alert.ended %}Tu turno ya terminó — marcá tu salida.{% else %}Tu turno termina en {{ shift_alert.minutes_left }} min.{% endif %}
+</a>
+</div>
+{% endif %}
 </header>

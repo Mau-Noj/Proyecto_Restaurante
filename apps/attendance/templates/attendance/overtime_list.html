@@ -1,0 +1,115 @@
+{% load static cache_bust %}
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Zennin Bistro - Horas Extra</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: { extend: { colors: { "neon-cyan": "#00f3ff", "neon-violet": "#bc13fe" },
+          fontFamily: { "body-md": ["Inter"], "headline-md": ["Inter"], "headline-lg": ["Inter"], "label-md": ["JetBrains Mono"] } } }
+      }
+</script>
+<link href="{% static_v 'css/auth-theme.css' %}" rel="stylesheet"/>
+</head>
+<body class="font-body-md">
+<div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+<div class="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full bg-neon-violet opacity-10 blur-[150px]"></div>
+<div class="absolute bottom-[0%] -right-[10%] w-[50%] h-[50%] rounded-full bg-neon-cyan opacity-5 blur-[120px]"></div>
+</div>
+
+{% include "dashboard/_topbar.html" with breadcrumb="Asistencia / Horas Extra" %}
+
+<main class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+{% if messages %}
+{% for message in messages %}
+<div class="form-error rounded-xl px-4 py-3 mb-6 text-sm {% if message.tags == 'success' %}!bg-[rgba(0,243,255,0.1)] !border-neon-cyan/40 !text-neon-cyan{% endif %}" role="alert">{{ message }}</div>
+{% endfor %}
+{% endif %}
+
+<div class="mb-8">
+<h2 class="font-headline-lg text-2xl font-bold text-white mb-1">Horas Extra</h2>
+<p class="text-gray-400 text-sm">Cualquier cuenta con puesto Gerente puede aprobar, no hace falta que sea el administrador original.</p>
+</div>
+
+<h3 class="font-headline-sm text-sm text-amber-400 uppercase tracking-widest mb-3">Pendientes de aprobar (solicitadas por el empleado)</h3>
+<div class="space-y-2 mb-8">
+{% for req in pending %}
+{% if req.origin == "EMPLEADO" %}
+<div class="glass-panel rounded-xl border border-amber-500/30 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+<div class="min-w-0">
+<p class="text-white text-sm">{{ req.employee.user.get_full_name|default:req.employee.user.username }} · {{ req.requested_minutes }} min · turno del {{ req.shift.date }}</p>
+{% if req.note %}<p class="text-gray-500 text-xs mt-1">{{ req.note }}</p>{% endif %}
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<form method="post" action="{% url 'attendance:overtime_decide' req.pk %}">
+{% csrf_token %}
+<input type="hidden" name="action" value="aprobar"/>
+<button type="submit" class="px-3 py-1.5 rounded-lg border border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10 transition-colors text-xs">Aprobar</button>
+</form>
+<form method="post" action="{% url 'attendance:overtime_decide' req.pk %}">
+{% csrf_token %}
+<input type="hidden" name="action" value="rechazar"/>
+<button type="submit" class="px-3 py-1.5 rounded-lg border border-red-500/40 text-red-400 hover:bg-red-500/10 transition-colors text-xs">Rechazar</button>
+</form>
+</div>
+</div>
+{% endif %}
+{% empty %}
+<p class="glass-panel rounded-xl border border-white/10 px-5 py-6 text-center text-gray-500 text-sm">Sin solicitudes pendientes.</p>
+{% endfor %}
+</div>
+
+<h3 class="font-headline-sm text-sm text-neon-cyan uppercase tracking-widest mb-3">Propuestas enviadas (esperando respuesta del empleado)</h3>
+<div class="space-y-2 mb-8">
+{% for req in pending %}
+{% if req.origin == "ADMIN" %}
+<div class="glass-panel rounded-xl border border-white/10 p-4">
+<p class="text-white text-sm">{{ req.employee.user.get_full_name|default:req.employee.user.username }} · {{ req.requested_minutes }} min propuestos · turno del {{ req.shift.date }}</p>
+{% if req.note %}<p class="text-gray-500 text-xs mt-1">{{ req.note }}</p>{% endif %}
+</div>
+{% endif %}
+{% empty %}
+<p class="glass-panel rounded-xl border border-white/10 px-5 py-6 text-center text-gray-500 text-sm">Sin propuestas pendientes.</p>
+{% endfor %}
+</div>
+
+<h3 class="font-headline-sm text-sm text-gray-400 uppercase tracking-widest mb-3">Historial</h3>
+<div class="glass-panel rounded-xl border border-white/10 overflow-x-auto">
+<table class="w-full text-sm min-w-[600px]">
+<thead class="bg-black/40 text-gray-400 font-label-md text-xs uppercase tracking-widest">
+<tr>
+<th class="text-left px-5 py-3">Empleado</th>
+<th class="text-left px-5 py-3">Origen</th>
+<th class="text-left px-5 py-3">Minutos</th>
+<th class="text-left px-5 py-3">Estado</th>
+<th class="text-left px-5 py-3">Respondido</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5">
+{% for req in history %}
+<tr class="hover:bg-white/5 transition-colors">
+<td class="px-5 py-3 text-white">{{ req.employee.user.get_full_name|default:req.employee.user.username }}</td>
+<td class="px-5 py-3 text-gray-400">{{ req.get_origin_display }}</td>
+<td class="px-5 py-3 text-gray-300">{{ req.requested_minutes }} solicitados{% if req.approved_minutes is not None %} / {{ req.approved_minutes }} aprobados{% endif %}</td>
+<td class="px-5 py-3 {% if req.status == 'APROBADA' %}text-emerald-400{% else %}text-red-400{% endif %}">{{ req.get_status_display }}</td>
+<td class="px-5 py-3 text-gray-500 text-xs">{{ req.responded_at|date:"d/m H:i" }} · {{ req.responded_by.get_full_name|default:req.responded_by.username }}</td>
+</tr>
+{% empty %}
+<tr>
+<td class="px-5 py-8 text-center text-gray-500" colspan="5">Sin historial todavía.</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</main>
+</body>
+</html>

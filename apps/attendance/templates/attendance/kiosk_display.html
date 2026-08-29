@@ -19,7 +19,7 @@
 </script>
 <link href="{% static_v 'css/auth-theme.css' %}" rel="stylesheet"/>
 </head>
-<body class="font-body-md min-h-screen flex items-center justify-center overflow-hidden">
+<body class="font-body-md min-h-screen overflow-y-auto">
 <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
 <div class="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full bg-neon-violet opacity-10 blur-[150px]"></div>
 <div class="absolute bottom-[0%] -right-[10%] w-[50%] h-[50%] rounded-full bg-neon-cyan opacity-5 blur-[120px]"></div>
@@ -30,46 +30,46 @@
 Salir del modo kiosco
 </a>
 
-<main class="relative z-10 text-center px-4">
+<main class="relative z-10 text-center px-4 py-16 max-w-4xl mx-auto">
 <h1 class="font-headline-lg text-xl sm:text-2xl font-bold text-white mb-1">{{ kiosk.name }}</h1>
-<p class="text-gray-400 text-sm mb-6">Escaneá con la cámara del celular para marcar tu entrada o salida</p>
+<p class="text-gray-400 text-sm mb-10">Escaneá con la cámara del celular</p>
 
-<div class="glass-panel neon-border rounded-2xl p-6 inline-block">
-<img id="qr-image" src="{% url 'attendance:kiosk_qr_image' kiosk.pk %}" alt="Código QR de asistencia" class="w-64 h-64 sm:w-72 sm:h-72 rounded-xl bg-white p-3"/>
+{% if leaving %}
+<h2 class="font-headline-sm text-sm text-amber-400 uppercase tracking-widest mb-4">Les toca salir ahora</h2>
+<div class="flex flex-wrap justify-center gap-4 mb-12">
+{% for row in leaving %}
+<div class="glass-panel rounded-2xl border border-amber-500/30 p-5 w-56">
+<img src="{% url 'attendance:kiosk_qr_scoped_image' kiosk.pk row.employee.pk %}" alt="QR de salida" class="w-40 h-40 mx-auto rounded-xl bg-white p-2 mb-3"/>
+<p class="text-white text-sm font-medium truncate">{{ row.employee.user.get_full_name|default:row.employee.user.username }}</p>
+<p class="text-gray-500 text-xs font-label-md mt-1">Salida {{ row.effective_end|date:"H:i" }}</p>
+</div>
+{% endfor %}
+</div>
+{% endif %}
+
+<div class="flex flex-wrap justify-center gap-6">
+<div>
+<h3 class="font-headline-sm text-xs text-neon-cyan uppercase tracking-widest mb-3">Marcar Entrada</h3>
+<div class="glass-panel neon-border rounded-2xl p-4 inline-block">
+<img src="{% url 'attendance:kiosk_qr_static_entrada_image' kiosk.pk %}" alt="QR de entrada" class="w-40 h-40 rounded-xl bg-white p-2"/>
+</div>
+<p class="text-gray-500 text-[10px] font-label-md uppercase tracking-widest mt-2 max-w-[180px] mx-auto">Este código no cambia</p>
 </div>
 
-<div class="mt-6 max-w-[260px] mx-auto">
-<div class="h-1 rounded-full bg-white/10 overflow-hidden">
-<div id="qr-progress" class="h-full bg-neon-cyan"></div>
+<div>
+<h3 class="font-headline-sm text-xs text-gray-400 uppercase tracking-widest mb-3">Salida sin turno asignado</h3>
+<div class="glass-panel rounded-2xl border border-white/10 p-4 inline-block">
+<img src="{% url 'attendance:kiosk_qr_image' kiosk.pk %}" alt="Código QR genérico" class="w-40 h-40 rounded-xl bg-white p-2"/>
 </div>
-<p class="text-gray-500 text-[10px] font-label-md uppercase tracking-widest mt-2">El código cambia solo — no lo guardes ni lo compartas</p>
+<p class="text-gray-500 text-[10px] font-label-md uppercase tracking-widest mt-2 max-w-[180px] mx-auto">Cambia cada 25s — no lo compartas</p>
+</div>
 </div>
 </main>
 
 <script>
-    const REFRESH_MS = 20000;
-    const img = document.getElementById('qr-image');
-    const progress = document.getElementById('qr-progress');
-    const baseSrc = img.getAttribute('src');
-
-    function refreshQr() {
-        img.src = baseSrc + '?t=' + Date.now();
-    }
-
-    function restartProgress() {
-        progress.style.transition = 'none';
-        progress.style.width = '100%';
-        // Forzar reflow para que la siguiente transicion se aplique desde 100%.
-        void progress.offsetWidth;
-        progress.style.transition = `width ${REFRESH_MS}ms linear`;
-        progress.style.width = '0%';
-    }
-
-    restartProgress();
-    setInterval(() => {
-        refreshQr();
-        restartProgress();
-    }, REFRESH_MS);
+    // Recarga completa cada 20s: refresca los QR rotativos y vuelve a
+    // calcular quién está por salir ahora, igual que la pantalla de KDS.
+    setTimeout(() => location.reload(), 20000);
 </script>
 </body>
 </html>
