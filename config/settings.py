@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "apps.kds",
     "apps.inventory",
     "apps.payments",
+    "apps.attendance",
 ]
 
 MIDDLEWARE = [

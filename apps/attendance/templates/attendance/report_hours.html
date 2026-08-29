@@ -1,0 +1,141 @@
+{% load static cache_bust %}
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Zennin Bistro - Días y Horas Trabajadas</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: { extend: { colors: { "neon-cyan": "#00f3ff", "neon-violet": "#bc13fe" },
+          fontFamily: { "body-md": ["Inter"], "headline-md": ["Inter"], "headline-lg": ["Inter"], "label-md": ["JetBrains Mono"] } } }
+      }
+</script>
+<link href="{% static_v 'css/auth-theme.css' %}" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head>
+<body class="font-body-md">
+<div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+<div class="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full bg-neon-violet opacity-10 blur-[150px]"></div>
+<div class="absolute bottom-[0%] -right-[10%] w-[50%] h-[50%] rounded-full bg-neon-cyan opacity-5 blur-[120px]"></div>
+</div>
+
+{% include "dashboard/_topbar.html" with breadcrumb="Asistencia / Días y Horas Trabajadas" %}
+
+<main class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+<div>
+<h2 class="font-headline-lg text-2xl font-bold text-white mb-1">Días y Horas Trabajadas</h2>
+<p class="text-gray-400 text-sm">Calculado siempre desde la bitácora de marcaciones (con ajustes ya aplicados), nunca desde un número guardado aparte.</p>
+<a href="{% url 'attendance:kiosk_list' %}" class="inline-flex items-center gap-1.5 mt-2 text-gray-400 hover:text-neon-cyan transition-colors text-xs font-label-md uppercase tracking-widest">
+<span class="material-symbols-outlined text-[16px]">qr_code_2</span>
+Kioscos de asistencia
+</a>
+</div>
+<form method="get" class="flex items-center gap-2 flex-wrap">
+<input type="date" name="desde" value="{{ desde|date:'Y-m-d' }}" class="field-input"/>
+<span class="text-gray-500 text-sm">a</span>
+<input type="date" name="hasta" value="{{ hasta|date:'Y-m-d' }}" class="field-input"/>
+<button type="submit" class="px-4 py-2 rounded-xl border border-white/10 text-gray-300 hover:text-neon-cyan hover:border-neon-cyan/40 transition-colors text-sm shrink-0">Ver</button>
+</form>
+</div>
+
+{% if chart_labels %}
+<div class="glass-panel rounded-xl border border-white/10 p-5 mb-6">
+<h3 class="font-headline-sm text-sm text-neon-cyan uppercase tracking-widest mb-4">Horas por Empleado</h3>
+<canvas id="hours-chart" height="200"></canvas>
+</div>
+{% endif %}
+
+<div class="glass-panel rounded-xl border border-white/10 overflow-x-auto mb-8">
+<table class="w-full text-sm min-w-[480px]">
+<thead class="bg-black/40 text-gray-400 font-label-md text-xs uppercase tracking-widest">
+<tr>
+<th class="text-left px-5 py-3">Empleado</th>
+<th class="text-left px-5 py-3">Días trabajados</th>
+<th class="text-left px-5 py-3">Horas</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5">
+{% for row in rows %}
+<tr class="hover:bg-white/5 transition-colors">
+<td class="px-5 py-3 text-white">{{ row.employee.user.get_full_name|default:row.employee.user.username }}</td>
+<td class="px-5 py-3 text-gray-300">{{ row.days }}</td>
+<td class="px-5 py-3 text-neon-cyan">{{ row.hours }} h</td>
+</tr>
+{% empty %}
+<tr>
+<td class="px-5 py-8 text-center text-gray-500" colspan="3">Sin marcaciones en ese rango de fechas.</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+
+<h3 class="font-headline-sm text-sm text-neon-cyan uppercase tracking-widest mb-3">Marcaciones Recientes</h3>
+<div class="glass-panel rounded-xl border border-white/10 overflow-x-auto">
+<table class="w-full text-sm min-w-[640px]">
+<thead class="bg-black/40 text-gray-400 font-label-md text-xs uppercase tracking-widest">
+<tr>
+<th class="text-left px-5 py-3">Fecha</th>
+<th class="text-left px-5 py-3">Empleado</th>
+<th class="text-left px-5 py-3">Tipo</th>
+<th class="text-left px-5 py-3">Kiosco</th>
+<th class="text-left px-5 py-3">Comprobante</th>
+<th class="text-right px-5 py-3"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5">
+{% for entry in recent_entries %}
+<tr class="hover:bg-white/5 transition-colors">
+<td class="px-5 py-3 text-gray-400 whitespace-nowrap">{{ entry.timestamp|date:"d/m/Y H:i:s" }}</td>
+<td class="px-5 py-3 text-white">{{ entry.employee.user.get_full_name|default:entry.employee.user.username }}</td>
+<td class="px-5 py-3 text-gray-300">{{ entry.get_entry_type_display }}</td>
+<td class="px-5 py-3 text-gray-400">{{ entry.kiosk.name }}</td>
+<td class="px-5 py-3 text-gray-500 font-label-md">{{ entry.receipt }}</td>
+<td class="px-5 py-3 text-right whitespace-nowrap">
+<a href="{% url 'attendance:entry_adjust' entry.pk %}" class="inline-flex items-center gap-1 text-gray-400 hover:text-neon-cyan transition-colors text-xs font-label-md uppercase tracking-widest">
+<span class="material-symbols-outlined text-[16px]">edit_note</span>
+Ajustar
+</a>
+</td>
+</tr>
+{% empty %}
+<tr>
+<td class="px-5 py-8 text-center text-gray-500" colspan="6">Sin marcaciones en ese rango de fechas.</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</main>
+
+{{ chart_labels|json_script:"chart-labels" }}
+{{ chart_hours|json_script:"chart-hours" }}
+<script>
+    const labels = JSON.parse(document.getElementById('chart-labels').textContent);
+    if (labels.length) {
+        new Chart(document.getElementById('hours-chart'), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{ data: JSON.parse(document.getElementById('chart-hours').textContent), backgroundColor: '#00f3ff' }],
+            },
+            options: {
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                    y: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                },
+            },
+        });
+    }
+</script>
+</body>
+</html>

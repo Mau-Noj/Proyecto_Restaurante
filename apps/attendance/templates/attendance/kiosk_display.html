@@ -1,0 +1,75 @@
+{% load static cache_bust %}
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Zennin Bistro - {{ kiosk.name }}</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: { extend: { colors: { "neon-cyan": "#00f3ff", "neon-violet": "#bc13fe" },
+          fontFamily: { "body-md": ["Inter"], "headline-md": ["Inter"], "headline-lg": ["Inter"], "label-md": ["JetBrains Mono"] } } }
+      }
+</script>
+<link href="{% static_v 'css/auth-theme.css' %}" rel="stylesheet"/>
+</head>
+<body class="font-body-md min-h-screen flex items-center justify-center overflow-hidden">
+<div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+<div class="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full bg-neon-violet opacity-10 blur-[150px]"></div>
+<div class="absolute bottom-[0%] -right-[10%] w-[50%] h-[50%] rounded-full bg-neon-cyan opacity-5 blur-[120px]"></div>
+</div>
+
+<a href="{% url 'attendance:kiosk_list' %}" class="absolute top-4 left-4 z-20 inline-flex items-center gap-1.5 text-gray-500 hover:text-neon-cyan transition-colors text-xs font-label-md uppercase tracking-widest">
+<span class="material-symbols-outlined text-[16px]">arrow_back</span>
+Salir del modo kiosco
+</a>
+
+<main class="relative z-10 text-center px-4">
+<h1 class="font-headline-lg text-xl sm:text-2xl font-bold text-white mb-1">{{ kiosk.name }}</h1>
+<p class="text-gray-400 text-sm mb-6">Escaneá con la cámara del celular para marcar tu entrada o salida</p>
+
+<div class="glass-panel neon-border rounded-2xl p-6 inline-block">
+<img id="qr-image" src="{% url 'attendance:kiosk_qr_image' kiosk.pk %}" alt="Código QR de asistencia" class="w-64 h-64 sm:w-72 sm:h-72 rounded-xl bg-white p-3"/>
+</div>
+
+<div class="mt-6 max-w-[260px] mx-auto">
+<div class="h-1 rounded-full bg-white/10 overflow-hidden">
+<div id="qr-progress" class="h-full bg-neon-cyan"></div>
+</div>
+<p class="text-gray-500 text-[10px] font-label-md uppercase tracking-widest mt-2">El código cambia solo — no lo guardes ni lo compartas</p>
+</div>
+</main>
+
+<script>
+    const REFRESH_MS = 20000;
+    const img = document.getElementById('qr-image');
+    const progress = document.getElementById('qr-progress');
+    const baseSrc = img.getAttribute('src');
+
+    function refreshQr() {
+        img.src = baseSrc + '?t=' + Date.now();
+    }
+
+    function restartProgress() {
+        progress.style.transition = 'none';
+        progress.style.width = '100%';
+        // Forzar reflow para que la siguiente transicion se aplique desde 100%.
+        void progress.offsetWidth;
+        progress.style.transition = `width ${REFRESH_MS}ms linear`;
+        progress.style.width = '0%';
+    }
+
+    restartProgress();
+    setInterval(() => {
+        refreshQr();
+        restartProgress();
+    }, REFRESH_MS);
+</script>
+</body>
+</html>

@@ -38,6 +38,12 @@ class EmployeeLoginView(LoginView):
     redirect_authenticated_user = True
 
     def get_success_url(self):
+        # Respeta ?next= cuando viene de un login_required puntual (ej. al
+        # escanear el QR de asistencia sin sesión abierta) para no perder a
+        # dónde iba; si no hay next, cae al landing normal por puesto.
+        redirect_to = self.get_redirect_url()
+        if redirect_to:
+            return redirect_to
         return _employee_landing_url(self.request.user)
 
 

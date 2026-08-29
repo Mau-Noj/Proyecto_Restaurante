@@ -26,7 +26,12 @@ MODULES = [
     {"code": "PUR", "name": "Compras", "icon": "shopping_cart"},
     {"code": "RES", "name": "Reservaciones", "icon": "event_seat"},
     {"code": "DEL", "name": "Delivery", "icon": "moped"},
-    {"code": "RRHH", "name": "Turnos y Propinas", "icon": "schedule"},
+    {
+        "code": "RRHH",
+        "name": "Turnos y Asistencia",
+        "icon": "schedule",
+        "url_name": "attendance:report_hours",
+    },
     {"code": "BI", "name": "Reportes", "icon": "monitoring"},
     {"code": "QR", "name": "Menú QR", "icon": "qr_code_2"},
     {"code": "CRM", "name": "Fidelización", "icon": "loyalty"},
