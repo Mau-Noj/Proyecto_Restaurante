@@ -85,13 +85,18 @@ Nuevo Empleado
 {% if chart_labels %}
 <div class="glass-panel rounded-xl border border-white/10 p-5 mb-6">
 <h3 class="font-headline-sm text-sm text-neon-cyan uppercase tracking-widest mb-4">Empleados por Puesto</h3>
-<div class="max-w-xs mx-auto">
-<canvas id="position-chart" height="220"></canvas>
+<div class="max-w-[200px] mx-auto">
+<canvas id="position-chart" height="200"></canvas>
 </div>
+<div id="position-legend" class="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 mt-5"></div>
 </div>
 {% endif %}
 
-<div class="glass-panel rounded-xl border border-white/10 overflow-x-auto">
+{% comment %}
+Tabla en desktop, tarjetas apiladas en mobile -- una tabla de 7 columnas
+obliga a scroll horizontal y corta la info en pantallas angostas.
+{% endcomment %}
+<div class="hidden sm:block glass-panel rounded-xl border border-white/10 overflow-x-auto">
 <table class="w-full text-sm min-w-[720px]">
 <thead class="bg-black/40 text-gray-400 font-label-md text-xs uppercase tracking-widest">
 <tr>
@@ -134,6 +139,44 @@ Editar
 </tbody>
 </table>
 </div>
+
+<div class="sm:hidden space-y-3">
+{% for employee in employees %}
+<div class="glass-panel rounded-xl border border-white/10 p-4">
+<div class="flex items-start justify-between gap-3 mb-3">
+<div class="min-w-0">
+<p class="text-white text-sm font-medium truncate">{{ employee.user.get_full_name }}</p>
+<p class="text-gray-500 text-xs font-label-md truncate">{{ employee.user.username }}</p>
+</div>
+{% if employee.user.is_active %}
+<span class="shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-neon-cyan/10 border border-neon-cyan/30 text-neon-cyan text-[10px] font-label-md uppercase tracking-widest">Activo</span>
+{% else %}
+<span class="shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 text-[10px] font-label-md uppercase tracking-widest">Inactivo</span>
+{% endif %}
+</div>
+<div class="grid grid-cols-2 gap-y-2 text-xs mb-3">
+<div>
+<span class="text-gray-500 block">Puesto</span>
+<span class="text-gray-300">{{ employee.get_position_display }}</span>
+</div>
+<div>
+<span class="text-gray-500 block">Teléfono</span>
+<span class="text-gray-300">{{ employee.phone|default:"—" }}</span>
+</div>
+<div>
+<span class="text-gray-500 block">Contratación</span>
+<span class="text-gray-300">{{ employee.hire_date }}</span>
+</div>
+</div>
+<a href="{% url 'employees:edit' employee.pk %}" class="inline-flex items-center gap-1 text-gray-400 hover:text-neon-cyan transition-colors text-xs font-label-md uppercase tracking-widest">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+Editar
+</a>
+</div>
+{% empty %}
+<p class="glass-panel rounded-xl border border-white/10 px-5 py-8 text-center text-gray-500 text-sm">Todavía no hay empleados registrados.</p>
+{% endfor %}
+</div>
 </main>
 
 {{ chart_labels|json_script:"chart-labels" }}
@@ -143,16 +186,30 @@ Editar
     if (labels.length) {
         const data = JSON.parse(document.getElementById('chart-data').textContent);
         const palette = ['#00f3ff', '#bc13fe', '#34d399', '#fbbf24', '#38bdf8', '#f472b6', '#818cf8', '#2dd4bf', '#fb7185'];
+        const colors = labels.map((_, i) => palette[i % palette.length]);
 
         new Chart(document.getElementById('position-chart'), {
             type: 'doughnut',
             data: {
                 labels: labels,
-                datasets: [{ data: data, backgroundColor: labels.map((_, i) => palette[i % palette.length]) }],
+                datasets: [{ data: data, backgroundColor: colors }],
             },
             options: {
-                plugins: { legend: { position: 'bottom', labels: { color: '#d1d5db' } } },
+                plugins: { legend: { display: false } },
             },
+        });
+
+        // Leyenda propia en grid en vez de la de Chart.js: la nativa se
+        // amontona y desalinea en pantallas angostas.
+        const legend = document.getElementById('position-legend');
+        labels.forEach((label, i) => {
+            const item = document.createElement('div');
+            item.className = 'flex items-center gap-2 min-w-0';
+            item.innerHTML =
+                '<span class="w-2.5 h-2.5 rounded-full shrink-0" style="background:' + colors[i] + '"></span>' +
+                '<span class="text-gray-300 text-xs truncate">' + label + '</span>' +
+                '<span class="text-gray-500 text-xs ml-auto shrink-0">' + data[i] + '</span>';
+            legend.appendChild(item);
         });
     }
 </script>
