@@ -57,6 +57,7 @@ def clock_employee(employee, kiosk: Kiosk, token: str) -> TimeEntry:
         entry_type=entry_type,
         kiosk=kiosk,
         token_used=token,
+        timestamp=timestamp,
         prev_hash=prev_hash,
         hash=new_hash,
     )
@@ -90,6 +91,7 @@ def create_adjustment(entry: TimeEntry, admin_user, reason: str, new_timestamp) 
         reason=reason,
         previous_timestamp=entry.timestamp,
         new_timestamp=new_timestamp,
+        created_at=created_at,
         prev_hash=prev_hash,
         hash=new_hash,
     )

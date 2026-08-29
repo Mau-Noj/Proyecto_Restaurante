@@ -49,7 +49,11 @@ class TimeEntry(models.Model):
     entry_type = models.CharField(max_length=10, choices=EntryType.choices)
     kiosk = models.ForeignKey(Kiosk, on_delete=models.PROTECT, related_name="time_entries")
     token_used = models.CharField(max_length=64, unique=True)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    # No auto_now_add: el hash se calcula ANTES de guardar a partir de este
+    # valor, así que tiene que ser el timestamp exacto que se persiste, no
+    # uno que Django reasigne por su cuenta al hacer INSERT (ver
+    # services.clock_employee, que siempre lo pasa explícito).
+    timestamp = models.DateTimeField()
     prev_hash = models.CharField(max_length=64, blank=True, default="")
     hash = models.CharField(max_length=64, editable=False)
 
@@ -80,7 +84,9 @@ class TimeEntryAdjustment(models.Model):
     reason = models.TextField("Motivo")
     previous_timestamp = models.DateTimeField()
     new_timestamp = models.DateTimeField()
-    created_at = models.DateTimeField(auto_now_add=True)
+    # Mismo motivo que TimeEntry.timestamp: sin auto_now_add, para que el
+    # hash calculado antes de guardar sea exactamente lo que se persiste.
+    created_at = models.DateTimeField()
     prev_hash = models.CharField(max_length=64, blank=True, default="")
     hash = models.CharField(max_length=64, editable=False)
 
