@@ -18,6 +18,14 @@ class ClockError(Exception):
     de otra persona, etc.), para distinguir de errores de programación."""
 
 
+def get_default_kiosk() -> Kiosk:
+    """Ya no se le pide al administrador que cree/administre kioscos --
+    hay uno solo, provisto automáticamente, para no ponerle carga extra.
+    La pantalla de asistencia (views.attendance_display) siempre usa este."""
+    kiosk, _ = Kiosk.objects.get_or_create(name="Principal")
+    return kiosk
+
+
 # --- Marcación genérica (kiosco de siempre: rotativo, cualquier empleado) --
 
 

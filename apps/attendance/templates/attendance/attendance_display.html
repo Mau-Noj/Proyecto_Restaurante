@@ -1,0 +1,92 @@
+{% load static cache_bust %}
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Zennin Bistro - Asistencia</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: { extend: { colors: { "neon-cyan": "#00f3ff", "neon-violet": "#bc13fe" },
+          fontFamily: { "body-md": ["Inter"], "headline-md": ["Inter"], "headline-lg": ["Inter"], "label-md": ["JetBrains Mono"] } } }
+      }
+</script>
+<link href="{% static_v 'css/auth-theme.css' %}" rel="stylesheet"/>
+<style>
+    /* Mobile/tablet (pantalla angosta): un solo QR de salida a la vez,
+       el resto queda oculto hasta que le toque su turno. Desktop/pantalla
+       ancha: se ven todas las tarjetas de una vez. */
+    @media (max-width: 900px) {
+        .leaving-card:not(:first-child) { display: none; }
+    }
+</style>
+</head>
+<body class="font-body-md min-h-screen overflow-y-auto">
+<div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+<div class="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full bg-neon-violet opacity-10 blur-[150px]"></div>
+<div class="absolute bottom-[0%] -right-[10%] w-[50%] h-[50%] rounded-full bg-neon-cyan opacity-5 blur-[120px]"></div>
+</div>
+
+<a href="{% url 'attendance:report_hours' %}" class="absolute top-4 left-4 z-20 inline-flex items-center gap-1.5 text-gray-600 hover:text-neon-cyan transition-colors text-xs font-label-md uppercase tracking-widest">
+<span class="material-symbols-outlined text-[16px]">arrow_back</span>
+Administración
+</a>
+
+<main class="relative z-10 text-center px-4 py-16 max-w-4xl mx-auto">
+{% if leaving %}
+<h2 class="font-headline-sm text-sm text-amber-400 uppercase tracking-widest mb-1">
+{% if leaving|length > 1 %}Les toca salir ahora ({{ leaving|length }}){% else %}Le toca salir ahora{% endif %}
+</h2>
+<div class="flex flex-wrap justify-center gap-4 mb-12">
+{% for row in leaving %}
+<div class="leaving-card glass-panel rounded-2xl border border-amber-500/30 p-5 w-56">
+<img src="{% url 'attendance:kiosk_qr_scoped_image' row.employee.pk %}" alt="QR de salida" class="w-40 h-40 mx-auto rounded-xl bg-white p-2 mb-3"/>
+<p class="text-white text-sm font-medium truncate">{{ row.employee.user.get_full_name|default:row.employee.user.username }}</p>
+<p class="text-gray-500 text-xs font-label-md mt-1">Salida {{ row.effective_end|date:"H:i" }}</p>
+</div>
+{% endfor %}
+</div>
+{% else %}
+<p class="text-gray-600 text-sm mb-10">Nadie tiene salida pendiente en este momento.</p>
+{% endif %}
+
+<div class="fixed bottom-6 right-6 z-20">
+<details class="group">
+<summary class="list-none cursor-pointer w-14 h-14 rounded-full glass-panel neon-border flex items-center justify-center text-neon-cyan shadow-lg">
+<span class="material-symbols-outlined">login</span>
+</summary>
+<div class="absolute bottom-16 right-0 glass-panel neon-border rounded-2xl p-4 w-48">
+<p class="text-gray-400 text-[10px] font-label-md uppercase tracking-widest mb-2 text-center">Marcar Entrada</p>
+<img src="{% url 'attendance:kiosk_qr_static_entrada_image' %}" alt="QR de entrada" class="w-40 h-40 rounded-xl bg-white p-2"/>
+<p class="text-gray-600 text-[9px] text-center mt-2">Este código no cambia</p>
+</div>
+</details>
+</div>
+
+<div class="fixed bottom-6 left-6 z-20">
+<details class="group">
+<summary class="list-none cursor-pointer text-gray-600 hover:text-gray-400 transition-colors text-[10px] font-label-md uppercase tracking-widest">
+Salida sin turno asignado
+</summary>
+<div class="mt-3 glass-panel rounded-2xl border border-white/10 p-4 w-48">
+<img src="{% url 'attendance:kiosk_qr_image' %}" alt="Código QR genérico" class="w-40 h-40 rounded-xl bg-white p-2"/>
+<p class="text-gray-600 text-[9px] text-center mt-2">Cambia cada 25s</p>
+</div>
+</details>
+</div>
+</main>
+
+<script>
+    // Recarga completa cada 20s: refresca los QR rotativos y vuelve a
+    // calcular quién está por salir ahora. Cuando alguien ya marcó su
+    // salida, su tarjeta deja de aparecer sola en el siguiente ciclo.
+    setTimeout(() => location.reload(), 20000);
+</script>
+</body>
+</html>

@@ -70,14 +70,22 @@ Nuevo Turno
 {% endfor %}
 </td>
 <td class="px-5 py-3 text-right">
-<form method="post" action="{% url 'attendance:overtime_propose' shift.pk %}" class="inline-flex items-center gap-1 justify-end">
-{% csrf_token %}
-<input type="hidden" name="minutes" value=""/>
-<button type="button" onclick="promptOvertime(this)" class="inline-flex items-center gap-1 text-gray-400 hover:text-neon-cyan transition-colors text-xs font-label-md uppercase tracking-widest">
+<details class="inline-block text-left">
+<summary class="list-none cursor-pointer inline-flex items-center gap-1 text-gray-400 hover:text-neon-cyan transition-colors text-xs font-label-md uppercase tracking-widest">
 <span class="material-symbols-outlined text-[16px]">more_time</span>
 Proponer extra
-</button>
+</summary>
+<form method="post" action="{% url 'attendance:overtime_propose' shift.pk %}" class="glass-panel neon-border rounded-xl p-3 mt-2 flex items-center gap-2" onsubmit="return prepareMinutes(this)">
+{% csrf_token %}
+<input type="hidden" name="minutes"/>
+<input type="number" min="1" value="1" class="field-input w-16 !h-8 !py-1 !text-xs" data-ot-value/>
+<select class="field-input !h-8 !py-1 !text-xs" data-ot-unit>
+<option value="60">Horas</option>
+<option value="1">Minutos</option>
+</select>
+<button type="submit" class="h-8 px-3 rounded-lg border border-neon-cyan/40 text-neon-cyan text-xs hover:bg-neon-cyan/10 transition-colors shrink-0">Enviar</button>
 </form>
+</details>
 </td>
 </tr>
 {% empty %}
@@ -91,12 +99,14 @@ Proponer extra
 </main>
 
 <script>
-    function promptOvertime(button) {
-        const minutes = window.prompt('¿Cuántos minutos extra proponés?', '60');
-        if (!minutes) return;
-        const form = button.closest('form');
-        form.querySelector('input[name="minutes"]').value = minutes;
-        form.submit();
+    // Convierte a minutos antes de mandar, asi se puede escribir en horas.
+    function prepareMinutes(form) {
+        const valueInput = form.querySelector('[data-ot-value]');
+        const unitSelect = form.querySelector('[data-ot-unit]');
+        const hidden = form.querySelector('input[name="minutes"]');
+        const total = Math.round(parseFloat(valueInput.value || '0') * parseInt(unitSelect.value, 10));
+        hidden.value = total;
+        return total > 0;
     }
 </script>
 </body>

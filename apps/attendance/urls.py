@@ -5,17 +5,15 @@ from . import views
 app_name = "attendance"
 
 urlpatterns = [
-    path("kioscos/", views.kiosk_list, name="kiosk_list"),
-    path("kioscos/nuevo/", views.kiosk_create, name="kiosk_create"),
-    path("kioscos/<int:kiosk_id>/", views.kiosk_display, name="kiosk_display"),
-    path("kioscos/<int:kiosk_id>/qr.png", views.kiosk_qr_image, name="kiosk_qr_image"),
+    path("pantalla/", views.attendance_display, name="display"),
+    path("pantalla/qr.png", views.kiosk_qr_image, name="kiosk_qr_image"),
     path(
-        "kioscos/<int:kiosk_id>/qr-entrada.png",
+        "pantalla/qr-entrada.png",
         views.kiosk_qr_static_entrada_image,
         name="kiosk_qr_static_entrada_image",
     ),
     path(
-        "kioscos/<int:kiosk_id>/qr-salida/<int:employee_id>.png",
+        "pantalla/qr-salida/<int:employee_id>.png",
         views.kiosk_qr_scoped_image,
         name="kiosk_qr_scoped_image",
     ),

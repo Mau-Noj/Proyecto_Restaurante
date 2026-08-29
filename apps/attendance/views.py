@@ -14,7 +14,7 @@ from django.utils.dateparse import parse_date
 from apps.employees.decorators import position_required
 from apps.employees.models import Employee
 
-from .forms import AdjustmentForm, KioskForm, OvertimeRequestForm, OvertimeResponseForm, ShiftForm
+from .forms import AdjustmentForm, OvertimeRequestForm, OvertimeResponseForm, ShiftForm
 from .models import Kiosk, OvertimeRequest, Shift, TimeEntry
 from .services import (
     ClockError,
@@ -26,6 +26,7 @@ from .services import (
     employees_leaving_now,
     generate_kiosk_token,
     generate_scoped_token,
+    get_default_kiosk,
     next_entry_type,
     request_overtime,
     respond_overtime_proposal,
@@ -40,34 +41,21 @@ from .services import (
 # ya usado para el acceso al KDS.
 gerente_required = position_required(Employee.Position.GERENTE)
 
-# --- Kioscos -----------------------------------------------------------------
+# --- Pantalla de asistencia (pública, sin login: es una pantalla fija de --
+# --- cocina/caja, nadie se queda logueado ahí para que funcione sola) -------
 
 
-@gerente_required
-def kiosk_list(request):
-    kiosks = Kiosk.objects.all()
-    return render(request, "attendance/kiosk_list.html", {"kiosks": kiosks})
-
-
-@gerente_required
-def kiosk_create(request):
-    if request.method == "POST":
-        form = KioskForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Kiosco creado.")
-            return redirect(reverse("attendance:kiosk_list"))
-    else:
-        form = KioskForm()
-    return render(request, "attendance/kiosk_form.html", {"form": form})
-
-
-@gerente_required
-def kiosk_display(request, kiosk_id):
-    kiosk = get_object_or_404(Kiosk, pk=kiosk_id)
+def attendance_display(request):
+    """Un solo QR de entrada (fijo) + una tarjeta por cada empleado que le
+    toca salir ahora, con su nombre y su propio QR. Sin turno asignado ese
+    día, se puede desplegar igual el QR genérico de respaldo. No requiere
+    sesión iniciada a propósito: es una pantalla física compartida, como
+    cualquier kiosco -- lo único protegido es la acción de marcar en sí
+    (mark_confirm), no el estar mirando la pantalla."""
+    kiosk = get_default_kiosk()
     leaving = employees_leaving_now()
     return render(
-        request, "attendance/kiosk_display.html", {"kiosk": kiosk, "leaving": leaving}
+        request, "attendance/attendance_display.html", {"kiosk": kiosk, "leaving": leaving}
     )
 
 
@@ -80,9 +68,8 @@ def _qr_response(url: str) -> HttpResponse:
     return response
 
 
-@gerente_required
-def kiosk_qr_image(request, kiosk_id):
-    kiosk = get_object_or_404(Kiosk, pk=kiosk_id)
+def kiosk_qr_image(request):
+    kiosk = get_default_kiosk()
     token = generate_kiosk_token(kiosk)
     url = request.build_absolute_uri(
         reverse("attendance:mark_confirm") + f"?k={kiosk.pk}&mode=generico&t={token}"
@@ -90,9 +77,8 @@ def kiosk_qr_image(request, kiosk_id):
     return _qr_response(url)
 
 
-@gerente_required
-def kiosk_qr_static_entrada_image(request, kiosk_id):
-    kiosk = get_object_or_404(Kiosk, pk=kiosk_id)
+def kiosk_qr_static_entrada_image(request):
+    kiosk = get_default_kiosk()
     token = static_entrada_token(kiosk)
     url = request.build_absolute_uri(
         reverse("attendance:mark_confirm") + f"?k={kiosk.pk}&mode=entrada&t={token}"
@@ -100,9 +86,8 @@ def kiosk_qr_static_entrada_image(request, kiosk_id):
     return _qr_response(url)
 
 
-@gerente_required
-def kiosk_qr_scoped_image(request, kiosk_id, employee_id):
-    kiosk = get_object_or_404(Kiosk, pk=kiosk_id)
+def kiosk_qr_scoped_image(request, employee_id):
+    kiosk = get_default_kiosk()
     employee = get_object_or_404(Employee, pk=employee_id)
     token = generate_scoped_token(kiosk, employee)
     url = request.build_absolute_uri(

@@ -54,11 +54,18 @@
 <div class="glass-panel rounded-2xl border border-white/10 p-5 mb-6">
 <h3 class="font-headline-sm text-sm text-neon-cyan uppercase tracking-widest mb-3">Turno de Hoy</h3>
 <p class="text-white text-sm mb-3">{{ today_shift.start_time|time:"H:i" }} - {{ today_shift.end_time|time:"H:i" }}</p>
-<form method="post" action="{% url 'attendance:overtime_request_create' today_shift.pk %}" class="flex items-end gap-2 flex-wrap">
+<form method="post" action="{% url 'attendance:overtime_request_create' today_shift.pk %}" class="flex items-end gap-2 flex-wrap" onsubmit="return prepareMinutes(this)">
 {% csrf_token %}
+<input type="hidden" name="minutes"/>
 <div>
-<label class="field-label">{{ overtime_form.minutes.label }}</label>
-{{ overtime_form.minutes }}
+<label class="field-label">Tiempo extra</label>
+<div class="flex gap-2">
+<input type="number" min="1" value="1" class="field-input w-20" data-ot-value/>
+<select class="field-input" data-ot-unit>
+<option value="60">Horas</option>
+<option value="1">Minutos</option>
+</select>
+</div>
 </div>
 <button type="submit" class="h-10 px-4 rounded-xl border border-neon-cyan/40 text-neon-cyan text-sm hover:bg-neon-cyan/10 transition-colors">Pedir horas extra</button>
 </form>
@@ -127,5 +134,18 @@
 </div>
 {% endif %}
 </main>
+
+<script>
+    // Formularios con data-ot-value/data-ot-unit: convierte a minutos antes
+    // de mandar, asi la persona puede escribir en horas si le es mas facil.
+    function prepareMinutes(form) {
+        const valueInput = form.querySelector('[data-ot-value]');
+        const unitSelect = form.querySelector('[data-ot-unit]');
+        const hidden = form.querySelector('input[name="minutes"]');
+        const total = Math.round(parseFloat(valueInput.value || '0') * parseInt(unitSelect.value, 10));
+        hidden.value = total;
+        return total > 0;
+    }
+</script>
 </body>
 </html>

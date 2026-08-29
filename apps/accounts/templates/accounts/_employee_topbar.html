@@ -44,4 +44,12 @@ Cerrar sesión
 </a>
 </div>
 {% endif %}
+{% if pending_overtime_count %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 pb-3">
+<a href="{% url 'attendance:overtime_list' %}" class="flex items-center gap-2 px-3 py-2 rounded-lg border border-neon-cyan/30 bg-neon-cyan/5 text-neon-cyan text-xs">
+<span class="material-symbols-outlined text-[16px]">more_time</span>
+{{ pending_overtime_count }} solicitud{{ pending_overtime_count|pluralize }} de horas extra esperando tu aprobación.
+</a>
+</div>
+{% endif %}
 </header>
