@@ -39,7 +39,18 @@ def get_default_kiosk() -> Kiosk:
 RECENT_REJECTION_COOLDOWN_SECONDS = 30
 
 
-def get_kiosk_access_status(user) -> KioskAccessRequest:
+def kiosko_session_is_approved(user, session_key: str) -> bool:
+    """Si YA hubo un "sí" aprobado para esta sesión puntual de navegador
+    -- no para la cuenta en general -- no hace falta volver a preguntar
+    en cada recarga de una pantalla que ya está abierta."""
+    if not session_key:
+        return False
+    return KioskAccessRequest.objects.filter(
+        requested_by=user, session_key=session_key, status=KioskAccessRequest.Status.APROBADA
+    ).exists()
+
+
+def get_kiosk_access_status(user, session_key: str) -> KioskAccessRequest:
     """La solicitud a mostrarle a la cuenta Kiosko en la pantalla de
     espera: reutiliza una pendiente si ya hay una (para no crear una
     nueva en cada recarga), muestra un rechazo reciente un momento antes
@@ -59,11 +70,15 @@ def get_kiosk_access_status(user) -> KioskAccessRequest:
     ):
         return last
 
-    return KioskAccessRequest.objects.create(requested_by=user)
+    return KioskAccessRequest.objects.create(requested_by=user, session_key=session_key)
 
 
 @transaction.atomic
 def respond_kiosk_access_request(access_request: KioskAccessRequest, admin_user, approved: bool) -> KioskAccessRequest:
+    """Aprobar NO toca el interruptor global (Kiosk.enabled) -- solo
+    autoriza la sesión puntual que pidió (ver kiosko_session_is_approved).
+    El interruptor global sigue existiendo aparte, para cuando el admin
+    quiera dejar la pantalla sin fricción a propósito."""
     if access_request.status != KioskAccessRequest.Status.PENDIENTE:
         raise ClockError("Esta solicitud ya fue respondida.")
     access_request.status = (
@@ -72,10 +87,6 @@ def respond_kiosk_access_request(access_request: KioskAccessRequest, admin_user,
     access_request.responded_by = admin_user
     access_request.responded_at = timezone.now()
     access_request.save(update_fields=["status", "responded_by", "responded_at"])
-    if approved:
-        kiosk = get_default_kiosk()
-        kiosk.enabled = True
-        kiosk.save(update_fields=["enabled"])
     return access_request
 
 

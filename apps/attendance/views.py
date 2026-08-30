@@ -30,6 +30,7 @@ from .services import (
     generate_scoped_token,
     get_default_kiosk,
     get_kiosk_access_status,
+    kiosko_session_is_approved,
     next_entry_type,
     request_overtime,
     respond_kiosk_access_request,
@@ -46,11 +47,14 @@ from .services import (
 gerente_required = position_required(Employee.Position.GERENTE)
 
 
-def _can_view_kiosk_screen(user) -> bool:
+def _can_view_kiosk_screen(user, session_key: str) -> bool:
     """Gerente/staff siempre puede (para poder revisar la pantalla sin
-    tener que loguearse como Kiosko), o la cuenta Kiosko -- pero solo si
-    el kiosco esta habilitado (kiosk.enabled), interruptor que solo un
-    Gerente/admin puede prender."""
+    tener que loguearse como Kiosko). La cuenta Kiosko puede si: el
+    interruptor global está prendido (kiosk.enabled -- el admin dejó la
+    pantalla sin fricción a propósito), o si ESTA sesión puntual de
+    navegador ya fue aprobada por un Gerente/admin vía la alerta "¿sos
+    vos?" (kiosko_session_is_approved) -- un "sí" no deja la puerta
+    abierta para siempre, solo para quien la pidió en ese momento."""
     if not user.is_authenticated:
         return False
     if user.is_staff or user.is_superuser:
@@ -61,22 +65,25 @@ def _can_view_kiosk_screen(user) -> bool:
     if employee.position == Employee.Position.GERENTE:
         return True
     if employee.position == Employee.Position.KIOSKO:
-        return get_default_kiosk().enabled
+        if get_default_kiosk().enabled:
+            return True
+        return kiosko_session_is_approved(user, session_key)
     return False
 
 
 def kiosko_access_required(view_func):
     """La pantalla de asistencia (y sus QR) ya NO es publica: hace falta
     una cuenta con puesto Kiosko (que el admin crea y controla como
-    cualquier empleado) Y que el admin haya habilitado el acceso desde su
-    panel -- así, aunque alguien consiga la contraseña de Kiosko, no puede
-    usarla para abrir la pantalla desde fuera del local a menos que el
-    admin la haya dejado habilitada."""
+    cualquier empleado) Y que esa sesión puntual haya sido autorizada
+    (interruptor global, o aprobación puntual vía la alerta "¿sos vos?")
+    -- así, aunque alguien consiga la contraseña de Kiosko, no puede
+    usarla para abrir la pantalla desde fuera del local sin que un
+    Gerente/admin lo apruebe."""
 
     @wraps(view_func)
     @login_required(login_url="accounts:login_empleado")
     def wrapped(request, *args, **kwargs):
-        if not _can_view_kiosk_screen(request.user):
+        if not _can_view_kiosk_screen(request.user, request.session.session_key or ""):
             return render(
                 request,
                 "attendance/display_disabled.html",
@@ -101,7 +108,8 @@ def attendance_display(request):
     solicitud en vivo ("¿sos vos?") que cualquier Gerente/admin conectado
     ve como alerta, y muestra una pantalla de espera mientras tanto (ver
     kiosk_waiting.html)."""
-    if _can_view_kiosk_screen(request.user):
+    session_key = request.session.session_key or ""
+    if _can_view_kiosk_screen(request.user, session_key):
         kiosk = get_default_kiosk()
         leaving = employees_leaving_now()
         return render(
@@ -112,7 +120,11 @@ def attendance_display(request):
     if not employee or employee.position != Employee.Position.KIOSKO:
         return render(request, "attendance/display_disabled.html", status=403)
 
-    access_request = get_kiosk_access_status(request.user)
+    if not session_key:
+        request.session.save()
+        session_key = request.session.session_key
+
+    access_request = get_kiosk_access_status(request.user, session_key)
     return render(
         request, "attendance/kiosk_waiting.html", {"access_request": access_request}
     )

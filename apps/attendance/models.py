@@ -37,9 +37,14 @@ class KioskAccessRequest(models.Model):
     """Un intento de entrar a la pantalla de asistencia mientras está
     deshabilitada (ver attendance.views.attendance_display). Se muestra
     como alerta en vivo a cualquier Gerente/admin conectado (ver
-    attendance.context_processors.kiosk_access_alert): "¿sos vos?" -- si
-    aprueba, habilita la pantalla (Kiosk.enabled) para que la cuenta
-    Kiosko pueda entrar; si rechaza, queda registrado el rechazo."""
+    attendance.context_processors.kiosk_access_alert): "¿sos vos?".
+
+    Aprobar NO prende el interruptor global (Kiosk.enabled, que sigue
+    existiendo aparte para cuando el admin quiera dejar la pantalla sin
+    fricción a propósito) -- solo autoriza a `session_key`, la sesión de
+    navegador puntual que la pidió. Si esa cuenta cierra sesión y vuelve a
+    entrar (o entra desde otro dispositivo), Django le da una sesión
+    nueva y tiene que volver a pedir permiso."""
 
     class Status(models.TextChoices):
         PENDIENTE = "PENDIENTE", "Pendiente"
@@ -49,6 +54,7 @@ class KioskAccessRequest(models.Model):
     requested_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="kiosk_access_requests"
     )
+    session_key = models.CharField(max_length=40, blank=True)
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDIENTE)
     created_at = models.DateTimeField(auto_now_add=True)
     responded_by = models.ForeignKey(
