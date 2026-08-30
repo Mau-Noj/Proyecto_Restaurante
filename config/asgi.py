@@ -8,11 +8,14 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 
 django_asgi_app = get_asgi_application()
 
-from apps.kds.routing import websocket_urlpatterns  # noqa: E402
+from apps.attendance.routing import websocket_urlpatterns as attendance_websocket_urlpatterns  # noqa: E402
+from apps.kds.routing import websocket_urlpatterns as kds_websocket_urlpatterns  # noqa: E402
 
 application = ProtocolTypeRouter(
     {
         "http": django_asgi_app,
-        "websocket": AuthMiddlewareStack(URLRouter(websocket_urlpatterns)),
+        "websocket": AuthMiddlewareStack(
+            URLRouter(kds_websocket_urlpatterns + attendance_websocket_urlpatterns)
+        ),
     }
 )

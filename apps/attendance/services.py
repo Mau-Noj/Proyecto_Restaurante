@@ -36,8 +36,6 @@ def get_default_kiosk() -> Kiosk:
 
 # --- Solicitudes de acceso al kiosco ("¿sos vos?") --------------------------
 
-RECENT_REJECTION_COOLDOWN_SECONDS = 30
-
 
 def kiosko_session_is_approved(user, session_key: str) -> bool:
     """Si YA hubo un "sí" aprobado para esta sesión puntual de navegador
@@ -53,8 +51,11 @@ def kiosko_session_is_approved(user, session_key: str) -> bool:
 def get_kiosk_access_status(user, session_key: str) -> KioskAccessRequest:
     """La solicitud a mostrarle a la cuenta Kiosko en la pantalla de
     espera: reutiliza una pendiente si ya hay una (para no crear una
-    nueva en cada recarga), muestra un rechazo reciente un momento antes
-    de dejar reintentar, o crea una pendiente nueva."""
+    nueva en cada recarga), o se queda mostrando el último rechazo hasta
+    que la persona pida explícitamente reintentar (ver
+    request_new_kiosk_access) -- así un "no" por error no la deja
+    trabada sin salida, pero tampoco recrea la solicitud sola en cada
+    recarga y vuelve a molestar al admin sin que nadie haya pedido nada."""
     pending = KioskAccessRequest.objects.filter(
         requested_by=user, status=KioskAccessRequest.Status.PENDIENTE
     ).first()
@@ -62,15 +63,21 @@ def get_kiosk_access_status(user, session_key: str) -> KioskAccessRequest:
         return pending
 
     last = KioskAccessRequest.objects.filter(requested_by=user).order_by("-created_at").first()
-    if (
-        last
-        and last.status == KioskAccessRequest.Status.RECHAZADA
-        and last.responded_at
-        and (timezone.now() - last.responded_at).total_seconds() < RECENT_REJECTION_COOLDOWN_SECONDS
-    ):
+    if last and last.status == KioskAccessRequest.Status.RECHAZADA:
         return last
 
-    return KioskAccessRequest.objects.create(requested_by=user, session_key=session_key)
+    return request_new_kiosk_access(user, session_key)
+
+
+def request_new_kiosk_access(user, session_key: str) -> KioskAccessRequest:
+    """Crea una solicitud nueva sin importar lo que haya antes -- para el
+    botón "Reintentar" tras un rechazo, una acción explícita de la
+    persona, no algo que deba pasar solo."""
+    from .notify import notify_kiosk_alert
+
+    access_request = KioskAccessRequest.objects.create(requested_by=user, session_key=session_key)
+    notify_kiosk_alert()
+    return access_request
 
 
 @transaction.atomic

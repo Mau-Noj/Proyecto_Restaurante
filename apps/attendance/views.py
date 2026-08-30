@@ -32,6 +32,7 @@ from .services import (
     get_kiosk_access_status,
     kiosko_session_is_approved,
     next_entry_type,
+    request_new_kiosk_access,
     request_overtime,
     respond_kiosk_access_request,
     respond_overtime_proposal,
@@ -124,7 +125,10 @@ def attendance_display(request):
         request.session.save()
         session_key = request.session.session_key
 
-    access_request = get_kiosk_access_status(request.user, session_key)
+    if request.GET.get("reintentar"):
+        access_request = request_new_kiosk_access(request.user, session_key)
+    else:
+        access_request = get_kiosk_access_status(request.user, session_key)
     return render(
         request, "attendance/kiosk_waiting.html", {"access_request": access_request}
     )

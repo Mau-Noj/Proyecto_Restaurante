@@ -30,11 +30,9 @@
 <div class="glass-panel rounded-2xl border border-red-500/30 p-8">
 <span class="material-symbols-outlined text-5xl text-red-400 mb-3 block">block</span>
 <h1 class="font-headline-lg text-xl font-bold text-white mb-2">Acceso denegado</h1>
-<p class="text-gray-400 text-sm">Un administrador rechazó este intento de entrar al kiosco.</p>
+<p class="text-gray-400 text-sm mb-6">Un administrador rechazó este intento de entrar al kiosco. Si fue un error, pedí que lo vuelvan a intentar.</p>
+<a href="{% url 'attendance:display' %}?reintentar=1" class="block w-full h-12 bg-gradient-to-r from-neon-cyan/20 to-neon-violet/20 border border-neon-cyan/50 text-white rounded-xl font-headline-sm text-sm tracking-widest uppercase hover:bg-neon-cyan/30 transition-all leading-[3rem]">Reintentar</a>
 </div>
-<a href="{% url 'attendance:display' %}" class="inline-flex items-center gap-2 mt-6 text-gray-400 hover:text-neon-cyan transition-colors text-xs font-label-md uppercase tracking-widest">
-Reintentar
-</a>
 {% else %}
 <div class="glass-panel neon-border rounded-2xl p-8">
 <span class="material-symbols-outlined text-5xl text-neon-cyan mb-3 block animate-pulse">hourglass_top</span>

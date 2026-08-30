@@ -1,3 +1,4 @@
+{% if user.is_staff or user.is_superuser or user.employee_profile.position == "GERENTE" %}
 {% if kiosk_access_request %}
 <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
 <div class="glass-panel neon-border rounded-2xl p-8 max-w-sm w-full text-center">
@@ -15,4 +16,20 @@ está intentando entrar al Kiosko de Asistencia.
 </form>
 </div>
 </div>
+{% endif %}
+<script>
+    // Escucha en vivo (WebSocket) por si alguien pide entrar al kiosco --
+    // sin esto, la alerta de arriba solo aparecería recién al refrescar o
+    // navegar a otra página. Al llegar un aviso, recarga esta misma
+    // página para que el modal aparezca al instante (mismo patron que ya
+    // usa el KDS). Si el socket se cae, reintenta conectarlo solo -- no
+    // recarga la pagina entera por eso, para no interrumpir a alguien que
+    // esta trabajando en otra pantalla.
+    (function connectKioskAlertSocket() {
+        const wsScheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
+        const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/kiosk-alert/`);
+        socket.onmessage = () => location.reload();
+        socket.onclose = () => setTimeout(connectKioskAlertSocket, 5000);
+    })();
+</script>
 {% endif %}
