@@ -1,0 +1,57 @@
+{% load static cache_bust %}
+<!DOCTYPE html>
+<html class="dark" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Zennin Bistro - Esperando Aprobación</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: { extend: { colors: { "neon-cyan": "#00f3ff", "neon-violet": "#bc13fe" },
+          fontFamily: { "body-md": ["Inter"], "headline-md": ["Inter"], "headline-lg": ["Inter"], "label-md": ["JetBrains Mono"] } } }
+      }
+</script>
+<link href="{% static_v 'css/auth-theme.css' %}" rel="stylesheet"/>
+</head>
+<body class="font-body-md min-h-screen flex items-center justify-center">
+<div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+<div class="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full bg-neon-violet opacity-10 blur-[150px]"></div>
+<div class="absolute bottom-[0%] -right-[10%] w-[50%] h-[50%] rounded-full bg-neon-cyan opacity-5 blur-[120px]"></div>
+</div>
+
+<main class="relative z-10 text-center px-6 max-w-sm w-full">
+{% if access_request.status == "RECHAZADA" %}
+<div class="glass-panel rounded-2xl border border-red-500/30 p-8">
+<span class="material-symbols-outlined text-5xl text-red-400 mb-3 block">block</span>
+<h1 class="font-headline-lg text-xl font-bold text-white mb-2">Acceso denegado</h1>
+<p class="text-gray-400 text-sm">Un administrador rechazó este intento de entrar al kiosco.</p>
+</div>
+<a href="{% url 'attendance:display' %}" class="inline-flex items-center gap-2 mt-6 text-gray-400 hover:text-neon-cyan transition-colors text-xs font-label-md uppercase tracking-widest">
+Reintentar
+</a>
+{% else %}
+<div class="glass-panel neon-border rounded-2xl p-8">
+<span class="material-symbols-outlined text-5xl text-neon-cyan mb-3 block animate-pulse">hourglass_top</span>
+<h1 class="font-headline-lg text-xl font-bold text-white mb-2">Esperando aprobación</h1>
+<p class="text-gray-400 text-sm">Le avisamos a un administrador que estás intentando abrir el kiosco de asistencia. Dejá esta pantalla abierta.</p>
+</div>
+{% endif %}
+</main>
+
+{% if access_request.status != "RECHAZADA" %}
+<script>
+    // Recarga cada 5s para ver si ya respondieron -- espera corta, a
+    // diferencia del refresco de 20s de la pantalla ya habilitada. No se
+    // recarga sola cuando ya rechazaron: que sea la persona quien decida
+    // reintentar, no un loop silencioso que vuelva a molestar al admin.
+    setTimeout(() => location.reload(), 5000);
+</script>
+{% endif %}
+</body>
+</html>

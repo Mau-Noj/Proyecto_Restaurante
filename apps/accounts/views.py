@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 
 from .forms import AdminAuthenticationForm, ThemedPasswordChangeForm
@@ -66,6 +66,13 @@ class ThemedLogoutView(LogoutView):
 
 @login_required(login_url="accounts:login_empleado")
 def employee_home(request):
+    # Si alguien cae directo en esta URL (favorito viejo, escrita a mano)
+    # en vez de pasar por el login, igual lo manda a su landing por puesto
+    # -- si no, se queda viendo la pantalla generica "sin modulos" aunque
+    # su puesto si tenga una pantalla propia (ej. Kiosko).
+    landing = _employee_landing_url(request.user)
+    if landing != str(reverse_lazy("accounts:employee_home")):
+        return redirect(landing)
     return render(request, "accounts/employee_home.html")
 
 

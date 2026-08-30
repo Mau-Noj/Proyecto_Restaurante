@@ -6,7 +6,15 @@ from django.core.cache import cache
 from django.db import IntegrityError, transaction
 from django.utils import timezone
 
-from .models import Kiosk, OvertimeRequest, Shift, TimeEntry, TimeEntryAdjustment, compute_hash
+from .models import (
+    Kiosk,
+    KioskAccessRequest,
+    OvertimeRequest,
+    Shift,
+    TimeEntry,
+    TimeEntryAdjustment,
+    compute_hash,
+)
 
 TOKEN_TTL_SECONDS = 25
 _GENERIC_PREFIX = "attendance-kiosk-token"
@@ -24,6 +32,51 @@ def get_default_kiosk() -> Kiosk:
     La pantalla de asistencia (views.attendance_display) siempre usa este."""
     kiosk, _ = Kiosk.objects.get_or_create(name="Principal")
     return kiosk
+
+
+# --- Solicitudes de acceso al kiosco ("¿sos vos?") --------------------------
+
+RECENT_REJECTION_COOLDOWN_SECONDS = 30
+
+
+def get_kiosk_access_status(user) -> KioskAccessRequest:
+    """La solicitud a mostrarle a la cuenta Kiosko en la pantalla de
+    espera: reutiliza una pendiente si ya hay una (para no crear una
+    nueva en cada recarga), muestra un rechazo reciente un momento antes
+    de dejar reintentar, o crea una pendiente nueva."""
+    pending = KioskAccessRequest.objects.filter(
+        requested_by=user, status=KioskAccessRequest.Status.PENDIENTE
+    ).first()
+    if pending:
+        return pending
+
+    last = KioskAccessRequest.objects.filter(requested_by=user).order_by("-created_at").first()
+    if (
+        last
+        and last.status == KioskAccessRequest.Status.RECHAZADA
+        and last.responded_at
+        and (timezone.now() - last.responded_at).total_seconds() < RECENT_REJECTION_COOLDOWN_SECONDS
+    ):
+        return last
+
+    return KioskAccessRequest.objects.create(requested_by=user)
+
+
+@transaction.atomic
+def respond_kiosk_access_request(access_request: KioskAccessRequest, admin_user, approved: bool) -> KioskAccessRequest:
+    if access_request.status != KioskAccessRequest.Status.PENDIENTE:
+        raise ClockError("Esta solicitud ya fue respondida.")
+    access_request.status = (
+        KioskAccessRequest.Status.APROBADA if approved else KioskAccessRequest.Status.RECHAZADA
+    )
+    access_request.responded_by = admin_user
+    access_request.responded_at = timezone.now()
+    access_request.save(update_fields=["status", "responded_by", "responded_at"])
+    if approved:
+        kiosk = get_default_kiosk()
+        kiosk.enabled = True
+        kiosk.save(update_fields=["enabled"])
+    return access_request
 
 
 # --- Marcación genérica (kiosco de siempre: rotativo, cualquier empleado) --

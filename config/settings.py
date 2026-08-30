@@ -59,6 +59,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "apps.attendance.context_processors.shift_alert",
                 "apps.attendance.context_processors.pending_overtime_alert",
+                "apps.attendance.context_processors.kiosk_access_alert",
             ],
         },
     },

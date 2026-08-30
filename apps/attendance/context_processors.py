@@ -2,7 +2,7 @@ from django.utils import timezone
 
 from apps.employees.models import Employee
 
-from .models import OvertimeRequest, Shift, TimeEntry
+from .models import KioskAccessRequest, OvertimeRequest, Shift, TimeEntry
 from .services import effective_shift_end, next_entry_type
 
 ALERT_WINDOW_MINUTES = 15
@@ -60,3 +60,26 @@ def pending_overtime_alert(request):
     if not count:
         return {}
     return {"pending_overtime_count": count}
+
+
+def kiosk_access_alert(request):
+    """"¿Sos vos?" -- alerta en vivo para Gerente/admin cuando la cuenta
+    Kiosko intenta entrar a la pantalla de asistencia mientras está
+    deshabilitada (ver attendance.views.attendance_display)."""
+    user = getattr(request, "user", None)
+    if not user or not user.is_authenticated:
+        return {}
+    employee = getattr(user, "employee_profile", None)
+    is_gerente = employee and employee.position == Employee.Position.GERENTE
+    if not (user.is_staff or user.is_superuser or is_gerente):
+        return {}
+
+    pending = (
+        KioskAccessRequest.objects.filter(status=KioskAccessRequest.Status.PENDIENTE)
+        .select_related("requested_by")
+        .order_by("created_at")
+        .first()
+    )
+    if not pending:
+        return {}
+    return {"kiosk_access_request": pending}

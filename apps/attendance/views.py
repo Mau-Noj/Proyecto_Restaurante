@@ -11,12 +11,13 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.dateparse import parse_date
+from django.utils.http import url_has_allowed_host_and_scheme
 
 from apps.employees.decorators import position_required
 from apps.employees.models import Employee
 
 from .forms import AdjustmentForm, OvertimeRequestForm, OvertimeResponseForm, ShiftForm
-from .models import Kiosk, OvertimeRequest, Shift, TimeEntry
+from .models import Kiosk, KioskAccessRequest, OvertimeRequest, Shift, TimeEntry
 from .services import (
     ClockError,
     clock_employee,
@@ -28,8 +29,10 @@ from .services import (
     generate_kiosk_token,
     generate_scoped_token,
     get_default_kiosk,
+    get_kiosk_access_status,
     next_entry_type,
     request_overtime,
+    respond_kiosk_access_request,
     respond_overtime_proposal,
     static_entrada_token,
     worked_summary,
@@ -88,15 +91,49 @@ def kiosko_access_required(view_func):
 # --- la haya habilitado; ver kiosko_access_required) ------------------------
 
 
-@kiosko_access_required
+@login_required(login_url="accounts:login_empleado")
 def attendance_display(request):
     """Un solo QR de entrada (fijo) + una tarjeta por cada empleado que le
-    toca salir ahora, con su nombre y su propio QR."""
-    kiosk = get_default_kiosk()
-    leaving = employees_leaving_now()
+    toca salir ahora, con su nombre y su propio QR.
+
+    Si quien entra es la cuenta Kiosko pero la pantalla todavía no está
+    habilitada, en vez de un simple "acceso denegado" dispara una
+    solicitud en vivo ("¿sos vos?") que cualquier Gerente/admin conectado
+    ve como alerta, y muestra una pantalla de espera mientras tanto (ver
+    kiosk_waiting.html)."""
+    if _can_view_kiosk_screen(request.user):
+        kiosk = get_default_kiosk()
+        leaving = employees_leaving_now()
+        return render(
+            request, "attendance/attendance_display.html", {"kiosk": kiosk, "leaving": leaving}
+        )
+
+    employee = getattr(request.user, "employee_profile", None)
+    if not employee or employee.position != Employee.Position.KIOSKO:
+        return render(request, "attendance/display_disabled.html", status=403)
+
+    access_request = get_kiosk_access_status(request.user)
     return render(
-        request, "attendance/attendance_display.html", {"kiosk": kiosk, "leaving": leaving}
+        request, "attendance/kiosk_waiting.html", {"access_request": access_request}
     )
+
+
+@gerente_required
+def kiosk_access_respond(request, request_id):
+    access_request = get_object_or_404(
+        KioskAccessRequest, pk=request_id, status=KioskAccessRequest.Status.PENDIENTE
+    )
+    if request.method == "POST":
+        approved = request.POST.get("action") == "aprobar"
+        respond_kiosk_access_request(access_request, request.user, approved)
+        messages.success(
+            request,
+            "Acceso al kiosco aprobado." if approved else "Acceso al kiosco denegado.",
+        )
+    next_url = request.POST.get("next") or request.META.get("HTTP_REFERER")
+    if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+        return redirect(next_url)
+    return redirect(reverse("dashboard:index"))
 
 
 def _qr_response(url: str) -> HttpResponse:

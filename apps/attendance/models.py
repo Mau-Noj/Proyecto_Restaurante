@@ -33,6 +33,42 @@ class Kiosk(models.Model):
         return self.name
 
 
+class KioskAccessRequest(models.Model):
+    """Un intento de entrar a la pantalla de asistencia mientras está
+    deshabilitada (ver attendance.views.attendance_display). Se muestra
+    como alerta en vivo a cualquier Gerente/admin conectado (ver
+    attendance.context_processors.kiosk_access_alert): "¿sos vos?" -- si
+    aprueba, habilita la pantalla (Kiosk.enabled) para que la cuenta
+    Kiosko pueda entrar; si rechaza, queda registrado el rechazo."""
+
+    class Status(models.TextChoices):
+        PENDIENTE = "PENDIENTE", "Pendiente"
+        APROBADA = "APROBADA", "Aprobada"
+        RECHAZADA = "RECHAZADA", "Rechazada"
+
+    requested_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="kiosk_access_requests"
+    )
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDIENTE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    responded_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        related_name="kiosk_access_responded",
+    )
+    responded_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Solicitud de acceso al kiosco"
+        verbose_name_plural = "Solicitudes de acceso al kiosco"
+
+    def __str__(self):
+        return f"{self.requested_by} · {self.get_status_display()}"
+
+
 class TimeEntry(models.Model):
     """Marcación de entrada/salida.
 
