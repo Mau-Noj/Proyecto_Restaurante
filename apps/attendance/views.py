@@ -1,4 +1,5 @@
 from datetime import timedelta
+from functools import wraps
 from io import BytesIO
 
 import qrcode
@@ -41,17 +42,56 @@ from .services import (
 # ya usado para el acceso al KDS.
 gerente_required = position_required(Employee.Position.GERENTE)
 
-# --- Pantalla de asistencia (pública, sin login: es una pantalla fija de --
-# --- cocina/caja, nadie se queda logueado ahí para que funcione sola) -------
+
+def _can_view_kiosk_screen(user) -> bool:
+    """Gerente/staff siempre puede (para poder revisar la pantalla sin
+    tener que loguearse como Kiosko), o la cuenta Kiosko -- pero solo si
+    el kiosco esta habilitado (kiosk.enabled), interruptor que solo un
+    Gerente/admin puede prender."""
+    if not user.is_authenticated:
+        return False
+    if user.is_staff or user.is_superuser:
+        return True
+    employee = getattr(user, "employee_profile", None)
+    if not employee:
+        return False
+    if employee.position == Employee.Position.GERENTE:
+        return True
+    if employee.position == Employee.Position.KIOSKO:
+        return get_default_kiosk().enabled
+    return False
 
 
+def kiosko_access_required(view_func):
+    """La pantalla de asistencia (y sus QR) ya NO es publica: hace falta
+    una cuenta con puesto Kiosko (que el admin crea y controla como
+    cualquier empleado) Y que el admin haya habilitado el acceso desde su
+    panel -- así, aunque alguien consiga la contraseña de Kiosko, no puede
+    usarla para abrir la pantalla desde fuera del local a menos que el
+    admin la haya dejado habilitada."""
+
+    @wraps(view_func)
+    @login_required(login_url="accounts:login_empleado")
+    def wrapped(request, *args, **kwargs):
+        if not _can_view_kiosk_screen(request.user):
+            return render(
+                request,
+                "attendance/display_disabled.html",
+                status=403,
+            )
+        return view_func(request, *args, **kwargs)
+
+    return wrapped
+
+
+# --- Pantalla de asistencia (requiere la cuenta Kiosko + que el admin -----
+# --- la haya habilitado; ver kiosko_access_required) ------------------------
+
+
+@kiosko_access_required
 def attendance_display(request):
     """Un solo QR de entrada (fijo) + una tarjeta por cada empleado que le
-    toca salir ahora, con su nombre y su propio QR. Sin turno asignado ese
-    día, se puede desplegar igual el QR genérico de respaldo. No requiere
-    sesión iniciada a propósito: es una pantalla física compartida, como
-    cualquier kiosco -- lo único protegido es la acción de marcar en sí
-    (mark_confirm), no el estar mirando la pantalla."""
+    toca salir ahora, con su nombre y su propio QR."""
     kiosk = get_default_kiosk()
     leaving = employees_leaving_now()
     return render(
@@ -68,6 +108,7 @@ def _qr_response(url: str) -> HttpResponse:
     return response
 
 
+@kiosko_access_required
 def kiosk_qr_image(request):
     kiosk = get_default_kiosk()
     token = generate_kiosk_token(kiosk)
@@ -77,6 +118,7 @@ def kiosk_qr_image(request):
     return _qr_response(url)
 
 
+@kiosko_access_required
 def kiosk_qr_static_entrada_image(request):
     kiosk = get_default_kiosk()
     token = static_entrada_token(kiosk)
@@ -86,6 +128,7 @@ def kiosk_qr_static_entrada_image(request):
     return _qr_response(url)
 
 
+@kiosko_access_required
 def kiosk_qr_scoped_image(request, employee_id):
     kiosk = get_default_kiosk()
     employee = get_object_or_404(Employee, pk=employee_id)
@@ -239,7 +282,21 @@ def entry_adjust(request, entry_id):
 
 
 @gerente_required
+def toggle_kiosk_access(request):
+    kiosk = get_default_kiosk()
+    if request.method == "POST":
+        kiosk.enabled = not kiosk.enabled
+        kiosk.save(update_fields=["enabled"])
+        messages.success(
+            request,
+            "Pantalla de asistencia habilitada." if kiosk.enabled else "Pantalla de asistencia deshabilitada.",
+        )
+    return redirect(reverse("attendance:report_hours"))
+
+
+@gerente_required
 def report_hours(request):
+    kiosk = get_default_kiosk()
     hasta = parse_date(request.GET.get("hasta", "")) or timezone.localdate()
     desde = parse_date(request.GET.get("desde", "")) or hasta - timedelta(days=30)
 
@@ -272,6 +329,7 @@ def report_hours(request):
         request,
         "attendance/report_hours.html",
         {
+            "kiosk": kiosk,
             "rows": rows,
             "recent_entries": recent_entries,
             "desde": desde,

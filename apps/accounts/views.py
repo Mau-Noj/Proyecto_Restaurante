@@ -21,6 +21,8 @@ def _employee_landing_url(user) -> str:
             return str(reverse_lazy("kds:bar"))
         if employee.position == Employee.Position.CAJERO:
             return str(reverse_lazy("payments:takeout_new"))
+        if employee.position == Employee.Position.KIOSKO:
+            return str(reverse_lazy("attendance:display"))
     return str(reverse_lazy("accounts:employee_home"))
 
 

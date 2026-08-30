@@ -11,10 +11,17 @@ def _generate_secret() -> str:
 
 class Kiosk(models.Model):
     """Punto físico (tablet/PC ya existente en cocina o caja) donde se
-    muestra el QR rotativo para marcar entrada/salida."""
+    muestra el QR rotativo para marcar entrada/salida.
+
+    `enabled` es un interruptor que solo un Gerente/admin puede prender
+    (ver attendance:toggle_kiosk_access): sin esto en True, ni siquiera la
+    cuenta especial "Kiosko" puede ver la pantalla, aunque tenga la
+    contraseña correcta -- así el acceso queda bajo control activo del
+    administrador, no solo de quién conoce las credenciales."""
 
     name = models.CharField("Nombre", max_length=100)
     secret_key = models.CharField(max_length=64, default=_generate_secret, editable=False)
+    enabled = models.BooleanField("Pantalla habilitada", default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

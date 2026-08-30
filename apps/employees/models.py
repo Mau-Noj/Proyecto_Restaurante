@@ -15,6 +15,7 @@ class Employee(models.Model):
         BODEGUERO = "BODEGUERO", "Bodeguero"
         COMPRAS = "COMPRAS", "Encargado de Compras"
         REPARTIDOR = "REPARTIDOR", "Repartidor"
+        KIOSKO = "KIOSKO", "Kiosko (pantalla de asistencia)"
 
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="employee_profile"
