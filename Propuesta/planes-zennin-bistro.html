@@ -394,6 +394,12 @@
   .calc-total-value span { font-family: var(--font-body); font-size: 14px; color: var(--ink-dim); font-weight: 500; }
   .calc-per-day { margin-top: 4px; font-size: 11.5px; color: var(--ink-dim); text-align: right; }
 
+  .calc-signup { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 20px; background: var(--ink); border-top: 1px solid rgba(244,233,215,0.14); }
+  .calc-signup-label { font-family: var(--font-body); font-weight: 600; font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--linen); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .calc-signup-tag { font-size: 9.5px; letter-spacing: 0.06em; padding: 2px 7px; border-radius: 20px; background: var(--ember); color: var(--linen); text-transform: uppercase; }
+  .calc-signup-sub { margin-top: 8px; max-width: 46ch; font-size: 12px; line-height: 1.55; color: var(--linen-dim); }
+  .calc-signup-value { flex: 0 0 auto; font-family: var(--font-display); font-size: 26px; color: var(--brass); }
+
   /* ---------- investment tables ---------- */
 
   .invest { padding: 54px 0; border-bottom: 1px solid var(--border); scroll-margin-top: 64px; }
@@ -1115,6 +1121,14 @@
           <div class="calc-per-day" id="calc-per-day">≈ Q0 al día</div>
         </div>
       </div>
+
+      <div class="calc-signup">
+        <div>
+          <span class="calc-signup-label">Cuota de inscripción <span class="calc-signup-tag">pago único</span></span>
+          <div class="calc-signup-sub">Un mes del plan que arme arriba, pagado una sola vez al firmar. Es el compromiso que arranca el trabajo: con eso el equipo de desarrollo empieza a personalizar el sistema a la medida de su restaurante, no a construir sobre una plantilla genérica para quien todavía no decidió en serio.</div>
+        </div>
+        <div class="calc-signup-value" id="calc-signup">Q0</div>
+      </div>
     </div>
   </div>
 </section>
@@ -1348,6 +1362,7 @@
   const perDayEl = document.getElementById('calc-per-day');
   const supportEl = document.getElementById('calc-support');
   const savingsEl = document.getElementById('calc-savings');
+  const signupEl = document.getElementById('calc-signup');
   const haToggle = document.getElementById('infra-ha');
   const panelEl = document.getElementById('calc-panel');
 
@@ -1393,6 +1408,7 @@
     totalEl.innerHTML = fmt(grandTotal) + ' <span>/ mes</span>';
     perDayEl.textContent = '≈ ' + fmt(grandTotal / 30) + ' al día';
     supportEl.textContent = includedCount + ' de ' + MODULES.length + ' módulos incluidos · Soporte: ' + (highestTier ? TIER_LABEL[highestTier] : '—');
+    signupEl.textContent = fmt(grandTotal);
 
     MODULES.forEach((m) => {
       TIERS.forEach((tier) => {
