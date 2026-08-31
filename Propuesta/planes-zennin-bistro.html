@@ -304,6 +304,7 @@
   .menu-tier.is-basico .menu-tier-name { color: #8a7357; }
   .menu-tier.is-premium .menu-tier-name { color: var(--ember); }
   .menu-tier.is-gold .menu-tier-name { color: #a3813a; }
+  .signup-card .menu-tier-name { color: var(--brass); }
   .menu-tier-leader { flex: 1; min-width: 20px; border-bottom: 2px dotted var(--ink-border-strong); margin-bottom: 6px; }
   .menu-tier-price { font-weight: 700; font-size: 17px; color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
   .menu-tier-price small { font-weight: 500; font-size: 11px; color: var(--ink-dim); }
@@ -1088,6 +1089,22 @@
       <strong>Tarifa de cliente fundador:</strong> por ser el primer negocio en operar con Zennin Bistro, el precio mensual que elija hoy por cada módulo queda congelado mientras mantenga el servicio activo — no sube después, aunque el precio de lista suba para los clientes que lleguen más adelante.
     </div>
 
+    <div class="menu-card signup-card">
+      <div class="menu-tier">
+        <div class="menu-tier-head">
+          <span class="menu-tier-name">Cuota de Inscripción</span>
+          <span class="menu-tier-leader"></span>
+          <span class="menu-tier-price">1 mes<small> de su plan</small></span>
+        </div>
+        <ul class="menu-tier-features">
+          <li>Pago único, al firmar — no es una mensualidad más</li>
+          <li>Equivale exactamente a un mes del plan que arme abajo</li>
+          <li>Con eso arranca la personalización real de su sistema</li>
+        </ul>
+        <p class="menu-tier-why">Antes de tocar una sola línea de código a la medida de su restaurante, necesitamos saber que usted ya decidió en serio — no que está probando. Por eso la inscripción no es un monto simbólico: es un mes completo de lo que va a pagar de todas formas, adelantado como compromiso de ambos lados. Ese mismo pago es lo que separa el tiempo del equipo de desarrollo para configurar su menú, sus mesas, sus roles y sus reportes — no una plantilla genérica, su sistema.</p>
+      </div>
+    </div>
+
     <div class="calc-presets">
       <button type="button" data-preset="basico">Todo Zen</button>
       <button type="button" data-preset="premium">Todo Zennin <span class="rec-mark">Recomendado</span></button>
@@ -1125,7 +1142,7 @@
       <div class="calc-signup">
         <div>
           <span class="calc-signup-label">Cuota de inscripción <span class="calc-signup-tag">pago único</span></span>
-          <div class="calc-signup-sub">Un mes del plan que arme arriba, pagado una sola vez al firmar. Es el compromiso que arranca el trabajo: con eso el equipo de desarrollo empieza a personalizar el sistema a la medida de su restaurante, no a construir sobre una plantilla genérica para quien todavía no decidió en serio.</div>
+          <div class="calc-signup-sub">Un mes del plan que armó arriba — vea la explicación completa al inicio de esta sección.</div>
         </div>
         <div class="calc-signup-value" id="calc-signup">Q0</div>
       </div>
