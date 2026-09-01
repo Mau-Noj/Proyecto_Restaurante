@@ -304,6 +304,7 @@
   .menu-tier.is-basico .menu-tier-name { color: #8a7357; }
   .menu-tier.is-premium .menu-tier-name { color: var(--ember); }
   .menu-tier.is-gold .menu-tier-name { color: #a3813a; }
+  .signup-card .menu-tier-name { color: var(--brass); }
   .menu-tier-leader { flex: 1; min-width: 20px; border-bottom: 2px dotted var(--ink-border-strong); margin-bottom: 6px; }
   .menu-tier-price { font-weight: 700; font-size: 17px; color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
   .menu-tier-price small { font-weight: 500; font-size: 11px; color: var(--ink-dim); }
@@ -393,6 +394,12 @@
   .calc-total-value { font-family: var(--font-display); font-size: 32px; color: var(--ink); text-align: right; transition: color .2s ease; }
   .calc-total-value span { font-family: var(--font-body); font-size: 14px; color: var(--ink-dim); font-weight: 500; }
   .calc-per-day { margin-top: 4px; font-size: 11.5px; color: var(--ink-dim); text-align: right; }
+
+  .calc-signup { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 20px; background: var(--ink); border-top: 1px solid rgba(244,233,215,0.14); }
+  .calc-signup-label { font-family: var(--font-body); font-weight: 600; font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--linen); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .calc-signup-tag { font-size: 9.5px; letter-spacing: 0.06em; padding: 2px 7px; border-radius: 20px; background: var(--ember); color: var(--linen); text-transform: uppercase; }
+  .calc-signup-sub { margin-top: 8px; max-width: 46ch; font-size: 12px; line-height: 1.55; color: var(--linen-dim); }
+  .calc-signup-value { flex: 0 0 auto; font-family: var(--font-display); font-size: 26px; color: var(--brass); }
 
   /* ---------- investment tables ---------- */
 
@@ -585,12 +592,12 @@
       <p class="cover-kicker">Carta de módulos</p>
       <h1>Un plan distinto para cada módulo, no para todo el sistema</h1>
       <div class="rule-orn"></div>
-      <p class="cover-lede">Zennin Bistro no se contrata en un solo bloque. Cada módulo — Personal, Mesas, Cocina, Pagos, Catálogo, Inventario y la capa de Seguridad — tiene su propio nivel Básico, Premium y Gold, y usted decide dónde vale la pena subir de nivel. Si lo único que le preocupa es que nadie entre al sistema sin permiso, sube solo el módulo de Seguridad a Premium y deja todo lo demás en Básico. Y si alguno de los siete no aplica a su operación, simplemente no se incluye — no paga por un módulo que no va a usar. El costo final de la inversión se arma según lo que el negocio necesita y puede pagar, no según un paquete cerrado.</p>
+      <p class="cover-lede">Zennin Bistro no se contrata en un solo bloque. Cada módulo — Personal, Mesas, Cocina, Pagos, Catálogo, Inventario y la capa de Seguridad — tiene su propio nivel Zen, Zennin y Zennin Shin, y usted decide dónde vale la pena subir de nivel. Si lo único que le preocupa es que nadie entre al sistema sin permiso, sube solo el módulo de Seguridad a Zennin y deja todo lo demás en Zen. Y si alguno de los siete no aplica a su operación, simplemente no se incluye — no paga por un módulo que no va a usar. El costo final de la inversión se arma según lo que el negocio necesita y puede pagar, no según un paquete cerrado.</p>
       <div class="rule-orn"></div>
       <div class="tier-swatches">
-        <div class="swatch"><span class="chip basico"></span>Básico</div>
-        <div class="swatch"><span class="chip premium"></span>Premium</div>
-        <div class="swatch"><span class="chip gold"></span>Gold</div>
+        <div class="swatch"><span class="chip basico"></span>Zen</div>
+        <div class="swatch"><span class="chip premium"></span>Zennin</div>
+        <div class="swatch"><span class="chip gold"></span>Zennin Shin</div>
       </div>
     </div>
   </div>
@@ -602,20 +609,20 @@
     <h2>Tres niveles, el mismo criterio en los siete módulos</h2>
     <div class="legend-grid">
       <div class="legend-card t-basico">
-        <h3>Básico</h3>
+        <h3>Zen</h3>
         <p>La operación diaria del restaurante, completa: tomar pedidos, cobrar, controlar inventario, dar de alta personal. Hoy existe como un recorrido interactivo de interfaz (UI/UX) — se ve y se navega como sería el sistema real, pero todavía no tiene lógica ni datos reales detrás; construirlo es el trabajo que cubre esta propuesta.</p>
       </div>
       <div class="legend-card t-premium">
-        <h3>Premium <span class="rec-mark">Recomendado</span></h3>
+        <h3>Zennin <span class="rec-mark">Recomendado</span></h3>
         <p>Lo que un restaurante necesita cuando ya tiene volumen y no puede darse el lujo de un error: control físico (impresoras, biometría), trazabilidad (auditoría, documentos) y reportes listos para salir del sistema hacia contabilidad.</p>
       </div>
       <div class="legend-card t-gold">
-        <h3>Gold</h3>
+        <h3>Zennin Shin</h3>
         <p>Automatización e integración: el sistema deja de solo registrar lo que pasó y empieza a anticipar, conectar con proveedores externos, facturar ante la SAT y sostener más de una sucursal sin duplicar trabajo.</p>
       </div>
     </div>
     <div class="callout">
-      <strong>Los módulos no se agrupan entre sí.</strong> Subir Seguridad a Premium no obliga a subir Personal. Puede empezar con los siete en Básico e ir subiendo de nivel únicamente donde el negocio lo va pidiendo, mes a mes. La mayoría de nuestros clientes terminan en Premium en la mitad o más de sus módulos — es el punto donde el sistema deja de solo operar y empieza a proteger el negocio. Y "los siete" tampoco es obligatorio: un módulo que no aplica a su operación simplemente se deja fuera — el punto de partida es lo que la empresa puede invertir hoy, no un catálogo cerrado.
+      <strong>Los módulos no se agrupan entre sí.</strong> Subir Seguridad a Zennin no obliga a subir Personal. Puede empezar con los siete en Zen e ir subiendo de nivel únicamente donde el negocio lo va pidiendo, mes a mes. La mayoría de nuestros clientes terminan en Zennin en la mitad o más de sus módulos — es el punto donde el sistema deja de solo operar y empieza a proteger el negocio. Y "los siete" tampoco es obligatorio: un módulo que no aplica a su operación simplemente se deja fuera — el punto de partida es lo que la empresa puede invertir hoy, no un catálogo cerrado.
     </div>
   </div>
 </section>
@@ -633,11 +640,11 @@
         <p>Atención 24 horas, los 7 días de la semana, incluida al contratar — sin pagar nada aparte. Una prueba real del respaldo con el que va a operar el sistema.</p>
       </div>
       <div class="legend-card t-basico">
-        <h3>Básico</h3>
+        <h3>Zen</h3>
         <p>Q250 al mes. Atención de lunes a viernes, de 12:00 p.m. a 12:00 a.m. Cubre el horario de mayor operación del restaurante.</p>
       </div>
       <div class="legend-card t-premium">
-        <h3>Premium</h3>
+        <h3>Zennin</h3>
         <p>Q500 al mes. Atención 24 horas, todos los días del mes. Para quien no puede permitirse ni un minuto sin respuesta.</p>
       </div>
     </div>
@@ -656,7 +663,7 @@
     <div class="menu-card">
       <div class="menu-tier is-basico">
         <div class="menu-tier-head">
-          <span class="menu-tier-name">Básico</span>
+          <span class="menu-tier-name">Zen</span>
           <span class="menu-tier-leader"></span>
           <span class="menu-tier-price">Q99<small> / mes</small></span>
         </div>
@@ -670,7 +677,7 @@
       </div>
       <div class="menu-tier is-premium is-rec">
         <div class="menu-tier-head">
-          <span class="menu-tier-name">Premium <span class="rec-mark">Recomendado</span></span>
+          <span class="menu-tier-name">Zennin <span class="rec-mark">Recomendado</span></span>
           <span class="menu-tier-leader"></span>
           <span class="menu-tier-price">Q249<small> / mes</small></span>
         </div>
@@ -684,7 +691,7 @@
       </div>
       <div class="menu-tier is-gold">
         <div class="menu-tier-head">
-          <span class="menu-tier-name">Gold</span>
+          <span class="menu-tier-name">Zennin Shin</span>
           <span class="menu-tier-leader"></span>
           <span class="menu-tier-price">Q499<small> / mes</small></span>
         </div>
@@ -712,7 +719,7 @@
     <div class="menu-card">
       <div class="menu-tier is-basico">
         <div class="menu-tier-head">
-          <span class="menu-tier-name">Básico</span>
+          <span class="menu-tier-name">Zen</span>
           <span class="menu-tier-leader"></span>
           <span class="menu-tier-price">Q149<small> / mes</small></span>
         </div>
@@ -726,20 +733,23 @@
       </div>
       <div class="menu-tier is-premium is-rec">
         <div class="menu-tier-head">
-          <span class="menu-tier-name">Premium <span class="rec-mark">Recomendado</span></span>
+          <span class="menu-tier-name">Zennin <span class="rec-mark">Recomendado</span></span>
           <span class="menu-tier-leader"></span>
           <span class="menu-tier-price">Q349<small> / mes</small></span>
         </div>
         <ul class="menu-tier-features">
           <li>Expediente: DPI/pasaporte y contrato firmado</li>
           <li>Registro de capacitaciones</li>
-          <li>Reloj biométrico de entrada y salida</li>
+          <li>Código QR dinámico para marcar entrada y salida desde el celular del empleado</li>
+          <li>Turnos programados: el código de salida aparece solo cuando le toca a cada persona</li>
+          <li>Solicitud y aprobación de horas extra, con aviso inmediato al administrador</li>
+          <li>Bitácora de marcaciones que no se puede editar ni borrar después de creada</li>
         </ul>
-        <p class="menu-tier-why">El expediente de cada empleado queda formal y a la mano, no en una carpeta física que se puede perder.</p>
+        <p class="menu-tier-why">El expediente de cada empleado queda formal y a la mano, y el reloj de asistencia por QR evita el reclamo de siempre — que si salió antes, que si le pagaron de menos — porque el registro no lo puede tocar ni el dueño ni el empleado.</p>
       </div>
       <div class="menu-tier is-gold">
         <div class="menu-tier-head">
-          <span class="menu-tier-name">Gold</span>
+          <span class="menu-tier-name">Zennin Shin</span>
           <span class="menu-tier-leader"></span>
           <span class="menu-tier-price">Q699<small> / mes</small></span>
         </div>
@@ -747,8 +757,10 @@
           <li>Onboarding automatizado de principio a fin</li>
           <li>Asignación multi-sucursal</li>
           <li>Integración con nómina externa</li>
+          <li>Kiosco de asistencia con aprobación en vivo: cada intento de acceso le avisa al administrador al instante y pide su confirmación</li>
+          <li>Cada marcación queda encadenada a la anterior con el mismo principio de verificación que usa la banca — alterar una se nota</li>
         </ul>
-        <p class="menu-tier-why">Prepara al negocio para abrir un segundo local sin duplicar el trabajo administrativo.</p>
+        <p class="menu-tier-why">Prepara al negocio para abrir un segundo local sin duplicar el trabajo administrativo, con la asistencia blindada de punta a punta: nadie entra al kiosco sin permiso, y nadie altera un registro sin que quede evidencia.</p>
       </div>
     </div>
   </div>
@@ -766,7 +778,7 @@
     <div class="menu-card">
       <div class="menu-tier is-basico">
         <div class="menu-tier-head">
-          <span class="menu-tier-name">Básico</span>
+          <span class="menu-tier-name">Zen</span>
           <span class="menu-tier-leader"></span>
           <span class="menu-tier-price">Q199<small> / mes</small></span>
         </div>
@@ -780,7 +792,7 @@
       </div>
       <div class="menu-tier is-premium is-rec">
         <div class="menu-tier-head">
-          <span class="menu-tier-name">Premium <span class="rec-mark">Recomendado</span></span>
+          <span class="menu-tier-name">Zennin <span class="rec-mark">Recomendado</span></span>
           <span class="menu-tier-leader"></span>
           <span class="menu-tier-price">Q449<small> / mes</small></span>
         </div>
@@ -794,7 +806,7 @@
       </div>
       <div class="menu-tier is-gold">
         <div class="menu-tier-head">
-          <span class="menu-tier-name">Gold</span>
+          <span class="menu-tier-name">Zennin Shin</span>
           <span class="menu-tier-leader"></span>
           <span class="menu-tier-price">Q899<small> / mes</small></span>
         </div>
@@ -821,7 +833,7 @@
     <div class="menu-card">
       <div class="menu-tier is-basico">
         <div class="menu-tier-head">
-          <span class="menu-tier-name">Básico</span>
+          <span class="menu-tier-name">Zen</span>
           <span class="menu-tier-leader"></span>
           <span class="menu-tier-price">Q249<small> / mes</small></span>
         </div>
@@ -835,7 +847,7 @@
       </div>
       <div class="menu-tier is-premium is-rec">
         <div class="menu-tier-head">
-          <span class="menu-tier-name">Premium <span class="rec-mark">Recomendado</span></span>
+          <span class="menu-tier-name">Zennin <span class="rec-mark">Recomendado</span></span>
           <span class="menu-tier-leader"></span>
           <span class="menu-tier-price">Q499<small> / mes</small></span>
         </div>
@@ -848,7 +860,7 @@
       </div>
       <div class="menu-tier is-gold">
         <div class="menu-tier-head">
-          <span class="menu-tier-name">Gold</span>
+          <span class="menu-tier-name">Zennin Shin</span>
           <span class="menu-tier-leader"></span>
           <span class="menu-tier-price">Q949<small> / mes</small></span>
         </div>
@@ -875,7 +887,7 @@
     <div class="menu-card">
       <div class="menu-tier is-basico">
         <div class="menu-tier-head">
-          <span class="menu-tier-name">Básico</span>
+          <span class="menu-tier-name">Zen</span>
           <span class="menu-tier-leader"></span>
           <span class="menu-tier-price">Q299<small> / mes</small></span>
         </div>
@@ -889,7 +901,7 @@
       </div>
       <div class="menu-tier is-premium is-rec">
         <div class="menu-tier-head">
-          <span class="menu-tier-name">Premium <span class="rec-mark">Recomendado</span></span>
+          <span class="menu-tier-name">Zennin <span class="rec-mark">Recomendado</span></span>
           <span class="menu-tier-leader"></span>
           <span class="menu-tier-price">Q599<small> / mes</small></span>
         </div>
@@ -902,7 +914,7 @@
       </div>
       <div class="menu-tier is-gold">
         <div class="menu-tier-head">
-          <span class="menu-tier-name">Gold</span>
+          <span class="menu-tier-name">Zennin Shin</span>
           <span class="menu-tier-leader"></span>
           <span class="menu-tier-price">Q1,199<small> / mes</small></span>
         </div>
@@ -929,7 +941,7 @@
     <div class="menu-card">
       <div class="menu-tier is-basico">
         <div class="menu-tier-head">
-          <span class="menu-tier-name">Básico</span>
+          <span class="menu-tier-name">Zen</span>
           <span class="menu-tier-leader"></span>
           <span class="menu-tier-price">Q99<small> / mes</small></span>
         </div>
@@ -942,7 +954,7 @@
       </div>
       <div class="menu-tier is-premium is-rec">
         <div class="menu-tier-head">
-          <span class="menu-tier-name">Premium <span class="rec-mark">Recomendado</span></span>
+          <span class="menu-tier-name">Zennin <span class="rec-mark">Recomendado</span></span>
           <span class="menu-tier-leader"></span>
           <span class="menu-tier-price">Q249<small> / mes</small></span>
         </div>
@@ -955,7 +967,7 @@
       </div>
       <div class="menu-tier is-gold">
         <div class="menu-tier-head">
-          <span class="menu-tier-name">Gold</span>
+          <span class="menu-tier-name">Zennin Shin</span>
           <span class="menu-tier-leader"></span>
           <span class="menu-tier-price">Q499<small> / mes</small></span>
         </div>
@@ -982,7 +994,7 @@
     <div class="menu-card">
       <div class="menu-tier is-basico">
         <div class="menu-tier-head">
-          <span class="menu-tier-name">Básico</span>
+          <span class="menu-tier-name">Zen</span>
           <span class="menu-tier-leader"></span>
           <span class="menu-tier-price">Q199<small> / mes</small></span>
         </div>
@@ -997,7 +1009,7 @@
       </div>
       <div class="menu-tier is-premium is-rec">
         <div class="menu-tier-head">
-          <span class="menu-tier-name">Premium <span class="rec-mark">Recomendado</span></span>
+          <span class="menu-tier-name">Zennin <span class="rec-mark">Recomendado</span></span>
           <span class="menu-tier-leader"></span>
           <span class="menu-tier-price">Q449<small> / mes</small></span>
         </div>
@@ -1010,7 +1022,7 @@
       </div>
       <div class="menu-tier is-gold">
         <div class="menu-tier-head">
-          <span class="menu-tier-name">Gold</span>
+          <span class="menu-tier-name">Zennin Shin</span>
           <span class="menu-tier-leader"></span>
           <span class="menu-tier-price">Q899<small> / mes</small></span>
         </div>
@@ -1059,7 +1071,7 @@
       </div>
     </div>
     <div class="callout">
-      <strong>¿Cuándo conviene subir a Alta Disponibilidad?</strong> Cuando ya no es aceptable que el sistema se caiga ni un minuto en hora pico — típicamente al mismo tiempo que se sube Pagos o Cocina/Bar a Premium o Gold, porque ahí es donde un minuto caído sí se siente en la caja.
+      <strong>¿Cuándo conviene subir a Alta Disponibilidad?</strong> Cuando ya no es aceptable que el sistema se caiga ni un minuto en hora pico — típicamente al mismo tiempo que se sube Pagos o Cocina/Bar a Zennin o Zennin Shin, porque ahí es donde un minuto caído sí se siente en la caja.
     </div>
   </div>
 </section>
@@ -1077,10 +1089,26 @@
       <strong>Tarifa de cliente fundador:</strong> por ser el primer negocio en operar con Zennin Bistro, el precio mensual que elija hoy por cada módulo queda congelado mientras mantenga el servicio activo — no sube después, aunque el precio de lista suba para los clientes que lleguen más adelante.
     </div>
 
+    <div class="menu-card signup-card">
+      <div class="menu-tier">
+        <div class="menu-tier-head">
+          <span class="menu-tier-name">Cuota de Inscripción</span>
+          <span class="menu-tier-leader"></span>
+          <span class="menu-tier-price">1 mes<small> de su plan</small></span>
+        </div>
+        <ul class="menu-tier-features">
+          <li>Pago único, al firmar — no es una mensualidad más</li>
+          <li>Equivale exactamente a un mes del plan que arme abajo</li>
+          <li>Con eso arranca la personalización real de su sistema</li>
+        </ul>
+        <p class="menu-tier-why">Antes de tocar una sola línea de código a la medida de su restaurante, necesitamos saber que usted ya decidió en serio — no que está probando. Por eso la inscripción no es un monto simbólico: es un mes completo de lo que va a pagar de todas formas, adelantado como compromiso de ambos lados. Ese mismo pago es lo que separa el tiempo del equipo de desarrollo para configurar su menú, sus mesas, sus roles y sus reportes — no una plantilla genérica, su sistema.</p>
+      </div>
+    </div>
+
     <div class="calc-presets">
-      <button type="button" data-preset="basico">Todo Básico</button>
-      <button type="button" data-preset="premium">Todo Premium <span class="rec-mark">Recomendado</span></button>
-      <button type="button" data-preset="gold">Todo Gold</button>
+      <button type="button" data-preset="basico">Todo Zen</button>
+      <button type="button" data-preset="premium">Todo Zennin <span class="rec-mark">Recomendado</span></button>
+      <button type="button" data-preset="gold">Todo Zennin Shin</button>
     </div>
 
     <div class="calc-panel" id="calc-panel">
@@ -1103,12 +1131,20 @@
       <div class="calc-total">
         <div>
           <span class="calc-total-label">Total estimado</span>
-          <div class="calc-total-sub" id="calc-support">Soporte incluido: Básico</div>
+          <div class="calc-total-sub" id="calc-support">Soporte incluido: Zen</div>
         </div>
         <div>
           <div class="calc-total-value" id="calc-total">Q0 <span>/ mes</span></div>
           <div class="calc-per-day" id="calc-per-day">≈ Q0 al día</div>
         </div>
+      </div>
+
+      <div class="calc-signup">
+        <div>
+          <span class="calc-signup-label">Cuota de inscripción <span class="calc-signup-tag">pago único</span></span>
+          <div class="calc-signup-sub">Un mes del plan que armó arriba — vea la explicación completa al inicio de esta sección.</div>
+        </div>
+        <div class="calc-signup-value" id="calc-signup">Q0</div>
       </div>
     </div>
   </div>
@@ -1120,19 +1156,19 @@
     <p class="eyebrow">Para uso interno</p>
     <div class="invest-head">
       <h2>Desglose de inversión en desarrollo</h2>
-      <p>Lo que existe hoy en cada módulo es un <strong style="color:var(--linen)">demo de interfaz (UI/UX)</strong>: las pantallas ya están diseñadas y se pueden recorrer, pero es una maqueta interactiva, no software funcionando — falta construir la lógica real, conectarla a una base de datos, y todo el endurecimiento de producción (pruebas de carga, manejo de errores reales, seguridad revisada) antes de poder cobrarlo como Básico. Los días de Premium y Gold son adicionales, calculados sobre ese Básico una vez construido — y asumen un solo desarrollador; con un equipo pequeño, el tiempo baja.</p>
+      <p>Lo que existe hoy en cada módulo es un <strong style="color:var(--linen)">demo de interfaz (UI/UX)</strong>: las pantallas ya están diseñadas y se pueden recorrer, pero es una maqueta interactiva, no software funcionando — falta construir la lógica real, conectarla a una base de datos, y todo el endurecimiento de producción (pruebas de carga, manejo de errores reales, seguridad revisada) antes de poder cobrarlo como Zen. Los días de Zennin y Zennin Shin son adicionales, calculados sobre ese Zen una vez construido — y asumen un solo desarrollador; con un equipo pequeño, el tiempo baja.</p>
     </div>
     <div class="table-scroll">
       <table>
         <thead>
           <tr>
             <th>Módulo</th>
-            <th>Básico</th>
-            <th>+ Premium</th>
-            <th>+ Gold</th>
-            <th>Precio Básico</th>
-            <th>Precio Premium</th>
-            <th>Precio Gold</th>
+            <th>Zen</th>
+            <th>+ Zennin</th>
+            <th>+ Zennin Shin</th>
+            <th>Precio Zen</th>
+            <th>Precio Zennin</th>
+            <th>Precio Zennin Shin</th>
           </tr>
         </thead>
         <tbody>
@@ -1273,7 +1309,7 @@
 <section class="closing">
   <div class="wrap">
     <h2>El negocio elige, no el sistema</h2>
-    <p>Los siete módulos ya tienen su interfaz recorrible a nivel Básico, lista para mostrar cómo se sentiría usar el sistema — construirlos de verdad es la inversión que cubre esta propuesta. Subir de nivel es una decisión por módulo, no un paquete cerrado — el dueño que solo necesita blindar el Login lo hace sin pagar por analítica de cocina que no va a usar, y el que ya quiere facturar formalmente ante la SAT sube Pagos a Gold sin tocar el resto. La infraestructura y el soporte técnico corren aparte de esa decisión: son la base que sostiene cualquier combinación que elija.</p>
+    <p>Los siete módulos ya tienen su interfaz recorrible a nivel Zen, lista para mostrar cómo se sentiría usar el sistema — construirlos de verdad es la inversión que cubre esta propuesta. Subir de nivel es una decisión por módulo, no un paquete cerrado — el dueño que solo necesita blindar el Login lo hace sin pagar por analítica de cocina que no va a usar, y el que ya quiere facturar formalmente ante la SAT sube Pagos a Zennin Shin sin tocar el resto. La infraestructura y el soporte técnico corren aparte de esa decisión: son la base que sostiene cualquier combinación que elija.</p>
     <div class="quote-block">
       <div class="quote-text">Un sistema que crece con el negocio, nunca antes que él.</div>
       <div class="quote-attr">Mauricio Noj, fundador de Zennin Bistro</div>
@@ -1330,7 +1366,7 @@
   const INFRA_BASE = 399;
   const INFRA_HA = 899;
   const BUNDLE_DISCOUNT = 0.10;
-  const TIER_LABEL = { ninguno: 'Ninguno', basico: 'Básico', premium: 'Premium', gold: 'Gold' };
+  const TIER_LABEL = { ninguno: 'Ninguno', basico: 'Zen', premium: 'Zennin', gold: 'Zennin Shin' };
   const TIER_RANK = { ninguno: -1, basico: 0, premium: 1, gold: 2 };
 
   const state = {};
@@ -1343,6 +1379,7 @@
   const perDayEl = document.getElementById('calc-per-day');
   const supportEl = document.getElementById('calc-support');
   const savingsEl = document.getElementById('calc-savings');
+  const signupEl = document.getElementById('calc-signup');
   const haToggle = document.getElementById('infra-ha');
   const panelEl = document.getElementById('calc-panel');
 
@@ -1388,6 +1425,7 @@
     totalEl.innerHTML = fmt(grandTotal) + ' <span>/ mes</span>';
     perDayEl.textContent = '≈ ' + fmt(grandTotal / 30) + ' al día';
     supportEl.textContent = includedCount + ' de ' + MODULES.length + ' módulos incluidos · Soporte: ' + (highestTier ? TIER_LABEL[highestTier] : '—');
+    signupEl.textContent = fmt(grandTotal);
 
     MODULES.forEach((m) => {
       TIERS.forEach((tier) => {
